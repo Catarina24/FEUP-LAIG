@@ -27,7 +27,7 @@ MySceneGraph.prototype.onXMLReady=function()
 	var rootElement = this.reader.xmlDoc.documentElement;
 	
 	// Here should go the calls for different functions to parse the various blocks
-	var error = this.parseGlobalsExample(rootElement);
+	var error = this.parseDSXFile(rootElement);
 
 	if (error != null) {
 		this.onXMLError(error);
@@ -84,7 +84,160 @@ MySceneGraph.prototype.parseGlobalsExample= function(rootElement) {
 	};
 
 };
+
+
+
+/* SCENE PARSER
+-Name of root node
+-Size of axis
+*/
+
+MySceneGraph.prototype.parseDSXScene = function (rootElement){
+
+	var search = rootElement.getElementsByTagName('scene');  
+
+	// getElementsByTagName(<tag>) returns a NodeList with all the elements named
+	// with the argument tag
+
+	var scene = search[0];
+
+	if (scene == null) {
+		return this.onXMLError("scene element is missing.");
+	}
+
+	console.log(this.reader.getString(scene, 'root'));
+
+};
+
+/* VIEWS PARSER 
+-Camera perspectives
+*/
+
+MySceneGraph.prototype.parseDSXViews = function (rootElement){
+
+	var search = rootElement.getElementsByTagName('');
+
+};
+
+/* ILLUMINATION PARSER 
+-Global illumination 
+-Background
+*/
+
+MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
+
+	var search = rootElement.getElementsByTagName('illumination');
+
+	var illumination = search[0];
+
+	if (illumination == null)
+	{
+		return this.onXMLError("illumination element is missing.");
+	};
+
+	//Get ambient illumination
+	search = illumination.getElementsByTagName('ambient');
+
+	var ambient = search[0];
+
+	if (ambient == null)
+	{
+		return this.onXMLError("ambient illumination is missing.");	
+	};
+
+	//Get background color
+
+	search = illumination.getElementsByTagName('background');
+
+	var background = search[0];
+
+	var bgRGBA = [];
+
+	bgRGBA.push(this.reader.getFloat(background, 'r'));
+	bgRGBA.push(this.reader.getFloat(background, 'g'));
+	bgRGBA.push(this.reader.getFloat(background, 'b'));
+	bgRGBA.push(this.reader.getFloat(background, 'a'));
+
+	this.background = bgRGBA;
+
+	console.log(bgRGBA);
+
+};
+
+/* LIGHTS PARSER
+-Gives location and color of omnilights
+-Gives location, target and color of omnilights
+*/
+
+MySceneGraph.prototype.parseDSXLights = function (rootElement){
+
+	var search = rootElement.getElementsByTagName('lights');
+
+	var lights = search[0];
+
+	if (lights == null)
+	{
+		return this.onXMLError("lights element is missing.");
+	};
+
+	// Searches both kind of lights: omni and spot
+	var searchOmni = lights.getElementsByTagName('omni');
+	var searchSpot = lights.getElementsByTagName('spot');
+
+	if (searchOmni.length == 0 && searchSpot == 0)
+	{
+		return this.onXMLError("no lights are defined. Please defined either an omnilight or a spotlight.");
+	}
+
+	// Extrapolate omni lights
+	for (var i = 0; i < searchOmni.length; i++)
+	{
+		var omni = searchOmni[i];
+		var id = this.reader.getString(omni, 'id');
+		var enabled = this.reader.getBoolean(omni, 'enabled');
+
+
+		// Light location
+		var searchLocation = omni.getElementsByTagName('location');
+		var location = searchLocation[0];
+
+		var locationX = this.reader.getFloat(location, 'x');
+		var locationY = this.reader.getFloat(location, 'y');
+		var locationZ = this.reader.getFloat(location, 'z');
+		var locationW = this.reader.getFloat(location, 'w');
+
+		if(locationX == null || locationY == null || 
+		locationZ == null || locationW == null)
+		{
+			return this.onXMLError("there's a component missing in " + id + " light.")
+		}
+
+		// Light ambient
+
+		var searchAmbient = omni.getElementsByTagName('ambient');
+		var ambient = searchAmbient[0];
+
+		if(this.getRGBAFromDSX(ambient) == null)
+		{
+			return this.onXMLError("bad RGBA on 'ambient' component of omnilight " + id);
+		}
+
+	}
+
+};
 	
+/**********************
+*	DSX Global Parser *
+***********************/
+
+MySceneGraph.prototype.parseDSXFile = function (rootElement) {
+
+	this.parseDSXScene(rootElement);
+	this.parseDSXIllumination(rootElement);
+	this.parseDSXLights(rootElement);
+
+};
+
 /*
  * Callback to be executed on any read error
  */
@@ -94,4 +247,40 @@ MySceneGraph.prototype.onXMLError=function (message) {
 	this.loadedOk=false;
 };
 
+/************************
+*   UTILITY FUNCTIONS   *
+*************************/
 
+MySceneGraph.prototype.getRGBAFromDSX = function(attributeName)
+{
+	var rgba = [];
+
+	var r = this.reader.getFloat(attributeName, 'r');
+	var g = this.reader.getFloat(attributeName, 'g');
+	var b = this.reader.getFloat(attributeName, 'b');
+	var a = this.reader.getFloat(attributeName, 'a');
+
+	if(r == null)
+	{
+		return this.onXMLError("missing component 'r''");
+	}
+
+	if(g == null)
+	{
+		return this.onXMLError("missing component 'g'");
+	}
+
+	if(b == null)
+	{
+		return this.onXMLError("missing component 'b'");
+	}
+
+	if(a == null)
+	{
+		return this.onXMLError("missing component 'a'");
+	}
+
+	rgba.push(r, g, b, a);
+
+	return rgba;
+};
