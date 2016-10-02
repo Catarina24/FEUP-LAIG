@@ -105,7 +105,8 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 		return "scene element is missing.";
 	}
 
-	console.log(this.reader.getString(scene, 'root'));
+	var root = this.reader.getString(scene, 'root');
+	var axis_length = this.reader.getString(scene, 'axis_length');
 
 };
 
@@ -115,7 +116,57 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 
 MySceneGraph.prototype.parseDSXViews = function (rootElement){
 
-	var search = rootElement.getElementsByTagName('');
+	var search = rootElement.getElementsByTagName('views');
+	
+	//fazer ciclo for para várias vistas
+	var views = search[0];
+	
+	if (views == null)
+		return "views element is missing";
+	
+	
+	search = views.getElementsByTagName('perspective');
+	
+	if (search.length == 0)
+		return "perspective element is missing";
+	
+	for (var i=0; i< search.length; i++){
+		
+		var perspective = search[i];
+		
+		var id = this.reader.getString(perspective, 'id');	
+		var near = this.reader.getFloat(perspective, 'near');
+		var far = this.reader.getFloat(perspective, 'far');
+		var angle = this.reader.getFloat(perspective, 'angle');
+		
+		//get from - x y z
+		search = perspective.getElementsByTagName('from');
+		
+		var fromp = search[0];
+		
+		if (fromp == null)
+			return "no perspective (from failed)";
+		
+		/*var coordf = [];
+		coordf.push(this.reader.getFloat(fromp, 'x');
+		coordf.push(this.reader.getFloat(fromp, 'y');
+		coordf.push(this.reader.getFloat(fromp, 'z');
+		
+		
+		//get to - x y z
+		search = perspective.getElementsByTagName('to');
+		
+		var to = search[0];
+		
+		if (to == null)
+			return "no perspective (to failed)";
+		
+		var coordt = [];
+		coordt.push(this.reader.getFloat(fromp, 'x');
+		coordt.push(this.reader.getFloat(fromp, 'y');
+		coordt.push(this.reader.getFloat(fromp, 'z');*/
+		
+	}
 
 };
 
@@ -149,7 +200,13 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 
 	search = illumination.getElementsByTagName('background');
 
-	var background = search[0];
+	if (search == null)
+		return "background does not exist"
+	
+	if (search.length != 1)
+		return "more than one background"
+	
+	var background = search[0];	
 
 	var bgRGBA = [];
 
