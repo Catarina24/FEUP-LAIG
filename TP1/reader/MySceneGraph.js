@@ -27,7 +27,7 @@ MySceneGraph.prototype.onXMLReady=function()
 	var rootElement = this.reader.xmlDoc.documentElement;
 	
 	// Here should go the calls for different functions to parse the various blocks
-	var error = this.parseGlobalsExample(rootElement);
+	var error = this.parseDSXFile(rootElement);
 
 	if (error != null) {
 		this.onXMLError(error);
@@ -84,7 +84,97 @@ MySceneGraph.prototype.parseGlobalsExample= function(rootElement) {
 	};
 
 };
+
+
+
+/* SCENE PARSER
+-Name of root node
+-Size of axis
+*/
+
+MySceneGraph.prototype.parseDSXScene = function (rootElement){
+
+	var search = rootElement.getElementsByTagName('scene');  
+
+	// getElementsByTagName(<tag>) returns a NodeList with all the elements named
+	// with the argument tag
+
+	var scene = search[0];
+
+	if (scene == null) {
+		return "scene element is missing.";
+	}
+
+	console.log(this.reader.getString(scene, 'root'));
+
+};
+
+/* VIEWS PARSER 
+-Camera perspectives
+*/
+
+MySceneGraph.prototype.parseDSXViews = function (rootElement){
+
+	var search = rootElement.getElementsByTagName('');
+
+};
+
+/* ILLUMINATION PARSER 
+-Global illumination 
+-Background
+*/
+
+MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
+
+	var search = rootElement.getElementsByTagName('illumination');
+
+	var illumination = search[0];
+
+	if (illumination == null)
+	{
+		return "illumination element is missing.";
+	};
+
+	//Get ambient illumination
+	search = illumination.getElementsByTagName('ambient');
+
+	var ambient = search[0];
+
+	if (ambient == null)
+	{
+		return "ambient illumination is missing."	
+	};
+
+	//Get background color
+
+	search = illumination.getElementsByTagName('background');
+
+	var background = search[0];
+
+	var bgRGBA = [];
+
+	bgRGBA.push(this.reader.getFloat(background, 'r'));
+	bgRGBA.push(this.reader.getFloat(background, 'g'));
+	bgRGBA.push(this.reader.getFloat(background, 'b'));
+	bgRGBA.push(this.reader.getFloat(background, 'a'));
+
+	this.background = bgRGBA;
+
+	console.log(bgRGBA);
+
+};
 	
+/**********************
+*	DSX Global Parser *
+***********************/
+
+MySceneGraph.prototype.parseDSXFile = function (rootElement) {
+
+	this.parseDSXScene(rootElement);
+	this.parseDSXIllumination(rootElement);
+
+};
+
 /*
  * Callback to be executed on any read error
  */
