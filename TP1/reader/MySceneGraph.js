@@ -102,7 +102,7 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 	var scene = search[0];
 
 	if (scene == null) {
-		return "scene element is missing.";
+		return this.onXMLError("scene element is missing.");
 	}
 
 	console.log(this.reader.getString(scene, 'root'));
@@ -132,7 +132,7 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 
 	if (illumination == null)
 	{
-		return "illumination element is missing.";
+		return this.onXMLError("illumination element is missing.");
 	};
 
 	//Get ambient illumination
@@ -142,7 +142,7 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 
 	if (ambient == null)
 	{
-		return "ambient illumination is missing."	
+		return this.onXMLError("ambient illumination is missing.");	
 	};
 
 	//Get background color
@@ -163,6 +163,91 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	console.log(bgRGBA);
 
 };
+
+/* LIGHTS PARSER
+-Gives location and color of omnilights
+-Gives location, target and color of omnilights
+*/
+
+MySceneGraph.prototype.parseDSXLights = function (rootElement){
+
+	var search = rootElement.getElementsByTagName('lights');
+
+	var lights = search[0];
+
+	if (lights == null)
+	{
+		return this.onXMLError("lights element is missing.");
+	};
+
+	// Searches both kind of lights: omni and spot
+	var searchOmni = lights.getElementsByTagName('omni');
+	var searchSpot = lights.getElementsByTagName('spot');
+
+	if (searchOmni.length == 0 && searchSpot == 0)
+	{
+		return this.onXMLError("no lights are defined. Please defined either an omnilight or a spotlight.");
+	}
+
+	// Extrapolate omni lights
+	for (var i = 0; i < searchOmni.length; i++)
+	{
+		var omni = searchOmni[i];
+		var id = this.reader.getString(omni, 'id');
+		var enabled = this.reader.getBoolean(omni, 'enabled');
+
+
+		// Light location
+		var searchLocation = omni.getElementsByTagName('location');
+		var location = searchLocation[0];
+
+		var locationX = this.reader.getFloat(location, 'x');
+		var locationY = this.reader.getFloat(location, 'y');
+		var locationZ = this.reader.getFloat(location, 'z');
+		var locationW = this.reader.getFloat(location, 'w');
+
+		if(locationX == null || locationY == null || 
+		locationZ == null || locationW == null)
+		{
+			return this.onXMLError("there's a component missing in " + id + " light.")
+		}
+
+		// Light ambient
+
+		var searchAmbient = omni.getElementsByTagName('ambient');
+		var ambient = searchAmbient[0];
+		var ambientRGBA = this.getRGBAFromDSX(ambient);
+
+		if(ambientRGBA == null)
+		{
+			return this.onXMLError("bad RGBA on 'ambient' component of omnilight " + id);
+		}
+
+		// Light diffuse
+
+		var searchDiffuse = omni.getElementsByTagName('diffuse');
+		var diffuse = searchAmbient[0];
+		var diffuseRGBA = this.getRGBAFromDSX(diffuse);
+
+		if(diffuseRGBA == null)
+		{
+			return this.onXMLError("bad RGBA on 'diffuse' component of omnilight " + id);
+		}
+
+		// Light specular
+
+		var searchSpecular = omni.getElementsByTagName('specular');
+		var specular = searchSpecular[0];
+		var specularRGBA = this.getRGBAFromDSX(specular);
+
+		if(specularRGBA == null)
+		{
+			return this.onXMLError("bad RGBA on 'specular' component of omnilight " + id);
+		}
+
+	}
+
+};
 	
 /**********************
 *	DSX Global Parser *
@@ -172,6 +257,7 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 
 	this.parseDSXScene(rootElement);
 	this.parseDSXIllumination(rootElement);
+	this.parseDSXLights(rootElement);
 
 };
 
@@ -184,4 +270,42 @@ MySceneGraph.prototype.onXMLError=function (message) {
 	this.loadedOk=false;
 };
 
+/************************
+*   UTILITY FUNCTIONS   *
+*************************/
 
+/*This function returns an array with the [R, G, B, A] components of an attribute.
+If there's missing component, it returns an error.*/
+MySceneGraph.prototype.getRGBAFromDSX = function(attributeName)
+{
+	var rgba = [];
+
+	var r = this.reader.getFloat(attributeName, 'r');
+	var g = this.reader.getFloat(attributeName, 'g');
+	var b = this.reader.getFloat(attributeName, 'b');
+	var a = this.reader.getFloat(attributeName, 'a');
+
+	if(r == null)
+	{
+		return this.onXMLError("missing component 'r''");
+	}
+
+	if(g == null)
+	{
+		return this.onXMLError("missing component 'g'");
+	}
+
+	if(b == null)
+	{
+		return this.onXMLError("missing component 'b'");
+	}
+
+	if(a == null)
+	{
+		return this.onXMLError("missing component 'a'");
+	}
+
+	rgba.push(r, g, b, a);
+
+	return rgba;
+};
