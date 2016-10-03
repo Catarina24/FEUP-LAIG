@@ -41,6 +41,14 @@ MySceneGraph.prototype.onXMLReady=function()
 };
 
 
+/*
+ * Callback to be executed on any read error
+ */
+MySceneGraph.prototype.onXMLError=function (message) {
+	console.error("XML Loading Error: "+message);	
+	this.loadedOk=false;
+};
+
 
 /*
  * Example of method that parses elements of one block and stores information in a specific data structure
@@ -101,9 +109,9 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 
 	var scene = search[0];
 
-	if (scene == null) {
-		return "scene element is missing.";
-	}
+	if (scene == null) 
+		return this.onXMLError("scene element is missing.");
+	
 
 	var root = this.reader.getString(scene, 'root');
 	var axis_length = this.reader.getString(scene, 'axis_length');
@@ -118,41 +126,35 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 
 	var search_views = rootElement.getElementsByTagName('views');
 
-	if (search_views.length == 0){
-		console.log("views element is missing");
-		return "views element is missing";
-	}
+	if (search_views.length == 0)
+		return this.onXMLError("views element is missing");
+	
+	//se várias vistas declaradas, o default é a primeira
+	//var default_view = search_views[0];
+	
+	//cada vez que v/V é carregado, vista muda para a próxima da lista
 
 	for (var j=0;j<search_views.length; j++){
 
 		//fazer ciclo for para várias vistas
 		var views = search_views[j];
-
-		if (views == null)
-			return "views element is missing";
 		
-		var vdefault = this.reader.getString(views, 'default');
-		console.log("view: " + vdefault);
+		//var vdefault = this.reader.getString(views, 'default');
+		//console.log("view: " + vdefault);
 
 		var perspectives = views.getElementsByTagName('perspective');
 
-		if (perspectives.length == 0){
-			console.log("perspective element is missing");
-			return "perspective element is missing";
-		}
-
+		if (perspectives.length == 0)
+			return this.onXMLError("perspective element is missing");
+		
 		for (var i=0; i< perspectives.length; i++){
 
 			var perspective = perspectives[i];
 
 			var id = this.reader.getString(perspective, 'id');
-			console.log("id:" + id);
 			var near = this.reader.getFloat(perspective, 'near');
-			console.log("near:" + near);
 			var far = this.reader.getFloat(perspective, 'far');
-			console.log("far:" + far);
 			var angle = this.reader.getFloat(perspective, 'angle');
-			console.log("angle:" + angle);
 
 			//get from - x y z
 			var search = perspective.getElementsByTagName('from');
@@ -240,6 +242,41 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 
 };
 
+
+/* TEXTURES PARSER 
+-
+*/
+
+MySceneGraph.prototype.parseDSXTextures = function (rootElement){
+	
+	var search = rootElement.getElementsByTagName('textures');
+	
+	var textures = search[0];
+	
+	//se "textures" não está no documento dsx
+	if (textures==null)
+		return this.onXMLError("Textures element is missing");
+	
+	
+	var texture = textures.getElementsByTagName('texture');
+	
+	//se "textures" não tem filhos
+	if (texture.length == 0)
+		return this.onXMLError("Texture element is missing");
+	
+	for (var i=0; i<texture.length; i++){
+		
+		var search = texture[i];
+		
+		var id = this.reader.getString(search, 'id');
+		var file = this.reader.getString(search, 'file');
+		var length_s = this.reader.getFloat(search, 'length_s');
+		var length_t = this.reader.getFloat(search, 'length_t');
+		
+	}
+}
+
+
 /**********************
 *	DSX Global Parser *
 ***********************/
@@ -249,17 +286,12 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 	this.parseDSXScene(rootElement);
 	this.parseDSXIllumination(rootElement);
 	this.parseDSXViews(rootElement);
+	this.parseDSXTextures(rootElement);
 
 };
 
-/*
- * Callback to be executed on any read error
- */
 
-MySceneGraph.prototype.onXMLError=function (message) {
-	console.error("XML Loading Error: "+message);	
-	this.loadedOk=false;
-};
+
 
 
 							
