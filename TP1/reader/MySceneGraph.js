@@ -403,24 +403,23 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 		search = material[i];
 		
 		var emission = search.getElementsByTagName('emission');
-		var ergb = this.getRGBAFromDSX(emission);
+		var ergb = this.getRGBAFromDSX(emission[0]);
 		console.log(ergb);
 		
 		var ambient = search.getElementsByTagName('ambient');
-		var argb = this.getRGBAFromDSX(ambient);
+		var argb = this.getRGBAFromDSX(ambient[0]);
 		console.log(argb);
 		
 		var diffuse = search.getElementsByTagName('diffuse');
-		var drgb = this.getRGBAFromDSX(diffuse);
+		var drgb = this.getRGBAFromDSX(diffuse[0]);
 		console.log(drgb);
 		
 		var specular = search.getElementsByTagName('specular');
-		var srgb = this.getRGBAFromDSX(specular);
+		var srgb = this.getRGBAFromDSX(specular[0]);
 		console.log(srgb);
 		
 		var shininess = search.getElementsByTagName('shininess');
-		var shrgb = this.getRGBAFromDSX(shininess);
-		console.log(shrgb);
+		
 			
 	}
 };
@@ -481,7 +480,7 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 	this.parseDSXIllumination(rootElement);
 	this.parseDSXViews(rootElement);
 	this.parseDSXTextures(rootElement);
-	//this.parseDSXFileMaterials(rootElement);
+	this.parseDSXMaterials(rootElement);
 	//this.parseDSXTransformations(rootElement);
 
 };
