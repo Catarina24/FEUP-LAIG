@@ -16,7 +16,7 @@ function MySceneGraph(filename, scene) {
 	 */
 
 	this.reader.open('scenes/'+filename, this);  
-}
+};
 
 /*
  * Callback to be executed after successful reading
@@ -111,7 +111,7 @@ MySceneGraph.prototype.parseGlobalsExample= function(rootElement) {
 		// process each element and store its information
 		this.list[e.id]=e.attributes.getNamedItem("coords").value;
 		console.log("Read list item id "+ e.id+" with value "+this.list[e.id]);
-	};
+	}
 
 };
 
@@ -137,6 +137,7 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 	var root = this.reader.getString(scene, 'root');
 	var axis_length = this.reader.getString(scene, 'axis_length');
 
+	}
 };
 
 /* VIEWS PARSER 
@@ -375,8 +376,7 @@ MySceneGraph.prototype.parseDSXTextures = function (rootElement){
 		var length_t = this.reader.getFloat(search, 'length_t');
 		
 	}
-}
-
+};
 
 /* MATERIALS PARSER 
  *
@@ -423,7 +423,7 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 		console.log(shrgb);
 			
 	}
-}
+};
 
 
 /* TRANSFORMATIONS PARSER 
@@ -467,7 +467,7 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 		console.log(list);
 			
 	}
-}
+};
 
 
 
@@ -481,7 +481,8 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 	this.parseDSXIllumination(rootElement);
 	this.parseDSXViews(rootElement);
 	this.parseDSXTextures(rootElement);
-	this.parseDSXTransformations(rootElement);
+	//this.parseDSXFileMaterials(rootElement);
+	//this.parseDSXTransformations(rootElement);
 
 };
 
