@@ -216,10 +216,33 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		var searchAmbient = omni.getElementsByTagName('ambient');
 		var ambient = searchAmbient[0];
+		var ambientRGBA = this.getRGBAFromDSX(ambient);
 
-		if(this.getRGBAFromDSX(ambient) == null)
+		if(ambientRGBA == null)
 		{
 			return this.onXMLError("bad RGBA on 'ambient' component of omnilight " + id);
+		}
+
+		// Light diffuse
+
+		var searchDiffuse = omni.getElementsByTagName('diffuse');
+		var diffuse = searchAmbient[0];
+		var diffuseRGBA = this.getRGBAFromDSX(diffuse);
+
+		if(diffuseRGBA == null)
+		{
+			return this.onXMLError("bad RGBA on 'diffuse' component of omnilight " + id);
+		}
+
+		// Light specular
+
+		var searchSpecular = omni.getElementsByTagName('specular');
+		var specular = searchSpecular[0];
+		var specularRGBA = this.getRGBAFromDSX(specular);
+
+		if(specularRGBA == null)
+		{
+			return this.onXMLError("bad RGBA on 'specular' component of omnilight " + id);
 		}
 
 	}
@@ -251,6 +274,8 @@ MySceneGraph.prototype.onXMLError=function (message) {
 *   UTILITY FUNCTIONS   *
 *************************/
 
+/*This function returns an array with the [R, G, B, A] components of an attribute.
+If there's missing component, it returns an error.*/
 MySceneGraph.prototype.getRGBAFromDSX = function(attributeName)
 {
 	var rgba = [];
