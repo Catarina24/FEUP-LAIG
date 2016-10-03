@@ -55,6 +55,7 @@
         </omni>
         <!--
         <spot id="ss" enabled="tt" angle="ff" exponent="ff">
+		-->
             <!-- atencao, "target" e' diferente de "direction" -->
 			 <!--
             <target x="ff" y="ff" z="ff" />
