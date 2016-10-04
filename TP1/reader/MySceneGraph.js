@@ -1,11 +1,11 @@
 
 function MySceneGraph(filename, scene) {
 	this.loadedOk = null;
-	
+
 	// Establish bidirectional references between scene and graph
 	this.scene = scene;
 	scene.graph=this;
-		
+
 	// File reading 
 	this.reader = new CGFXMLreader();
 
@@ -14,9 +14,9 @@ function MySceneGraph(filename, scene) {
 	 * After the file is read, the reader calls onXMLReady on this object.
 	 * If any error occurs, the reader calls onXMLError on this object, with an error message
 	 */
-	 
+
 	this.reader.open('scenes/'+filename, this);  
-}
+};
 
 /*
  * Callback to be executed after successful reading
@@ -25,7 +25,7 @@ MySceneGraph.prototype.onXMLReady=function()
 {
 	console.log("XML Loading finished.");
 	var rootElement = this.reader.xmlDoc.documentElement;
-	
+
 	// Here should go the calls for different functions to parse the various blocks
 	var error = this.parseDSXFile(rootElement);
 
@@ -35,18 +35,48 @@ MySceneGraph.prototype.onXMLReady=function()
 	}	
 
 	this.loadedOk=true;
-	
+
 	// As the graph loaded ok, signal the scene so that any additional initialization depending on the graph can take place
 	this.scene.onGraphLoaded();
 };
 
+
+/*
+ * Callback to be executed on any read error
+ */
+MySceneGraph.prototype.onXMLError=function (message) {
+	console.error("XML Loading Error: "+message);	
+	this.loadedOk=false;
+};
+
+
+/*
+ *	Reads 3D coordinates and returns a vector
+ */
+MySceneGraph.prototype.getCoordFromDSX = function (attributeName){
+	var x = this.reader.getFloat(attributeName, 'x');
+	var y = this.reader.getFloat(attributeName, 'y');
+	var z = this.reader.getFloat(attributeName, 'z');
+	
+	if (x == null)
+		return this.onXMLError("x coordinate is missing");
+	if (y == null)
+		return this.onXMLError("y coordinate is missing");
+	if (z == null)
+		return this.onXMLError("z coordinate is missing");
+	
+	var coord = [];
+	coord.push(x, y, z);
+	
+	return coord;
+};
 
 
 /*
  * Example of method that parses elements of one block and stores information in a specific data structure
  */
 MySceneGraph.prototype.parseGlobalsExample= function(rootElement) {
-	
+
 	var elems =  rootElement.getElementsByTagName('globals');
 	if (elems == null) {
 		return "globals element is missing.";
@@ -70,7 +100,7 @@ MySceneGraph.prototype.parseGlobalsExample= function(rootElement) {
 	if (tempList == null  || tempList.length==0) {
 		return "list element is missing.";
 	}
-	
+
 	this.list=[];
 	// iterate over every element
 	var nnodes=tempList[0].children.length;
@@ -81,7 +111,7 @@ MySceneGraph.prototype.parseGlobalsExample= function(rootElement) {
 		// process each element and store its information
 		this.list[e.id]=e.attributes.getNamedItem("coords").value;
 		console.log("Read list item id "+ e.id+" with value "+this.list[e.id]);
-	};
+	}
 
 };
 
@@ -103,10 +133,11 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 
 	if (scene == null) {
 		return this.onXMLError("scene element is missing.");
+
+	var root = this.reader.getString(scene, 'root');
+	var axis_length = this.reader.getString(scene, 'axis_length');
+
 	}
-
-	console.log(this.reader.getString(scene, 'root'));
-
 };
 
 /* VIEWS PARSER 
@@ -115,7 +146,65 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 
 MySceneGraph.prototype.parseDSXViews = function (rootElement){
 
-	var search = rootElement.getElementsByTagName('');
+	var search_views = rootElement.getElementsByTagName('views');
+
+	if (search_views.length == 0)
+		return this.onXMLError("views element is missing");
+	
+	//se várias vistas declaradas, o default é a primeira
+	//var default_view = search_views[0];
+	
+	//cada vez que v/V é carregado, vista muda para a próxima da lista
+
+	for (var j=0;j<search_views.length; j++){
+
+		//fazer ciclo for para várias vistas
+		var views = search_views[j];
+		
+		//var vdefault = this.reader.getString(views, 'default');
+		//console.log("view: " + vdefault);
+
+		var perspectives = views.getElementsByTagName('perspective');
+
+		if (perspectives.length == 0)
+			return this.onXMLError("perspective element is missing");
+		
+		for (var i=0; i< perspectives.length; i++){
+
+			var perspective = perspectives[i];
+
+			var id = this.reader.getString(perspective, 'id');
+			var near = this.reader.getFloat(perspective, 'near');
+			var far = this.reader.getFloat(perspective, 'far');
+			var angle = this.reader.getFloat(perspective, 'angle');
+
+			//get from - x y z
+			var search = perspective.getElementsByTagName('from');
+
+			var fromp = search[0];
+
+			if (fromp == null)
+				return "no perspective (from failed)";
+
+			
+			var coordf = this.getCoordFromDSX(fromp);
+
+			console.log("from:" + coordf);
+
+			//get to - x y z
+			search = perspective.getElementsByTagName('to');
+
+			var to = search[0];
+
+			if (to == null)
+				return "no perspective (to failed)";
+
+			var coordt = this.getCoordFromDSX(to);
+
+			console.log("to:" + coordt);
+
+		}
+	}
 
 };
 
@@ -148,6 +237,12 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	//Get background color
 
 	search = illumination.getElementsByTagName('background');
+
+	if (search == null)
+		return "background does not exist"
+
+	if (search.length != 1)
+		return "more than one background"
 
 	var background = search[0];
 
@@ -248,7 +343,133 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 	}
 
 };
+
+
+/* TEXTURES PARSER 
+*
+*/
+
+MySceneGraph.prototype.parseDSXTextures = function (rootElement){
 	
+	var search = rootElement.getElementsByTagName('textures');
+	
+	var textures = search[0];
+	
+	//se "textures" não está no documento dsx
+	if (textures==null)
+		return this.onXMLError("Textures element is missing");
+	
+	
+	var texture = textures.getElementsByTagName('texture');
+	
+	//se "textures" não tem filhos
+	if (texture.length == 0)
+		return this.onXMLError("Texture element is missing");
+	
+	for (var i=0; i<texture.length; i++){
+		
+		search = texture[i];
+		
+		var id = this.reader.getString(search, 'id');
+		var file = this.reader.getString(search, 'file');
+		var length_s = this.reader.getFloat(search, 'length_s');
+		var length_t = this.reader.getFloat(search, 'length_t');
+		
+	}
+};
+
+/* MATERIALS PARSER 
+ *
+ */
+MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
+	
+	var search = rootElement.getElementsByTagName('materials');
+	
+	var materials = search[0];
+	
+	//se "materials" não está no documento dsx
+	if (materials==null)
+		return this.onXMLError("Materials element is missing");
+	
+	
+	var material = materials.getElementsByTagName('material');
+	
+	//se "materials" não tem filhos
+	if (material.length == 0)
+		return this.onXMLError("Material element is missing");
+	
+	for (var i=0; i<material.length; i++){
+		
+		search = material[i];
+		
+		var emission = search.getElementsByTagName('emission');
+		var ergb = this.getRGBAFromDSX(emission[0]);
+		console.log(ergb);
+		
+		var ambient = search.getElementsByTagName('ambient');
+		var argb = this.getRGBAFromDSX(ambient[0]);
+		console.log(argb);
+		
+		var diffuse = search.getElementsByTagName('diffuse');
+		var drgb = this.getRGBAFromDSX(diffuse[0]);
+		console.log(drgb);
+		
+		var specular = search.getElementsByTagName('specular');
+		var srgb = this.getRGBAFromDSX(specular[0]);
+		console.log(srgb);
+		
+		var shininess = search.getElementsByTagName('shininess');
+		
+			
+	}
+};
+
+
+/* TRANSFORMATIONS PARSER 
+ *
+ */
+MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
+	
+	var search = rootElement.getElementsByTagName('transformations');
+	
+	var transformations = search[0];
+	
+	//se "transformations" não está no documento dsx
+	if (transformations==null)
+		return this.onXMLError("Transformations element is missing");
+	
+	
+	var transformation = transformations.getElementsByTagName('transformation');
+	
+	//se "transformations" não tem filhos
+	if (transformation.length == 0)
+		return this.onXMLError("Transformation element is missing");
+	
+	for (var i=0; i<transformation.length; i++){
+		
+		search = transformation[i];
+		
+		var id = this.reader.getString(search, 'id');
+		
+
+		var list = search.children;
+		
+		//if no transformations are found
+		if (list.length == 0)
+			return this.onXMLError("no transformations can be read");
+				
+		for (var j=0; j<list.length; j++){
+			if (list[i].nodeName == 'translate')
+				console.log("sim");
+		}
+		
+		console.log(list);
+			
+	}
+};
+
+
+
 /**********************
 *	DSX Global Parser *
 ***********************/
@@ -257,18 +478,13 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 
 	this.parseDSXScene(rootElement);
 	this.parseDSXIllumination(rootElement);
-	this.parseDSXLights(rootElement);
+	this.parseDSXViews(rootElement);
+	this.parseDSXTextures(rootElement);
+	this.parseDSXMaterials(rootElement);
+	//this.parseDSXTransformations(rootElement);
 
 };
 
-/*
- * Callback to be executed on any read error
- */
- 
-MySceneGraph.prototype.onXMLError=function (message) {
-	console.error("XML Loading Error: "+message);	
-	this.loadedOk=false;
-};
 
 /************************
 *   UTILITY FUNCTIONS   *
