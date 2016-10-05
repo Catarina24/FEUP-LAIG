@@ -112,8 +112,8 @@
            <!-- instrucoes a usar sem limite nem ordem -->
            <!-- deve existir pelo menos uma transformacao -->
            <translate x="0" y="0" z="1" />
-           <rotate axis="x" angle="0" />
-           <scale x="0" y="0" z="0" />
+           <rotate axis="x" angle="180" />
+           <scale x="2" y="0" z="0" />
 		   
         </transformation>
         

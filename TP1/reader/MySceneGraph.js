@@ -71,6 +71,41 @@ MySceneGraph.prototype.getCoordFromDSX = function (attributeName){
 	return coord;
 };
 
+/*
+ *	Convert degrees to radians
+ */
+ 
+MySceneGraph.prototype.convertDegreesToRadians = function(angle){
+	 
+	 return angle*Math.PI/180;
+	 
+ };
+
+/*
+ *	Reads rotate axis and angle
+ */
+MySceneGraph.prototype.getRotateFromDSX = function (attributeName){
+	var axis = this.reader.getString(attributeName, 'axis');
+	var angle_degrees = this.reader.getString(attributeName, 'angle');
+	
+	var angle = this.convertDegreesToRadians(angle_degrees);
+	
+	var coord = [];
+	
+	if (axis == 'x')
+		coord.push(1, 0, 0);
+	else if (axis == 'y')
+		coord.push(0, 1, 0);
+	else if (axis == 'z')
+		coord.push(0, 0, 1);
+	else
+		return this.onXMLError("getRotateFromDSX: Axis has to be x, y or z");
+	
+	coord.push(angle);
+	
+	return coord;
+};
+
 
 /*
  * Example of method that parses elements of one block and stores information in a specific data structure
@@ -226,19 +261,18 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	var ambient = search[0];
 
 	if (ambient == null)
-	{
 		return this.onXMLError("ambient illumination is missing.");	
-	};
-
+	
+	
 	//Get background color
 
 	search = illumination.getElementsByTagName('background');
 
 	if (search == null)
-		return "background does not exist"
+		return this.onXMLError("background does not exist");
 
 	if (search.length != 1)
-		return "more than one background"
+		return this.onXMLError("more than one background");
 
 	var background = search[0];
 
@@ -250,8 +284,6 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	bgRGBA.push(this.reader.getFloat(background, 'a'));
 
 	this.background = bgRGBA;
-
-	console.log(bgRGBA);
 
 };
 
@@ -442,6 +474,10 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 	if (transformation.length == 0)
 		return this.onXMLError("Transformation element is missing");
 	
+	
+	var matrix, translate, scale, aux;
+	var rotate = [];
+	
 	for (var i=0; i<transformation.length; i++){
 		
 		search = transformation[i];
@@ -454,13 +490,30 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 		if (list.length == 0)
 			return this.onXMLError("no transformations can be read");
 		
-		var translate;
+		//cria matriz identidade para as transformações
+		matrix = mat4.create();
 				
-		for (var j=0; j<list.length; j++){
-			if (list[i].nodeName == 'translate')
-				console.log("sim");
+		for (var j=list.length-1; j>=0; j--){
+		//for (var j=0; j<list-length; j++){
+			if (list[j].nodeName == 'translate'){
+					translate = this.getCoordFromDSX(list[j]);
+					mat4.translate(matrix, matrix, translate);
+			}
+			
+			else if(list[j].nodeName == 'rotate'){
+				aux = this.getRotateFromDSX(list[j]);
+				rotate.push(aux[0], aux[1], aux[2]);
+				mat4.rotate(matrix, matrix, aux[3],rotate);
+			}
+			
+			else if (list[j].nodeName == 'scale'){
+				scale = this.getCoordFromDSX(list[j]);
+				mat4.scale(matrix, matrix, scale);
+			}
+			else return this.onXMLError("There can only be translate, rotate or scale transformations")
 		}
 		
+		console.log("matrix: " + matrix);
 		console.log(list);
 			
 	}
@@ -476,10 +529,10 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 
 	this.parseDSXScene(rootElement);
 	this.parseDSXIllumination(rootElement);
-	this.parseDSXViews(rootElement);
-	this.parseDSXTextures(rootElement);
-	this.parseDSXMaterials(rootElement);
-	//this.parseDSXTransformations(rootElement);
+	//this.parseDSXViews(rootElement);
+	//this.parseDSXTextures(rootElement);
+	//this.parseDSXMaterials(rootElement);
+	this.parseDSXTransformations(rootElement);
 
 };
 
@@ -499,23 +552,19 @@ MySceneGraph.prototype.getRGBAFromDSX = function(attributeName)
 	var b = this.reader.getFloat(attributeName, 'b');
 	var a = this.reader.getFloat(attributeName, 'a');
 
-	if(r == null)
-	{
+	if(r == null){
 		return this.onXMLError("missing component 'r''");
 	}
 
-	if(g == null)
-	{
+	if(g == null){
 		return this.onXMLError("missing component 'g'");
 	}
 
-	if(b == null)
-	{
+	if(b == null){
 		return this.onXMLError("missing component 'b'");
 	}
 
-	if(a == null)
-	{
+	if(a == null){
 		return this.onXMLError("missing component 'a'");
 	}
 
