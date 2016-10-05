@@ -189,8 +189,6 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 			
 			var coordf = this.getCoordFromDSX(fromp);
 
-			console.log("from:" + coordf);
-
 			//get to - x y z
 			search = perspective.getElementsByTagName('to');
 
@@ -200,8 +198,6 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 				return "no perspective (to failed)";
 
 			var coordt = this.getCoordFromDSX(to);
-
-			console.log("to:" + coordt);
 
 		}
 	}
@@ -404,7 +400,7 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 		
 		var emission = search.getElementsByTagName('emission');
 		var ergb = this.getRGBAFromDSX(emission[0]);
-		console.log(ergb);
+		console.log("emission" + ergb);
 		
 		var ambient = search.getElementsByTagName('ambient');
 		var argb = this.getRGBAFromDSX(ambient[0]);
@@ -419,7 +415,8 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 		console.log(srgb);
 		
 		var shininess = search.getElementsByTagName('shininess');
-		
+		var value = this.reader.getFloat(shininess[0], 'value');
+		console.log(value);
 			
 	}
 };
@@ -450,13 +447,14 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 		search = transformation[i];
 		
 		var id = this.reader.getString(search, 'id');
-		
 
 		var list = search.children;
 		
 		//if no transformations are found
 		if (list.length == 0)
 			return this.onXMLError("no transformations can be read");
+		
+		var translate;
 				
 		for (var j=0; j<list.length; j++){
 			if (list[i].nodeName == 'translate')
