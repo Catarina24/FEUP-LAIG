@@ -50,26 +50,6 @@ MySceneGraph.prototype.onXMLError=function (message) {
 };
 
 
-/*
- *	Reads 3D coordinates and returns a vector
- */
-MySceneGraph.prototype.getCoordFromDSX = function (attributeName){
-	var x = this.reader.getFloat(attributeName, 'x');
-	var y = this.reader.getFloat(attributeName, 'y');
-	var z = this.reader.getFloat(attributeName, 'z');
-	
-	if (x == null)
-		return this.onXMLError("x coordinate is missing");
-	if (y == null)
-		return this.onXMLError("y coordinate is missing");
-	if (z == null)
-		return this.onXMLError("z coordinate is missing");
-	
-	var coord = [];
-	coord.push(x, y, z);
-	
-	return coord;
-};
 
 
 /*
@@ -468,6 +448,49 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 	}
 };
 
+/*
+* PRIMITVES PARSER
+-Available primitives for scene drawing
+*/
+
+MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
+
+	var searchPrimitives = rootElement.getElementsByTagName('primitives');
+	
+	var primitives = searchPrimitives[0];
+
+	if (primitives==null)
+		return this.onXMLError("Primitives element is missing");
+
+	var primitive = primitives.getElementsByTagName('primitive');
+
+	if(primitive.length == 0)
+		return this.onXMLError('There are no primitives defined inside the primitives block.');
+	
+	for (var i = 0; i < primitive.length; i++)
+	{
+		var id = this.reader.getString(primitive[i], 'id');
+
+		console.log(primitive[i]);
+
+		var primitiveShapesList = primitive[i].children;
+
+		console.log(primitive[i].children);
+
+		this.parseRectangles(primitive[i].children[0]);
+	}
+};
+
+MySceneGraph.prototype.parseRectangles = function (rectangleElement){
+
+	var x1 = this.reader.getFloat(rectangleElement, 'x1');
+	var x2 = this.reader.getFloat(rectangleElement, 'x2');
+	var y1 = this.reader.getFloat(rectangleElement, 'y1');
+	var y2 = this.reader.getFloat(rectangleElement, 'y2');
+
+	console.log(x1,x2,y1,y2);
+
+};
 
 
 /**********************
@@ -481,7 +504,8 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 	this.parseDSXViews(rootElement);
 	this.parseDSXTextures(rootElement);
 	this.parseDSXMaterials(rootElement);
-	//this.parseDSXTransformations(rootElement);
+	this.parseDSXTransformations(rootElement);
+	this.parseDSXPrimitives(rootElement);
 
 };
 
@@ -524,4 +548,25 @@ MySceneGraph.prototype.getRGBAFromDSX = function(attributeName)
 	rgba.push(r, g, b, a);
 
 	return rgba;
+};
+
+/*
+ *	Reads 3D coordinates and returns a vector
+ */
+MySceneGraph.prototype.getCoordFromDSX = function (attributeName){
+	var x = this.reader.getFloat(attributeName, 'x');
+	var y = this.reader.getFloat(attributeName, 'y');
+	var z = this.reader.getFloat(attributeName, 'z');
+	
+	if (x == null)
+		return this.onXMLError("x coordinate is missing");
+	if (y == null)
+		return this.onXMLError("y coordinate is missing");
+	if (z == null)
+		return this.onXMLError("z coordinate is missing");
+	
+	var coord = [];
+	coord.push(x, y, z);
+	
+	return coord;
 };
