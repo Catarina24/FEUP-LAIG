@@ -22,6 +22,7 @@ function MyNode()
     this.material = null;
     this.texture = null;
     this.transformations = [];
+    this.isPrimitive = false;
 };
 
 MyNode.prototype.constructor = MyNode;  // defining which function is the constructor
@@ -46,3 +47,6 @@ MyNode.prototype.numOfChildren = function(){
     return this.children.length;
 }
 
+MyNode.prototype.isPrimitive = function(){
+    return this.isPrimitive;
+}

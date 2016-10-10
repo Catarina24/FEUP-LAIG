@@ -16,6 +16,23 @@ function MySceneGraph(filename, scene) {
 	 */
 
 	this.reader.open('scenes/'+filename, this);  
+
+	/** Information from parsers (values by default) **/
+
+	//Scene
+	this.scene = null;
+	this.axis_length = 10; 
+	
+	//Cameras
+	this.cameras = [];
+
+	//Illumination
+	this.ambient = null;
+	this.background = null;
+
+	//Lights
+	this.lights =[];
+
 };
 
 /*
@@ -161,9 +178,9 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 			//get from - x y z
 			var search = perspective.getElementsByTagName('from');
 
-			var fromp = search[0];
+			var from = search[0];
 
-			if (fromp == null)
+			if (from == null)
 				return "no perspective (from failed)";
 
 			
@@ -213,6 +230,16 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	{
 		return this.onXMLError("ambient illumination is missing.");	
 	};
+
+	var ambientRGBA = [];
+
+	ambientRGBA.push(this.reader.getFloat(ambient, 'r'));
+	ambientRGBA.push(this.reader.getFloat(ambient, 'g'));
+	ambientRGBA.push(this.reader.getFloat(ambient, 'b'));
+	ambientRGBA.push(this.reader.getFloat(ambient, 'a'));
+
+	this.ambient = ambientRGBA;
+
 
 	//Get background color
 
@@ -449,7 +476,7 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 };
 
 /*
-* PRIMITVES PARSER
+* PRIMITVES PARSER ** UNFINISHED
 -Available primitives for scene drawing
 */
 
@@ -481,6 +508,8 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 	}
 };
 
+/** Parses rectangles information **/
+
 MySceneGraph.prototype.parseRectangles = function (rectangleElement){
 
 	var x1 = this.reader.getFloat(rectangleElement, 'x1');
@@ -492,6 +521,36 @@ MySceneGraph.prototype.parseRectangles = function (rectangleElement){
 
 };
 
+
+/** COMPONENTS PARSER
+* - build the scene graph, transforming each component into a node
+*/
+
+MySceneGraph.prototype.parseDSXComponents = function (rootElement){
+
+	// Empty list that will store the component nodes
+	
+
+	var searchComponents = rootElement.getElementsByTagName('components');
+	var components = searchComponents[0];
+
+	if(components == null)
+	{
+		return this.onXMLError("Components element is missing");
+	}
+
+	var component = components.getElementsByTagName('component');
+
+	if(component.length == 0)
+		return this.onXMLError('There are no components defined inside the components block.');
+	
+
+	for (var i = 0; i < component.length; i++)
+	{
+
+	}
+
+}
 
 /**********************
 *	DSX Global Parser *
@@ -506,6 +565,7 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 	this.parseDSXMaterials(rootElement);
 	this.parseDSXTransformations(rootElement);
 	this.parseDSXPrimitives(rootElement);
+	this.parseDSXComponents(rootElement);
 
 };
 

@@ -80,3 +80,6 @@ XMLscene.prototype.display = function () {
 	};	
 };
 
+/**FROM HERE ON THE FUNCTIONS ARE OURS**/
+
+
