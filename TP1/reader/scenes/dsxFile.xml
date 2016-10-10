@@ -132,7 +132,9 @@
             <!-- em OpenGL/GLUT; o cilindro deve adicionalmente ter tampas -->
             <rectangle x1="2" y1="3" x2="4" y2="7" />
             <!--
-			<triangle x1="ff" y1="ff" z1="ff" x2="ff" y2="ff" z2="ff" x3="ff" y3="ff" z3="ff" />
+     
+
+	 <triangle x1="ff" y1="ff" z1="ff" x2="ff" y2="ff" z2="ff" x3="ff" y3="ff" z3="ff" />
             <cylinder base="ff" top="ff" height="ff" slices="ii" stacks="ii" />
             <sphere radius="ff" slices="ii" stacks="ii" />
             <torus inner="ff" outer="ff" slices="ii" loops="ii" />

@@ -181,60 +181,59 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 
 MySceneGraph.prototype.parseDSXViews = function (rootElement){
 
-	var search_views = rootElement.getElementsByTagName('views');
+	var search = rootElement.getElementsByTagName('views');
 
-	if (search_views.length == 0)
+	if (search.length == 0)
 		return this.onXMLError("views element is missing");
 	
 	//se várias vistas declaradas, o default é a primeira
-	//var default_view = search_views[0];
+	//var default_view = search[0];
 	
 	//cada vez que v/V é carregado, vista muda para a próxima da lista
 
-	for (var j=0;j<search_views.length; j++){
+	
 
-		//fazer ciclo for para várias vistas
-		var views = search_views[j];
+	var views = search[0];
 		
-		//var vdefault = this.reader.getString(views, 'default');
-		//console.log("view: " + vdefault);
+	//var vdefault = this.reader.getString(views, 'default');
+	//console.log("view: " + vdefault);
 
-		var perspectives = views.getElementsByTagName('perspective');
+	var perspectives = views.getElementsByTagName('perspective');
 
-		if (perspectives.length == 0)
-			return this.onXMLError("perspective element is missing");
+	if (perspectives.length == 0)
+		return this.onXMLError("perspective element is missing");
 		
-		for (var i=0; i< perspectives.length; i++){
+	for (var i=0; i< perspectives.length; i++){
+		
+		var perspective = perspectives[i];
+		var id = this.reader.getString(perspective, 'id');
+		var near = this.reader.getFloat(perspective, 'near');
+		var far = this.reader.getFloat(perspective, 'far');
+		var angle = this.reader.getFloat(perspective, 'angle');
 
-			var perspective = perspectives[i];
-
-			var id = this.reader.getString(perspective, 'id');
-			var near = this.reader.getFloat(perspective, 'near');
-			var far = this.reader.getFloat(perspective, 'far');
-			var angle = this.reader.getFloat(perspective, 'angle');
-
-			//get from - x y z
-			var search = perspective.getElementsByTagName('from');
-
-			var fromp = search[0];
-
-			if (fromp == null)
-				return "no perspective (from failed)";
+		//get from - x y z
+		search = perspective.getElementsByTagName('from');
+		
+		var fromp = search[0];
+		if (fromp == null)
+			return "no perspective (from failed)";
 
 			
-			var coordf = this.getCoordFromDSX(fromp);
+		var coordf = this.getCoordFromDSX(fromp);
 
-			//get to - x y z
-			search = perspective.getElementsByTagName('to');
+		//get to - x y z
+		search = perspective.getElementsByTagName('to');
 
-			var to = search[0];
+		var to = search[0];
 
-			if (to == null)
-				return "no perspective (to failed)";
+		if (to == null)
+			return "no perspective (to failed)";
 
-			var coordt = this.getCoordFromDSX(to);
+		var coordt = this.getCoordFromDSX(to);
+		
+		console.log("coordenadas:" ,coordt);
 
-		}
+		
 	}
 
 };
@@ -529,9 +528,9 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 
 	this.parseDSXScene(rootElement);
 	this.parseDSXIllumination(rootElement);
-	//this.parseDSXViews(rootElement);
-	//this.parseDSXTextures(rootElement);
-	//this.parseDSXMaterials(rootElement);
+	this.parseDSXViews(rootElement);
+	this.parseDSXTextures(rootElement);
+	this.parseDSXMaterials(rootElement);
 	this.parseDSXTransformations(rootElement);
 
 };
