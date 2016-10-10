@@ -20,7 +20,7 @@ function MySceneGraph(filename, scene) {
 	/** Information from parsers (values by default) **/
 
 	//Scene
-	this.scene = null;
+	this.sceneRoot = null;
 	this.axis_length = 10; 
 	
 	//Cameras
@@ -267,6 +267,7 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	var ambient = search[0];
 
 	if (ambient == null)
+	{
 		return this.onXMLError("ambient illumination is missing.");	
 	};
 
@@ -326,9 +327,22 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 	// Extrapolate omni lights
 	for (var i = 0; i < searchOmni.length; i++)
 	{
+		var light = new MyLight(this.scene);
+
+		light.omni = true;
+
 		var omni = searchOmni[i];
-		var id = this.reader.getString(omni, 'id');
-		var enabled = this.reader.getBoolean(omni, 'enabled');
+
+		light.id = this.reader.getString(omni, 'id');
+
+		//Verify if ID is UNIQUE
+		for(var j = 0; j < this.lights.length; j++)
+		{
+			if(this.lights[j].id == light.id)
+				return this.onXMLError("light in position " + (i+1) + " has a duplicated id");
+		}
+
+		light.enabled = this.reader.getBoolean(omni, 'enabled');
 
 
 		// Light location
@@ -346,13 +360,18 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 			return this.onXMLError("there's a component missing in " + id + " light.")
 		}
 
+		light.location.push(locationX);
+		light.location.push(locationY);
+		light.location.push(locationZ);
+		light.location.push(locationW);
+
 		// Light ambient
 
 		var searchAmbient = omni.getElementsByTagName('ambient');
 		var ambient = searchAmbient[0];
-		var ambientRGBA = this.getRGBAFromDSX(ambient);
+		light.ambientRGBA = this.getRGBAFromDSX(ambient);
 
-		if(ambientRGBA == null)
+		if(light.ambientRGBA == null)
 		{
 			return this.onXMLError("bad RGBA on 'ambient' component of omnilight " + id);
 		}
@@ -361,9 +380,9 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		var searchDiffuse = omni.getElementsByTagName('diffuse');
 		var diffuse = searchAmbient[0];
-		var diffuseRGBA = this.getRGBAFromDSX(diffuse);
+		light.diffuseRGBA = this.getRGBAFromDSX(diffuse);
 
-		if(diffuseRGBA == null)
+		if(light.diffuseRGBA == null)
 		{
 			return this.onXMLError("bad RGBA on 'diffuse' component of omnilight " + id);
 		}
@@ -372,12 +391,17 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		var searchSpecular = omni.getElementsByTagName('specular');
 		var specular = searchSpecular[0];
-		var specularRGBA = this.getRGBAFromDSX(specular);
+		light.specularRGBA = this.getRGBAFromDSX(specular);
 
-		if(specularRGBA == null)
+		if(light.specularRGBA == null)
 		{
 			return this.onXMLError("bad RGBA on 'specular' component of omnilight " + id);
 		}
+
+		this.lights.push(light);
+
+		console.log("lights");
+		console.log(this.lights[0]);
 
 	}
 
@@ -598,12 +622,14 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 	
 	this.parseDSXScene(rootElement);
 	this.parseDSXIllumination(rootElement);
+	this.parseDSXLights(rootElement);
 	this.parseDSXViews(rootElement);
 	this.parseDSXTextures(rootElement);
 	this.parseDSXMaterials(rootElement);
 	this.parseDSXTransformations(rootElement);
 	this.parseDSXPrimitives(rootElement);
 	this.parseDSXComponents(rootElement);
+
 
 };
 

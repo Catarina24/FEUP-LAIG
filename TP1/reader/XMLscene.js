@@ -28,6 +28,7 @@ XMLscene.prototype.initLights = function () {
 	this.lights[0].setPosition(2, 3, 3, 1);
     this.lights[0].setDiffuse(1.0,1.0,1.0,1.0);
     this.lights[0].update();
+
 };
 
 XMLscene.prototype.initCameras = function () {
@@ -50,6 +51,10 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.gl.clearColor(this.graph.background[0],this.graph.background[1],this.graph.background[2],this.graph.background[3]);
 	this.lights[0].setVisible(true);
     this.lights[0].enable();
+
+    this.lights[1] = this.graph.lights[0].myLightToCGFlight();
+    this.lights[1].setVisible(true);
+    this.lights[1].enable();
 };
 
 XMLscene.prototype.display = function () {
@@ -79,6 +84,7 @@ XMLscene.prototype.display = function () {
 	if (this.graph.loadedOk)
 	{
 		this.lights[0].update();
+		this.lights[1].update();
 	};	
 };
 

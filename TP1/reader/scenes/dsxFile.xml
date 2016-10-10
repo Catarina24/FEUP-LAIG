@@ -53,6 +53,7 @@
             <diffuse r="1" g="1" b="1" a="1" />
             <specular r="1" g="1" b="1" a="1" />
         </omni>
+
         <!--
         <spot id="ss" enabled="tt" angle="ff" exponent="ff">
 		-->
