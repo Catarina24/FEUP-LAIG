@@ -29,6 +29,8 @@ function MySceneGraph(filename, scene) {
 	//Illumination
 	this.ambient = null;
 	this.background = null;
+	this.doublesidedIllumination = 0;
+	this.local = 0;
 
 	//Lights
 	this.lights =[];
