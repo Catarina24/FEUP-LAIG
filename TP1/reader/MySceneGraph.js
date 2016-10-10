@@ -20,10 +20,11 @@ function MySceneGraph(filename, scene) {
 	/** Information from parsers (values by default) **/
 
 	//Scene
-	this.scene = null;
+	this.sceneRoot = null;
 	this.axis_length = 10; 
 	
 	//Cameras
+	this.default_view=null;
 	this.cameras = [];
 
 	//Illumination
@@ -186,6 +187,9 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 
 	var root = this.reader.getString(scene, 'root');
 	var axis_length = this.reader.getString(scene, 'axis_length');
+	
+	this.sceneRoot = root;
+	this.axis_length = axis_length;
 
 };
 
@@ -216,33 +220,50 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 		//var default_view = search[0];
 		
 		var perspective = perspectives[i];
+		
+		//verifies if the id already exists
+		var exists = false;
+		
 		var id = this.reader.getString(perspective, 'id');
-		var near = this.reader.getFloat(perspective, 'near');
-		var far = this.reader.getFloat(perspective, 'far');
-		var angle = this.reader.getFloat(perspective, 'angle');
-
-		//get from - x y z
-		search = perspective.getElementsByTagName('from');
 		
-		var fromp = search[0];
-		if (fromp == null)
-			return "no perspective (from failed)";
-
+		for (var j=0; j<this.cameras.length; j++){
+			if (id==this.cameras[j].id){
+				exists = true;
+				break;
+			}
+		}
+		
+		if (!exists){
+			var view = new MyView(this.scene);
 			
-		var coordf = this.getCoordFromDSX(fromp);
+			view.id = id;
+			view.near = this.reader.getFloat(perspective, 'near');
+			view.far = this.reader.getFloat(perspective, 'far');
+			view.angle = this.reader.getFloat(perspective, 'angle');
 
-		//get to - x y z
-		search = perspective.getElementsByTagName('to');
+			//get from - x y z
+			search = perspective.getElementsByTagName('from');
+			
+			var fromp = search[0];
+			if (fromp == null)
+				return "no perspective (from failed)";
 
-		var to = search[0];
+				
+			view.from_ = this.getCoordFromDSX(fromp);
 
-		if (to == null)
-			return "no perspective (to failed)";
+			//get to - x y z
+			search = perspective.getElementsByTagName('to');
 
-		var coordt = this.getCoordFromDSX(to);
-		
-		console.log("coordenadas:" ,coordt);
+			var to = search[0];
 
+			if (to == null)
+				return "no perspective (to failed)";
+
+			view.to = this.getCoordFromDSX(to);
+			
+			this.cameras.push(view);
+		}
+		console.log(this.cameras);
 		
 	}
 
@@ -266,7 +287,6 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 
 	if (ambient == null)
 		return this.onXMLError("ambient illumination is missing.");	
-	};
 
 	var ambientRGBA = [];
 
@@ -298,7 +318,7 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	bgRGBA.push(this.reader.getFloat(background, 'a'));
 
 	this.background = bgRGBA;
-
+	
 };
 
 /* LIGHTS PARSER
