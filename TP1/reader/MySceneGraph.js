@@ -36,6 +36,9 @@ function MySceneGraph(filename, scene) {
 	
 	//Textures
 	this.textures = [];
+	
+	//Materials
+	this.materials=[];
 
 };
 
@@ -462,38 +465,57 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 	
 	var search = rootElement.getElementsByTagName('materials');
 	
-	var materials = search[0];
-	
-	var material = materials.getElementsByTagName('material');
+	var material = search[0].getElementsByTagName('material');
 	
 	//se "materials" não tem filhos
 	if (material.length == 0)
 		return this.onXMLError("Material element is missing");
 	
+	var exists;
+	var mat;
+	var id;
+	
 	for (var i=0; i<material.length; i++){
+		
+		exists = false;
 		
 		search = material[i];
 		
-		var emission = search.getElementsByTagName('emission');
-		var ergb = this.getRGBAFromDSX(emission[0]);
-		console.log("emission" + ergb);
+		id=this.reader.getString(search, 'id');
 		
-		var ambient = search.getElementsByTagName('ambient');
-		var argb = this.getRGBAFromDSX(ambient[0]);
-		console.log(argb);
+		for (var j=0; j<this.materials.length; j++){
+			if (id==this.materials[j].id){
+				exists=true;
+				break;
+			}
+		}
 		
-		var diffuse = search.getElementsByTagName('diffuse');
-		var drgb = this.getRGBAFromDSX(diffuse[0]);
-		console.log(drgb);
-		
-		var specular = search.getElementsByTagName('specular');
-		var srgb = this.getRGBAFromDSX(specular[0]);
-		console.log(srgb);
-		
-		var shininess = search.getElementsByTagName('shininess');
-		var value = this.reader.getFloat(shininess[0], 'value');
-		console.log(value);
+		if (!exists){
 			
+			mat = new MyMaterial(this.scene);
+			
+			mat.id=id;
+			
+			var emission = search.getElementsByTagName('emission');
+			mat.emission = this.getRGBAFromDSX(emission[0]);
+			
+			var ambient = search.getElementsByTagName('ambient');
+			mat.ambient = this.getRGBAFromDSX(ambient[0]);
+			
+			var diffuse = search.getElementsByTagName('diffuse');
+			mat.diffuse = this.getRGBAFromDSX(diffuse[0]);
+			
+			var specular = search.getElementsByTagName('specular');
+			mat.specular= this.getRGBAFromDSX(specular[0]);
+			
+			var shininess = search.getElementsByTagName('shininess');
+			mat.shininess= this.reader.getFloat(shininess[0], 'value');
+			
+			this.materials.push(mat);
+			
+		}
+		
+		console.log(this.materials);
 	}
 };
 
