@@ -71,6 +71,42 @@ MySceneGraph.prototype.getCoordFromDSX = function (attributeName){
 	return coord;
 };
 
+/*
+ *	Convert degrees to radians
+ */
+ 
+MySceneGraph.prototype.convertDegreesToRadians = function(angle){
+	 
+	 return angle*Math.PI/180;
+	 
+ };
+
+/*
+ *	Reads rotate axis and angle
+ */
+MySceneGraph.prototype.getRotateFromDSX = function (attributeName){
+	var axis = this.reader.getString(attributeName, 'axis');
+	var angle_degrees = this.reader.getString(attributeName, 'angle');
+	
+	var angle = this.convertDegreesToRadians(angle_degrees);
+	
+	var coord = [];
+	
+	if (axis == 'x')
+		coord.push(1, 0, 0);
+	else if (axis == 'y')
+		coord.push(0, 1, 0);
+	else if (axis == 'z')
+		coord.push(0, 0, 1);
+	else
+		return this.onXMLError("getRotateFromDSX: Axis has to be x, y or z");
+	
+	coord.push(angle);
+	
+	return coord;
+};
+
+
 
 /*
  * Example of method that parses elements of one block and stores information in a specific data structure
@@ -115,7 +151,28 @@ MySceneGraph.prototype.parseGlobalsExample= function(rootElement) {
 
 };
 
+/*
+ *	Verifies the order of the blocks
+ */
 
+ MySceneGraph.prototype.verifyOrder = function(rootElement){
+	var search = rootElement.children;
+	
+	if (search.length != 9)
+		return this.onXMLError("There's one or more elements missing");
+	
+	else if (search[0].tagName != 'scene' ||
+		search[1].tagName != 'views' ||
+		search[2].tagName != 'illumination' ||
+		search[3].tagName != 'lights' ||
+		search[4].tagName != 'textures' ||
+		search[5].tagName != 'materials' ||
+		search[6].tagName != 'transformations' ||
+		search[7].tagName != 'primitives' ||
+		search[8].tagName != 'components')
+		return this.onXMLError("The blocks are not in the right order");
+	
+ }
 
 /* SCENE PARSER
 -Name of root node
@@ -124,20 +181,15 @@ MySceneGraph.prototype.parseGlobalsExample= function(rootElement) {
 
 MySceneGraph.prototype.parseDSXScene = function (rootElement){
 
-	var search = rootElement.getElementsByTagName('scene');  
-
 	// getElementsByTagName(<tag>) returns a NodeList with all the elements named
 	// with the argument tag
+	var search = rootElement.getElementsByTagName('scene');
 
 	var scene = search[0];
-
-	if (scene == null) {
-		return this.onXMLError("scene element is missing.");
 
 	var root = this.reader.getString(scene, 'root');
 	var axis_length = this.reader.getString(scene, 'axis_length');
 
-	}
 };
 
 /* VIEWS PARSER 
@@ -146,64 +198,55 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 
 MySceneGraph.prototype.parseDSXViews = function (rootElement){
 
-	var search_views = rootElement.getElementsByTagName('views');
-
-	if (search_views.length == 0)
-		return this.onXMLError("views element is missing");
+	var search = rootElement.getElementsByTagName('views');
 	
-	//se várias vistas declaradas, o default é a primeira
-	//var default_view = search_views[0];
+	var views = search[0];
 	
-	//cada vez que v/V é carregado, vista muda para a próxima da lista
-
-	for (var j=0;j<search_views.length; j++){
-
-		//fazer ciclo for para várias vistas
-		var views = search_views[j];
+	//cada vez que v/V é carregado, vista muda para a próxima da lista	
+	
 		
-		//var vdefault = this.reader.getString(views, 'default');
-		//console.log("view: " + vdefault);
+	//var vdefault = this.reader.getString(views, 'default');
+	//console.log("view: " + vdefault);
 
-		var perspectives = views.getElementsByTagName('perspective');
+	var perspectives = views.getElementsByTagName('perspective');
 
-		if (perspectives.length == 0)
-			return this.onXMLError("perspective element is missing");
+	if (perspectives.length == 0)
+		return this.onXMLError("perspective element is missing");
 		
-		for (var i=0; i< perspectives.length; i++){
+	for (var i=0; i< perspectives.length; i++){
+		
+		//se várias vistas declaradas, o default é a primeira
+		//var default_view = search[0];
+		
+		var perspective = perspectives[i];
+		var id = this.reader.getString(perspective, 'id');
+		var near = this.reader.getFloat(perspective, 'near');
+		var far = this.reader.getFloat(perspective, 'far');
+		var angle = this.reader.getFloat(perspective, 'angle');
 
-			var perspective = perspectives[i];
-
-			var id = this.reader.getString(perspective, 'id');
-			var near = this.reader.getFloat(perspective, 'near');
-			var far = this.reader.getFloat(perspective, 'far');
-			var angle = this.reader.getFloat(perspective, 'angle');
-
-			//get from - x y z
-			var search = perspective.getElementsByTagName('from');
-
-			var fromp = search[0];
-
-			if (fromp == null)
-				return "no perspective (from failed)";
+		//get from - x y z
+		search = perspective.getElementsByTagName('from');
+		
+		var fromp = search[0];
+		if (fromp == null)
+			return "no perspective (from failed)";
 
 			
-			var coordf = this.getCoordFromDSX(fromp);
+		var coordf = this.getCoordFromDSX(fromp);
 
-			console.log("from:" + coordf);
+		//get to - x y z
+		search = perspective.getElementsByTagName('to');
 
-			//get to - x y z
-			search = perspective.getElementsByTagName('to');
+		var to = search[0];
 
-			var to = search[0];
+		if (to == null)
+			return "no perspective (to failed)";
 
-			if (to == null)
-				return "no perspective (to failed)";
+		var coordt = this.getCoordFromDSX(to);
+		
+		console.log("coordenadas:" ,coordt);
 
-			var coordt = this.getCoordFromDSX(to);
-
-			console.log("to:" + coordt);
-
-		}
+		
 	}
 
 };
@@ -219,30 +262,24 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 
 	var illumination = search[0];
 
-	if (illumination == null)
-	{
-		return this.onXMLError("illumination element is missing.");
-	};
-
 	//Get ambient illumination
 	search = illumination.getElementsByTagName('ambient');
 
 	var ambient = search[0];
 
 	if (ambient == null)
-	{
 		return this.onXMLError("ambient illumination is missing.");	
-	};
-
+	
+	
 	//Get background color
 
 	search = illumination.getElementsByTagName('background');
 
 	if (search == null)
-		return "background does not exist"
+		return this.onXMLError("background does not exist");
 
 	if (search.length != 1)
-		return "more than one background"
+		return this.onXMLError("more than one background");
 
 	var background = search[0];
 
@@ -254,8 +291,6 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	bgRGBA.push(this.reader.getFloat(background, 'a'));
 
 	this.background = bgRGBA;
-
-	console.log(bgRGBA);
 
 };
 
@@ -269,11 +304,6 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 	var search = rootElement.getElementsByTagName('lights');
 
 	var lights = search[0];
-
-	if (lights == null)
-	{
-		return this.onXMLError("lights element is missing.");
-	};
 
 	// Searches both kind of lights: omni and spot
 	var searchOmni = lights.getElementsByTagName('omni');
@@ -355,11 +385,6 @@ MySceneGraph.prototype.parseDSXTextures = function (rootElement){
 	
 	var textures = search[0];
 	
-	//se "textures" não está no documento dsx
-	if (textures==null)
-		return this.onXMLError("Textures element is missing");
-	
-	
 	var texture = textures.getElementsByTagName('texture');
 	
 	//se "textures" não tem filhos
@@ -387,11 +412,6 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 	
 	var materials = search[0];
 	
-	//se "materials" não está no documento dsx
-	if (materials==null)
-		return this.onXMLError("Materials element is missing");
-	
-	
 	var material = materials.getElementsByTagName('material');
 	
 	//se "materials" não tem filhos
@@ -404,7 +424,7 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 		
 		var emission = search.getElementsByTagName('emission');
 		var ergb = this.getRGBAFromDSX(emission[0]);
-		console.log(ergb);
+		console.log("emission" + ergb);
 		
 		var ambient = search.getElementsByTagName('ambient');
 		var argb = this.getRGBAFromDSX(ambient[0]);
@@ -419,7 +439,8 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 		console.log(srgb);
 		
 		var shininess = search.getElementsByTagName('shininess');
-		
+		var value = this.reader.getFloat(shininess[0], 'value');
+		console.log(value);
 			
 	}
 };
@@ -434,37 +455,50 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 	
 	var transformations = search[0];
 	
-	//se "transformations" não está no documento dsx
-	if (transformations==null)
-		return this.onXMLError("Transformations element is missing");
-	
-	
 	var transformation = transformations.getElementsByTagName('transformation');
 	
 	//se "transformations" não tem filhos
 	if (transformation.length == 0)
 		return this.onXMLError("Transformation element is missing");
 	
+	
+	var matrix, translate, scale, aux;
+	var rotate = [];
+	
 	for (var i=0; i<transformation.length; i++){
 		
 		search = transformation[i];
 		
 		var id = this.reader.getString(search, 'id');
-		
 
 		var list = search.children;
 		
 		//if no transformations are found
 		if (list.length == 0)
 			return this.onXMLError("no transformations can be read");
-				
-		for (var j=0; j<list.length; j++){
-			if (list[i].nodeName == 'translate')
-				console.log("sim");
-		}
 		
-		console.log(list);
+		//cria matriz identidade para as transformações
+		matrix = mat4.create();
+				
+		for (var j=list.length-1; j>=0; j--){
+		//for (var j=0; j<list-length; j++){
+			if (list[j].nodeName == 'translate'){
+					translate = this.getCoordFromDSX(list[j]);
+					mat4.translate(matrix, matrix, translate);
+			}
 			
+			else if(list[j].nodeName == 'rotate'){
+				aux = this.getRotateFromDSX(list[j]);
+				rotate.push(aux[0], aux[1], aux[2]);
+				mat4.rotate(matrix, matrix, aux[3],rotate);
+			}
+			
+			else if (list[j].nodeName == 'scale'){
+				scale = this.getCoordFromDSX(list[j]);
+				mat4.scale(matrix, matrix, scale);
+			}
+			else return this.onXMLError("There can only be translate, rotate or scale transformations");
+		}			
 	}
 };
 
@@ -476,12 +510,15 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 
 MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 
+	this.verifyOrder(rootElement);
+	
 	this.parseDSXScene(rootElement);
 	this.parseDSXIllumination(rootElement);
-	this.parseDSXViews(rootElement);
-	this.parseDSXTextures(rootElement);
-	this.parseDSXMaterials(rootElement);
+	//this.parseDSXViews(rootElement);
+	//this.parseDSXTextures(rootElement);
+	//this.parseDSXMaterials(rootElement);
 	//this.parseDSXTransformations(rootElement);
+	
 
 };
 
@@ -501,23 +538,19 @@ MySceneGraph.prototype.getRGBAFromDSX = function(attributeName)
 	var b = this.reader.getFloat(attributeName, 'b');
 	var a = this.reader.getFloat(attributeName, 'a');
 
-	if(r == null)
-	{
+	if(r == null){
 		return this.onXMLError("missing component 'r''");
 	}
 
-	if(g == null)
-	{
+	if(g == null){
 		return this.onXMLError("missing component 'g'");
 	}
 
-	if(b == null)
-	{
+	if(b == null){
 		return this.onXMLError("missing component 'b'");
 	}
 
-	if(a == null)
-	{
+	if(a == null){
 		return this.onXMLError("missing component 'a'");
 	}
 
