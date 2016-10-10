@@ -39,6 +39,9 @@ function MySceneGraph(filename, scene) {
 	
 	//Materials
 	this.materials=[];
+	
+	//Transformations
+	this.transformations=[];
 
 };
 
@@ -471,9 +474,7 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 	if (material.length == 0)
 		return this.onXMLError("Material element is missing");
 	
-	var exists;
-	var mat;
-	var id;
+	var exists, mat, id;
 	
 	for (var i=0; i<material.length; i++){
 		
@@ -527,53 +528,73 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 	
 	var search = rootElement.getElementsByTagName('transformations');
 	
-	var transformations = search[0];
-	
-	var transformation = transformations.getElementsByTagName('transformation');
+	var transformation = search[0].getElementsByTagName('transformation');
 	
 	//se "transformations" não tem filhos
 	if (transformation.length == 0)
 		return this.onXMLError("Transformation element is missing");
 	
 	
-	var matrix, translate, scale, aux;
+	var matrix, translate, scale, aux, id, exists, transf;
 	var rotate = [];
 	
 	for (var i=0; i<transformation.length; i++){
 		
+		exists=false;
+		
 		search = transformation[i];
 		
-		var id = this.reader.getString(search, 'id');
-
-		var list = search.children;
+		id = this.reader.getString(search, 'id');
 		
-		//if no transformations are found
-		if (list.length == 0)
-			return this.onXMLError("no transformations can be read");
+		for(var j=0; j<this.transformations.length; j++){
+			if (id==this.transformations[j].id){
+				exists=true;
+				break;
+			}
+		}
 		
-		//cria matriz identidade para as transformações
-		matrix = mat4.create();
+		if (!exists){
+			
+			transf = new MyTransformation(this.scene);
+			
+			var list = search.children;
+			
+			//if no transformations are found
+			if (list.length == 0)
+				return this.onXMLError("no transformations can be read");
+			
+			//cria matriz identidade para as transformações
+			matrix = mat4.create();
+					
+			for (var j=list.length-1; j>=0; j--){
+			//for (var j=0; j<list-length; j++){
+				if (list[j].nodeName == 'translate'){
+						translate = this.getCoordFromDSX(list[j]);
+						mat4.translate(matrix, matrix, translate);
+				}
 				
-		for (var j=list.length-1; j>=0; j--){
-		//for (var j=0; j<list-length; j++){
-			if (list[j].nodeName == 'translate'){
-					translate = this.getCoordFromDSX(list[j]);
-					mat4.translate(matrix, matrix, translate);
-			}
+				else if(list[j].nodeName == 'rotate'){
+					aux = this.getRotateFromDSX(list[j]);
+					rotate.push(aux[0], aux[1], aux[2]);
+					mat4.rotate(matrix, matrix, aux[3],rotate);
+				}
+				
+				else if (list[j].nodeName == 'scale'){
+					scale = this.getCoordFromDSX(list[j]);
+					mat4.scale(matrix, matrix, scale);
+				}
+				else return this.onXMLError("There can only be translate, rotate or scale transformations");
+			}	
 			
-			else if(list[j].nodeName == 'rotate'){
-				aux = this.getRotateFromDSX(list[j]);
-				rotate.push(aux[0], aux[1], aux[2]);
-				mat4.rotate(matrix, matrix, aux[3],rotate);
-			}
+			transf.id=id;
+			transf.matrix = mat4.clone(matrix);
 			
-			else if (list[j].nodeName == 'scale'){
-				scale = this.getCoordFromDSX(list[j]);
-				mat4.scale(matrix, matrix, scale);
-			}
-			else return this.onXMLError("There can only be translate, rotate or scale transformations");
-		}			
+			this.transformations.push(transf);
+		}		
+		console.log(this.transformations);
 	}
+	
+	
 };
 
 /*
