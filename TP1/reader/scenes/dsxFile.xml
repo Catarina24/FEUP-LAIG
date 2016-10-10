@@ -85,6 +85,7 @@
         <!-- Nao necessario aplicar fatores de escala em  -->
         <!-- quadricas (esfera, ciclindro...) -->
         <texture id="t1" file="./scenes/resources/floor.jpg" length_s="1" length_t="1" />  
+        <texture id="t2" file="./scenes/resources/floor.jpg" length_s="1" length_t="1" />  
         
 		
     </textures>

@@ -33,6 +33,9 @@ function MySceneGraph(filename, scene) {
 
 	//Lights
 	this.lights =[];
+	
+	//Textures
+	this.textures = [];
 
 };
 
@@ -213,6 +216,8 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 
 	if (perspectives.length == 0)
 		return this.onXMLError("perspective element is missing");
+	
+	var exists;
 		
 	for (var i=0; i< perspectives.length; i++){
 		
@@ -222,7 +227,7 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 		var perspective = perspectives[i];
 		
 		//verifies if the id already exists
-		var exists = false;
+		exists = false;
 		
 		var id = this.reader.getString(perspective, 'id');
 		
@@ -263,7 +268,7 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 			
 			this.cameras.push(view);
 		}
-		console.log(this.cameras);
+		this.default_view = this.cameras[0];
 		
 	}
 
@@ -418,14 +423,34 @@ MySceneGraph.prototype.parseDSXTextures = function (rootElement){
 	if (texture.length == 0)
 		return this.onXMLError("Texture element is missing");
 	
+	var exists;
+	var tex;
+	var id;
+	
 	for (var i=0; i<texture.length; i++){
+		
+		exists=false;
 		
 		search = texture[i];
 		
-		var id = this.reader.getString(search, 'id');
-		var file = this.reader.getString(search, 'file');
-		var length_s = this.reader.getFloat(search, 'length_s');
-		var length_t = this.reader.getFloat(search, 'length_t');
+		id = this.reader.getString(search, 'id');
+		
+		for (var j=0; j<this.textures.length; j++){
+			if (id==this.textures[j].id){
+				exists=true;
+				break;
+			}
+		}
+		
+		if (!exists){
+			tex = new MyTexture(this.scene);
+			tex.id=id;
+			tex.file = this.reader.getString(search, 'file');
+			tex.length_s = this.reader.getFloat(search, 'length_s');
+			tex.length_t = this.reader.getFloat(search, 'length_t');
+			this.textures.push(tex);
+		}
+		console.log(this.textures);
 		
 	}
 };

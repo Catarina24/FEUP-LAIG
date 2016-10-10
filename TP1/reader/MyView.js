@@ -22,5 +22,5 @@ function MyView(scene) {
 	
  };
  
-MyShape.prototype = Object.create(CGFobject.prototype);
-MyShape.prototype.constructor = MyView;
+MyView.prototype = Object.create(CGFobject.prototype);
+MyView.prototype.constructor = MyView;
