@@ -22,6 +22,9 @@ function MyNode()
     this.material = null;
     this.texture = null;
     this.transformations = [];
+
+    this.localMatrix = mat4.create();
+    this.worldMatrix = mat4.create();
     this.isPrimitive = false;
 };
 
@@ -45,6 +48,24 @@ MyNode.prototype.pushChildNode = function (childNode){
 
 MyNode.prototype.numOfChildren = function(){
     return this.children.length;
+}
+
+MyNode.prototype.updateWorldMatrix = function (parentWorldMatrix){
+    if(parentWorldMatrix)   // if there is a matrix to be applied
+    {
+        this.worldMatrix = matrixMultiply(this.localMatrix, parentWorldMatrix);
+    }
+    else    // apply node matrix
+    {
+        this.worldMatrix = this.localMatrix;
+    }
+
+    // process childrens matrix
+    var worldMatrix = this.worldMatrix;
+    this.children.forEach(function(child){
+        child.updateWorldMatrix(worldMatrix);
+    });
+
 }
 
 MyNode.prototype.isPrimitive = function(){

@@ -35,6 +35,9 @@ function MySceneGraph(filename, scene) {
 	//Lights
 	this.lights =[];
 
+	//Scene Nodes
+	this.nodes = [];
+
 };
 
 /*
@@ -607,7 +610,8 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 
 	for (var i = 0; i < component.length; i++)
 	{
-
+		var node = new MyNode();
+		
 	}
 
 }
