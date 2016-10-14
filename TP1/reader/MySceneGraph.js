@@ -24,7 +24,7 @@ function MySceneGraph(filename, scene) {
 	this.axis_length = 10; 
 	
 	//Cameras
-	this.cameras = [];
+	this.cameras = {};
 
 	//Illumination
 	this.ambient = null;
@@ -35,8 +35,11 @@ function MySceneGraph(filename, scene) {
 	//Lights
 	this.lights =[];
 
+	//Transformations
+	this.transformations = {};
+
 	//Scene Nodes
-	this.nodes = [];
+	this.nodes = new Map();
 
 };
 
@@ -401,10 +404,10 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 			return this.onXMLError("bad RGBA on 'specular' component of omnilight " + id);
 		}
 
-		this.lights.push(light);
+		this.lights[light.id]= light;
 
 		console.log("lights");
-		console.log(this.lights[0]);
+		console.log(this.lights['o1']);
 
 	}
 
@@ -497,44 +500,15 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 	if (transformation.length == 0)
 		return this.onXMLError("Transformation element is missing");
 	
-	
-	var matrix, translate, scale, aux;
-	var rotate = [];
-	
 	for (var i=0; i<transformation.length; i++){
+
+		var matrix;
 		
 		search = transformation[i];
 		
 		var id = this.reader.getString(search, 'id');
 
-		var list = search.children;
-		
-		//if no transformations are found
-		if (list.length == 0)
-			return this.onXMLError("no transformations can be read");
-		
-		//cria matriz identidade para as transformações
-		matrix = mat4.create();
-				
-		for (var j=list.length-1; j>=0; j--){
-		//for (var j=0; j<list-length; j++){
-			if (list[j].nodeName == 'translate'){
-					translate = this.getCoordFromDSX(list[j]);
-					mat4.translate(matrix, matrix, translate);
-			}
-			
-			else if(list[j].nodeName == 'rotate'){
-				aux = this.getRotateFromDSX(list[j]);
-				rotate.push(aux[0], aux[1], aux[2]);
-				mat4.rotate(matrix, matrix, aux[3],rotate);
-			}
-			
-			else if (list[j].nodeName == 'scale'){
-				scale = this.getCoordFromDSX(list[j]);
-				mat4.scale(matrix, matrix, scale);
-			}
-			else return this.onXMLError("There can only be translate, rotate or scale transformations");
-		}			
+		matrix = mat4.clone(this.calculateTransformMatrix(search));
 	}
 };
 
@@ -611,6 +585,35 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 	for (var i = 0; i < component.length; i++)
 	{
 		var node = new MyNode();
+
+		node.id = this.reader.getString(component[i], 'id');
+
+		var transformation = component[i].getElementsByTagName('transformation');
+
+		if(transformation.length == 0 || transformation.length > 1)
+		{
+			return onXMLError("There needs to be one and only one transformation block for each component.")
+		}
+
+		var transformationRef = transformation[0].getElementsByTagName('transformationref');
+
+		if(transformationRef != null && transformationRef.length == 1)
+		{
+			node.transformation = transformationRef[0].id;
+			console.log(node.transformation);
+		}
+		else
+		{
+			
+		}
+
+		/*
+			Adicionar informação a cada node.
+			Adicionar node a this.nodes com [id (key), node(value)].
+
+			Depois de adicionar os componentes e as primitivas, ver componentrefs,
+			que determinam os filhos de cada nó e depois implementar DFS ao grafo.
+		*/
 		
 	}
 
@@ -694,3 +697,43 @@ MySceneGraph.prototype.getCoordFromDSX = function (attributeName){
 	
 	return coord;
 };
+
+/*
+* 	Receives a transformation element and returns a single mat4 representing it
+*/
+MySceneGraph.prototype.calculateTransformMatrix = function (transformElement)
+{
+	var matrix, translate, scale, aux;
+	var rotate = [];
+
+	var list = transformElement.children;
+		
+	//if no transformations are found
+	if (list.length == 0)
+		return this.onXMLError("no transformations can be read");
+		
+	//cria matriz identidade para as transformações
+	matrix = mat4.create();
+				
+	for (var j=list.length-1; j>=0; j--){
+	//for (var j=0; j<list-length; j++){
+		if (list[j].nodeName == 'translate'){
+				translate = this.getCoordFromDSX(list[j]);
+				mat4.translate(matrix, matrix, translate);
+		}
+			
+		else if(list[j].nodeName == 'rotate'){
+			aux = this.getRotateFromDSX(list[j]);
+			rotate.push(aux[0], aux[1], aux[2]);
+			mat4.rotate(matrix, matrix, aux[3],rotate);
+		}
+			
+		else if (list[j].nodeName == 'scale'){
+			scale = this.getCoordFromDSX(list[j]);
+			mat4.scale(matrix, matrix, scale);
+		}
+		else return this.onXMLError("There can only be translate, rotate or scale transformations");
+	}
+
+	return matrix;		
+}

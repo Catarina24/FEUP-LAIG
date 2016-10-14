@@ -21,7 +21,8 @@ function MyNode()
     this.children = [];
     this.material = null;
     this.texture = null;
-    this.transformations = [];
+    
+    this.transformation = null;
 
     this.localMatrix = mat4.create();
     this.worldMatrix = mat4.create();
@@ -53,11 +54,11 @@ MyNode.prototype.numOfChildren = function(){
 MyNode.prototype.updateWorldMatrix = function (parentWorldMatrix){
     if(parentWorldMatrix)   // if there is a matrix to be applied
     {
-        this.worldMatrix = matrixMultiply(this.localMatrix, parentWorldMatrix);
+        mat4.multiply(this.worldMatrix, this.localMatrix, parentWorldMatrix);
     }
     else    // apply node matrix
     {
-        this.worldMatrix = this.localMatrix;
+        this.worldMatrix = mat4.clone(this.localMatrix);
     }
 
     // process childrens matrix
