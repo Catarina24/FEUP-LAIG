@@ -250,7 +250,9 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 			view.id = id;
 			view.near = this.reader.getFloat(perspective, 'near');
 			view.far = this.reader.getFloat(perspective, 'far');
-			view.angle = this.reader.getFloat(perspective, 'angle');
+			var angle = this.reader.getFloat(perspective, 'angle');
+
+			view.angle = this.convertDegreesToRadians(angle);
 
 			//get from - x y z
 			search = perspective.getElementsByTagName('from');

@@ -22,9 +22,13 @@ XMLscene.prototype.init = function (application) {
 
 	this.axis=new CGFaxis(this);
 
+	//this.myInterface = new CGFinterface();
+
 
 	//declaração das variáveis do MySceneGraph
 	this.cameras = [];
+	this.textures = [];
+	this.materials = [];
 };
 
 XMLscene.prototype.initLights = function () {
@@ -54,18 +58,25 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.lights[0].setVisible(true);
     this.lights[0].enable();
 
-	this.setCameras();
-	this.changeCamera();
+	this.init_variables();
+	this.changeCamera(0);
+
 	
 };
 
-XMLscene.prototype.setCameras = function(){
+XMLscene.prototype.init_variables = function(){
 	this.cameras = this.graph.cameras;
+	this.textures = this.graph.textures;
+	this.materials = this.graph.materials;
 }
 
+
 //Added function - MERDOU
-XMLscene.prototype.changeCamera = function(){
-	this.camera = new CGFcamera(this.cameras[0].angle, this.cameras[0].near, this.cameras[0].far, this.cameras[0].position, this.cameras[0].target);
+XMLscene.prototype.changeCamera = function(i){
+	//verificação nao faz nada ??
+	if (i >= this.cameras.length)
+		return "i out of range";
+	this.camera = new CGFcamera(this.cameras[i].angle, this.cameras[i].near, this.cameras[i].far, this.cameras[i].position, this.cameras[i].target);
 	//this.myInterface.setActive(this.camera);
 }
 
