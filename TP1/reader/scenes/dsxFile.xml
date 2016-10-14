@@ -29,8 +29,9 @@
         <!-- ultima vista da lista volta 'a primeira -->
         <perspective id="p1" near="10.0" far="10.0" angle="30.0">
             <from x="1.0" y="2.0" z="3.0" />
-            <to x="50.0" y="50.0" z="50.0" />
+            <to x="0.0" y="50.0" z="50.0" />
         </perspective>
+		
         
     </views>
     
@@ -100,7 +101,7 @@
             <specular r="0" g="0.2" b="0.8" a="1" />
             <shininess value="120" />
         </material>
-        
+		        
     </materials>
     
     
@@ -116,6 +117,7 @@
            <scale x="2" y="0" z="0" />
 		   
         </transformation>
+		
         
     </transformations>
     

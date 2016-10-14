@@ -20,10 +20,11 @@ function MySceneGraph(filename, scene) {
 	/** Information from parsers (values by default) **/
 
 	//Scene
-	this.scene = null;
+	this.sceneRoot = null;
 	this.axis_length = 10; 
 	
 	//Cameras
+	this.default_view=null;
 	this.cameras = [];
 
 	//Illumination
@@ -32,6 +33,15 @@ function MySceneGraph(filename, scene) {
 
 	//Lights
 	this.lights =[];
+	
+	//Textures
+	this.textures = [];
+	
+	//Materials
+	this.materials=[];
+	
+	//Transformations
+	this.transformations=[];
 
 };
 
@@ -186,6 +196,9 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 
 	var root = this.reader.getString(scene, 'root');
 	var axis_length = this.reader.getString(scene, 'axis_length');
+	
+	this.sceneRoot = root;
+	this.axis_length = axis_length;
 
 };
 
@@ -209,6 +222,8 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 
 	if (perspectives.length == 0)
 		return this.onXMLError("perspective element is missing");
+	
+	var exists;
 		
 	for (var i=0; i< perspectives.length; i++){
 		
@@ -216,33 +231,50 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 		//var default_view = search[0];
 		
 		var perspective = perspectives[i];
+		
+		//verifies if the id already exists
+		exists = false;
+		
 		var id = this.reader.getString(perspective, 'id');
-		var near = this.reader.getFloat(perspective, 'near');
-		var far = this.reader.getFloat(perspective, 'far');
-		var angle = this.reader.getFloat(perspective, 'angle');
-
-		//get from - x y z
-		search = perspective.getElementsByTagName('from');
 		
-		var fromp = search[0];
-		if (fromp == null)
-			return "no perspective (from failed)";
-
+		for (var j=0; j<this.cameras.length; j++){
+			if (id==this.cameras[j].id){
+				exists = true;
+				break;
+			}
+		}
+		
+		if (!exists){
+			var view = new MyView(this.scene);
 			
-		var coordf = this.getCoordFromDSX(fromp);
+			view.id = id;
+			view.near = this.reader.getFloat(perspective, 'near');
+			view.far = this.reader.getFloat(perspective, 'far');
+			view.angle = this.reader.getFloat(perspective, 'angle');
 
-		//get to - x y z
-		search = perspective.getElementsByTagName('to');
+			//get from - x y z
+			search = perspective.getElementsByTagName('from');
+			
+			var fromp = search[0];
+			if (fromp == null)
+				return "no perspective (from failed)";
 
-		var to = search[0];
+				
+			view.from_ = this.getCoordFromDSX(fromp);
 
-		if (to == null)
-			return "no perspective (to failed)";
+			//get to - x y z
+			search = perspective.getElementsByTagName('to');
 
-		var coordt = this.getCoordFromDSX(to);
-		
-		console.log("coordenadas:" ,coordt);
+			var to = search[0];
 
+			if (to == null)
+				return "no perspective (to failed)";
+
+			view.to = this.getCoordFromDSX(to);
+			
+			this.cameras.push(view);
+		}
+		this.default_view = this.cameras[0];
 		
 	}
 
@@ -266,7 +298,6 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 
 	if (ambient == null)
 		return this.onXMLError("ambient illumination is missing.");	
-	};
 
 	var ambientRGBA = [];
 
@@ -298,7 +329,7 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	bgRGBA.push(this.reader.getFloat(background, 'a'));
 
 	this.background = bgRGBA;
-
+	
 };
 
 /* LIGHTS PARSER
@@ -398,14 +429,34 @@ MySceneGraph.prototype.parseDSXTextures = function (rootElement){
 	if (texture.length == 0)
 		return this.onXMLError("Texture element is missing");
 	
+	var exists;
+	var tex;
+	var id;
+	
 	for (var i=0; i<texture.length; i++){
+		
+		exists=false;
 		
 		search = texture[i];
 		
-		var id = this.reader.getString(search, 'id');
-		var file = this.reader.getString(search, 'file');
-		var length_s = this.reader.getFloat(search, 'length_s');
-		var length_t = this.reader.getFloat(search, 'length_t');
+		id = this.reader.getString(search, 'id');
+		
+		for (var j=0; j<this.textures.length; j++){
+			if (id==this.textures[j].id){
+				exists=true;
+				break;
+			}
+		}
+		
+		if (!exists){
+			tex = new MyTexture(this.scene);
+			tex.id=id;
+			tex.file = this.reader.getString(search, 'file');
+			tex.length_s = this.reader.getFloat(search, 'length_s');
+			tex.length_t = this.reader.getFloat(search, 'length_t');
+			this.textures.push(tex);
+		}
+		console.log(this.textures);
 		
 	}
 };
@@ -417,38 +468,55 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 	
 	var search = rootElement.getElementsByTagName('materials');
 	
-	var materials = search[0];
-	
-	var material = materials.getElementsByTagName('material');
+	var material = search[0].getElementsByTagName('material');
 	
 	//se "materials" não tem filhos
 	if (material.length == 0)
 		return this.onXMLError("Material element is missing");
 	
+	var exists, mat, id;
+	
 	for (var i=0; i<material.length; i++){
+		
+		exists = false;
 		
 		search = material[i];
 		
-		var emission = search.getElementsByTagName('emission');
-		var ergb = this.getRGBAFromDSX(emission[0]);
-		console.log("emission" + ergb);
+		id=this.reader.getString(search, 'id');
 		
-		var ambient = search.getElementsByTagName('ambient');
-		var argb = this.getRGBAFromDSX(ambient[0]);
-		console.log(argb);
+		for (var j=0; j<this.materials.length; j++){
+			if (id==this.materials[j].id){
+				exists=true;
+				break;
+			}
+		}
 		
-		var diffuse = search.getElementsByTagName('diffuse');
-		var drgb = this.getRGBAFromDSX(diffuse[0]);
-		console.log(drgb);
-		
-		var specular = search.getElementsByTagName('specular');
-		var srgb = this.getRGBAFromDSX(specular[0]);
-		console.log(srgb);
-		
-		var shininess = search.getElementsByTagName('shininess');
-		var value = this.reader.getFloat(shininess[0], 'value');
-		console.log(value);
+		if (!exists){
 			
+			mat = new MyMaterial(this.scene);
+			
+			mat.id=id;
+			
+			var emission = search.getElementsByTagName('emission');
+			mat.emission = this.getRGBAFromDSX(emission[0]);
+			
+			var ambient = search.getElementsByTagName('ambient');
+			mat.ambient = this.getRGBAFromDSX(ambient[0]);
+			
+			var diffuse = search.getElementsByTagName('diffuse');
+			mat.diffuse = this.getRGBAFromDSX(diffuse[0]);
+			
+			var specular = search.getElementsByTagName('specular');
+			mat.specular= this.getRGBAFromDSX(specular[0]);
+			
+			var shininess = search.getElementsByTagName('shininess');
+			mat.shininess= this.reader.getFloat(shininess[0], 'value');
+			
+			this.materials.push(mat);
+			
+		}
+		
+		console.log(this.materials);
 	}
 };
 
@@ -460,53 +528,73 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 	
 	var search = rootElement.getElementsByTagName('transformations');
 	
-	var transformations = search[0];
-	
-	var transformation = transformations.getElementsByTagName('transformation');
+	var transformation = search[0].getElementsByTagName('transformation');
 	
 	//se "transformations" não tem filhos
 	if (transformation.length == 0)
 		return this.onXMLError("Transformation element is missing");
 	
 	
-	var matrix, translate, scale, aux;
+	var matrix, translate, scale, aux, id, exists, transf;
 	var rotate = [];
 	
 	for (var i=0; i<transformation.length; i++){
 		
+		exists=false;
+		
 		search = transformation[i];
 		
-		var id = this.reader.getString(search, 'id');
-
-		var list = search.children;
+		id = this.reader.getString(search, 'id');
 		
-		//if no transformations are found
-		if (list.length == 0)
-			return this.onXMLError("no transformations can be read");
+		for(var j=0; j<this.transformations.length; j++){
+			if (id==this.transformations[j].id){
+				exists=true;
+				break;
+			}
+		}
 		
-		//cria matriz identidade para as transformações
-		matrix = mat4.create();
+		if (!exists){
+			
+			transf = new MyTransformation(this.scene);
+			
+			var list = search.children;
+			
+			//if no transformations are found
+			if (list.length == 0)
+				return this.onXMLError("no transformations can be read");
+			
+			//cria matriz identidade para as transformações
+			matrix = mat4.create();
+					
+			for (var j=list.length-1; j>=0; j--){
+			//for (var j=0; j<list-length; j++){
+				if (list[j].nodeName == 'translate'){
+						translate = this.getCoordFromDSX(list[j]);
+						mat4.translate(matrix, matrix, translate);
+				}
 				
-		for (var j=list.length-1; j>=0; j--){
-		//for (var j=0; j<list-length; j++){
-			if (list[j].nodeName == 'translate'){
-					translate = this.getCoordFromDSX(list[j]);
-					mat4.translate(matrix, matrix, translate);
-			}
+				else if(list[j].nodeName == 'rotate'){
+					aux = this.getRotateFromDSX(list[j]);
+					rotate.push(aux[0], aux[1], aux[2]);
+					mat4.rotate(matrix, matrix, aux[3],rotate);
+				}
+				
+				else if (list[j].nodeName == 'scale'){
+					scale = this.getCoordFromDSX(list[j]);
+					mat4.scale(matrix, matrix, scale);
+				}
+				else return this.onXMLError("There can only be translate, rotate or scale transformations");
+			}	
 			
-			else if(list[j].nodeName == 'rotate'){
-				aux = this.getRotateFromDSX(list[j]);
-				rotate.push(aux[0], aux[1], aux[2]);
-				mat4.rotate(matrix, matrix, aux[3],rotate);
-			}
+			transf.id=id;
+			transf.matrix = mat4.clone(matrix);
 			
-			else if (list[j].nodeName == 'scale'){
-				scale = this.getCoordFromDSX(list[j]);
-				mat4.scale(matrix, matrix, scale);
-			}
-			else return this.onXMLError("There can only be translate, rotate or scale transformations");
-		}			
+			this.transformations.push(transf);
+		}		
+		console.log(this.transformations);
 	}
+	
+	
 };
 
 /*
