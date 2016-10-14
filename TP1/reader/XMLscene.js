@@ -21,6 +21,14 @@ XMLscene.prototype.init = function (application) {
     this.gl.depthFunc(this.gl.LEQUAL);
 
 	this.axis=new CGFaxis(this);
+
+	//this.myInterface = new CGFinterface();
+
+
+	//declaração das variáveis do MySceneGraph
+	this.cameras = [];
+	this.textures = [];
+	this.materials = [];
 };
 
 XMLscene.prototype.initLights = function () {
@@ -32,6 +40,7 @@ XMLscene.prototype.initLights = function () {
 
 XMLscene.prototype.initCameras = function () {
     this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(15, 15, 15), vec3.fromValues(0, 0, 0));
+	
 };
 
 XMLscene.prototype.setDefaultAppearance = function () {
@@ -48,7 +57,28 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.gl.clearColor(this.graph.background[0],this.graph.background[1],this.graph.background[2],this.graph.background[3]);
 	this.lights[0].setVisible(true);
     this.lights[0].enable();
+
+	this.init_variables();
+	this.changeCamera(0);
+
+	
 };
+
+XMLscene.prototype.init_variables = function(){
+	this.cameras = this.graph.cameras;
+	this.textures = this.graph.textures;
+	this.materials = this.graph.materials;
+}
+
+
+//Added function - MERDOU
+XMLscene.prototype.changeCamera = function(i){
+	//verificação nao faz nada ??
+	if (i >= this.cameras.length)
+		return "i out of range";
+	this.camera = new CGFcamera(this.cameras[i].angle, this.cameras[i].near, this.cameras[i].far, this.cameras[i].position, this.cameras[i].target);
+	//this.myInterface.setActive(this.camera);
+}
 
 XMLscene.prototype.display = function () {
 	// ---- BEGIN Background, camera and axis setup

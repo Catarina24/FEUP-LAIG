@@ -13,14 +13,16 @@
 * @attribute material       -- The nodes material (use fathers if it is null)
 * @attribute texture        -- The nodes texture (use fathers if it is null)
 * @attribute transformations-- An ARRAY of tranformations to be multiplied by the fathers.
+* @attribute matrix         -- A matrix with transformations.
 */
 
-function MyNode()
-{
+function MyNode(){
+    
     this.id = null;
     this.children = [];
     this.material = null;
     this.texture = null;
+    this.mat = null;
     this.transformations = [];
     this.isPrimitive = false;
 };
@@ -39,7 +41,7 @@ MyNode.prototype.setTexture = function (texture){
     this.texture = texture;
 }
 
-MyNode.prototype.pushChildNode = function (childNode){
+MyNode.prototype.push = function (childNode){
     this.children.push(childNode);
 }
 
@@ -49,4 +51,8 @@ MyNode.prototype.numOfChildren = function(){
 
 MyNode.prototype.isPrimitive = function(){
     return this.isPrimitive;
+}
+
+MyNode.prototype.setMatrix = function(mat){
+    this.mat = mat4.clone(mat);
 }

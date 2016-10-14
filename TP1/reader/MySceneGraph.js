@@ -250,7 +250,9 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 			view.id = id;
 			view.near = this.reader.getFloat(perspective, 'near');
 			view.far = this.reader.getFloat(perspective, 'far');
-			view.angle = this.reader.getFloat(perspective, 'angle');
+			var angle = this.reader.getFloat(perspective, 'angle');
+
+			view.angle = this.convertDegreesToRadians(angle);
 
 			//get from - x y z
 			search = perspective.getElementsByTagName('from');
@@ -260,7 +262,8 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 				return "no perspective (from failed)";
 
 				
-			view.from_ = this.getCoordFromDSX(fromp);
+			var pos = this.getCoordFromDSX(fromp);
+			view.position = vec3.fromValues(pos[0], pos[1], pos[2]);
 
 			//get to - x y z
 			search = perspective.getElementsByTagName('to');
@@ -270,7 +273,8 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 			if (to == null)
 				return "no perspective (to failed)";
 
-			view.to = this.getCoordFromDSX(to);
+			var targ = this.getCoordFromDSX(to);
+			view.target = vec3.fromValues(targ[0], targ[1], targ[2]);
 			
 			this.cameras.push(view);
 		}

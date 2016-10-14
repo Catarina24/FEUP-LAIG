@@ -17,10 +17,16 @@ function MyView(scene) {
 	this.near=null;
 	this.far=null;
 	this.angle=null;
-	this.from_=[];
-	this.to=[];
+	this.position=null;
+	this.target=null;
 	
  };
  
 MyView.prototype = Object.create(CGFobject.prototype);
 MyView.prototype.constructor = MyView;
+
+MyView.prototype.myViewToCGFcamera = function(){
+	var aux = new CGFcamera(this.angle, this.near, this.far, this.position, this.target);
+	
+	return aux;
+}
