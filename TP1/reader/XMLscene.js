@@ -52,7 +52,7 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.lights[0].setVisible(true);
     this.lights[0].enable();
 
-    this.lights[1] = this.graph.lights[0].myLightToCGFlight();
+    this.lights[1] = this.graph.lights['o1'].myLightToCGFlight();
     this.lights[1].setVisible(true);
     this.lights[1].enable();
 };
