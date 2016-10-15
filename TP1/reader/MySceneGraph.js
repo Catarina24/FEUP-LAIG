@@ -625,8 +625,18 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 	
 	for (var i = 0; i < primitive.length; i++)
 	{
+		var exists = false;
+
 		var id = this.reader.getString(primitive[i], 'id');
 
+		for (var j=0; j<this.primitives.length; j++){
+			if (id==this.primitives[j].id){
+				exists = true;
+				break;
+			}
+		}
+
+		console.log(exists);
 		console.log(primitive[i]);
 
 		var primitiveShapesList = primitive[i].children;
@@ -634,12 +644,14 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 		if (primitiveShapesList.length > 1)
 			return this.onXMLError("There can only be one primitive.");
 
+
+		if(!exists){
 		/** 
 		 * Rectangles
 		 */
 		if (primitiveShapesList[0].tagName == "rectangle"){
-				
 				var rectangle = this.parseRectangles(primitiveShapesList[0]);
+				rectangle.id = id;
 				this.primitives.push(rectangle);
 		}
 
@@ -649,6 +661,7 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 		if (primitiveShapesList[0].tagName == "triangle"){
 				
 				var triangle = this.parseTriangles(primitiveShapesList[0]);
+				triangle.id = id;
 				this.primitives.push(triangle);
 		}
 
@@ -658,9 +671,11 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 		if (primitiveShapesList[0].tagName == "sphere"){
 				
 				var sphere = this.parseSpheres(primitiveShapesList[0]);
+				sphere.id = id;
 				this.primitives.push(sphere);
 		}
 		console.log(this.primitives);
+		}
 	}
 };
 
