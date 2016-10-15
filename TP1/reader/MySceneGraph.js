@@ -674,6 +674,17 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 				sphere.id = id;
 				this.primitives.push(sphere);
 		}
+
+
+		/** 
+		 * Cylinder
+		 */
+		if (primitiveShapesList[0].tagName == "cylinder"){
+				
+				var cylinder = this.parseCylinders(primitiveShapesList[0]);
+				cylinder.id = id;
+				this.primitives.push(cylinder);
+		}
 		console.log(this.primitives);
 		}
 	}
@@ -725,6 +736,21 @@ MySceneGraph.prototype.parseSpheres = function (sphereElement){
 	console.log(sphere);
 
 	return sphere;
+};
+
+MySceneGraph.prototype.parseCylinders = function (cylinderElement){
+
+	var base = this.reader.getFloat(cylinderElement, 'base');
+	var top = this.reader.getFloat(cylinderElement, 'top');
+	var height = this.reader.getFloat(cylinderElement, 'height');
+	var slices = this.reader.getFloat(cylinderElement, 'slices');
+	var stacks = this.reader.getFloat(cylinderElement, 'stacks');
+
+	var cylinder = new MyCylinder(this.scene, slices, stacks, top, base, height);
+
+	console.log(cylinder);
+
+	return cylinder;
 };
 
 

@@ -37,6 +37,9 @@ XMLscene.prototype.init = function (application) {
 	this.quad = new MyQuad(this, -1.5,1.5, -1, 1);
 	this.triangle = new MyTriangle(this, 0, 2, 0, 0, 0, 3, 0, 0, 0);
 
+	this.cylinder = new MyCylinder(this, 40, 10, 2, 0.5, 0.5);
+
+	this.torus = new MyTorus(this, 0.1, 0.5, 30, 10);
 };
 
 XMLscene.prototype.initLights = function () {
@@ -122,15 +125,58 @@ XMLscene.prototype.display = function () {
 
 	/**					TESTES!!!!!! 				 */
 
-	this.pushMatrix();
+	/*this.pushMatrix();
 		this.translate(3, 3, 0);
+		this.quad.display();
+
+	this.popMatrix();*/
+
+	//left wall - mirror
+	/*this.pushMatrix();
+		this.translate(0, 0, 6);
+		this.rotate(Math.PI/2, 0, 1, 0);
+		this.translate(3, 2, 0);
+		this.scale(2, 2, 0);
+
+
+		/*this.setDiffuse(0.78, 0.78, 0.78, 1.0);
+		this.setSpecular(1, 1, 0, 1);
+		this.setAmbient(0, 0, 0, 1);
+		this.setShininess(100);*/
+		/*this.quad.display();
+
+	this.popMatrix();
+
+	//right wall
+	this.pushMatrix();
+		this.translate(3, 2, 0);
+		this.scale(2, 2, 0);
 		this.quad.display();
 
 	this.popMatrix();
 
+	//floor
 	this.pushMatrix();
-		this.triangle.display();
+		this.translate(0, 0, 6);
+		this.rotate(3*Math.PI/2, 1, 0, 0);
+		this.translate(3, 3, 0);
+		this.scale(2, 3, 0);
+		this.quad.display();
+
 	this.popMatrix();
+
+	/*this.pushMatrix();
+		this.triangle.display();
+	this.popMatrix();*/
+
+	/*this.pushMatrix();
+		this.translate(0, 2, 0);
+		this.rotate(Math.PI/2, 1, 0, 0);
+		this.cylinder.display();
+	this.popMatrix();*/
+
+
+	this.torus.display();
 };
 
 /**FROM HERE ON THE FUNCTIONS ARE OURS**/
