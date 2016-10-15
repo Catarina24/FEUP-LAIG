@@ -23,7 +23,7 @@ XMLscene.prototype.init = function (application) {
 	this.axis=new CGFaxis(this);
 
 	//this.myInterface = new CGFinterface();
-
+	this.enableTextures(true);
 
 	//declaração das variáveis do MySceneGraph
 	this.cameras = [];
@@ -39,13 +39,21 @@ XMLscene.prototype.init = function (application) {
 
 	this.cylinder = new MyCylinder(this, 40, 10, 2, 0.5, 0.5);
 
-	this.torus = new MyTorus(this, 0.1, 0.5, 30, 10);
+	this.torus = new MyTorus(this, 0.2, 0.5, 50, 40);
+
+	this.sphere = new MySphere(this, 40, 10, 0.5);
+
+	this.seaAppearance = new CGFappearance(this);
+	this.seaAppearance.loadTexture("../reader/scenes/resources/sea.png");
+
+	//this.seaAppearance.setTextureWrap('CLAMP_TO_EDGE', 'CLAMP_TO_EDGE');
 };
 
 XMLscene.prototype.initLights = function () {
 
 	this.lights[0].setPosition(2, 3, 3, 1);
     this.lights[0].setDiffuse(1.0,1.0,1.0,1.0);
+    this.lights[0].setSpecular(1.0,1.0,1.0,1.0);
     this.lights[0].update();
 };
 
@@ -125,25 +133,22 @@ XMLscene.prototype.display = function () {
 
 	/**					TESTES!!!!!! 				 */
 
-	/*this.pushMatrix();
-		this.translate(3, 3, 0);
-		this.quad.display();
+	//this.sphere.display();
 
-	this.popMatrix();*/
+
 
 	//left wall - mirror
-	/*this.pushMatrix();
+	this.pushMatrix();
 		this.translate(0, 0, 6);
 		this.rotate(Math.PI/2, 0, 1, 0);
 		this.translate(3, 2, 0);
 		this.scale(2, 2, 0);
 
 
-		/*this.setDiffuse(0.78, 0.78, 0.78, 1.0);
-		this.setSpecular(1, 1, 0, 1);
-		this.setAmbient(0, 0, 0, 1);
-		this.setShininess(100);*/
-		/*this.quad.display();
+		//this.setDiffuse(0.2, 0.5, 0.1, 1.0);
+		//this.setSpecular(1, 1, 1, 1);
+		this.setAmbient(1, 1, 1, 1);
+		this.quad.display();
 
 	this.popMatrix();
 
@@ -161,6 +166,7 @@ XMLscene.prototype.display = function () {
 		this.rotate(3*Math.PI/2, 1, 0, 0);
 		this.translate(3, 3, 0);
 		this.scale(2, 3, 0);
+		//this.seaAppearance.apply();
 		this.quad.display();
 
 	this.popMatrix();
@@ -176,7 +182,7 @@ XMLscene.prototype.display = function () {
 	this.popMatrix();*/
 
 
-	this.torus.display();
+	/*this.torus.display();*/
 };
 
 /**FROM HERE ON THE FUNCTIONS ARE OURS**/
