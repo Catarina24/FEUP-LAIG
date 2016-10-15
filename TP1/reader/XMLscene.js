@@ -43,10 +43,9 @@ XMLscene.prototype.init = function (application) {
 
 	this.sphere = new MySphere(this, 40, 10, 0.5);
 
-	this.seaAppearance = new CGFappearance(this);
-	this.seaAppearance.loadTexture("../reader/scenes/resources/sea.png");
 
-	//this.seaAppearance.setTextureWrap('CLAMP_TO_EDGE', 'CLAMP_TO_EDGE');
+	this.initAppearances();
+
 };
 
 XMLscene.prototype.initLights = function () {
@@ -55,6 +54,7 @@ XMLscene.prototype.initLights = function () {
     this.lights[0].setDiffuse(1.0,1.0,1.0,1.0);
     this.lights[0].setSpecular(1.0,1.0,1.0,1.0);
     this.lights[0].update();
+	
 };
 
 XMLscene.prototype.initCameras = function () {
@@ -101,6 +101,18 @@ XMLscene.prototype.changeCamera = function(i){
 	//this.myInterface.setActive(this.camera);
 }
 
+//FUNCAO TESTE
+XMLscene.prototype.initAppearances = function(){
+	this.seaAppearance = new CGFappearance(this);
+	this.seaAppearance.loadTexture("./scenes/resources/sea.png");
+	//this.seaAppearance.setTextureWrap('REPEAT', 'REPEAT');
+	//this.seaAppearance.setTextureWrap('CLAMP_TO_EDGE', 'CLAMP_TO_EDGE');
+
+
+	this.boia = new CGFappearance(this);
+	this.boia.loadTexture("./scenes/resources/patinhos.jpg");
+}
+
 XMLscene.prototype.display = function () {
 	// ---- BEGIN Background, camera and axis setup
 	
@@ -138,7 +150,7 @@ XMLscene.prototype.display = function () {
 
 
 	//left wall - mirror
-	this.pushMatrix();
+	/*this.pushMatrix();
 		this.translate(0, 0, 6);
 		this.rotate(Math.PI/2, 0, 1, 0);
 		this.translate(3, 2, 0);
@@ -166,10 +178,9 @@ XMLscene.prototype.display = function () {
 		this.rotate(3*Math.PI/2, 1, 0, 0);
 		this.translate(3, 3, 0);
 		this.scale(2, 3, 0);
-		//this.seaAppearance.apply();
 		this.quad.display();
 
-	this.popMatrix();
+	this.popMatrix();*/
 
 	/*this.pushMatrix();
 		this.triangle.display();
@@ -181,8 +192,14 @@ XMLscene.prototype.display = function () {
 		this.cylinder.display();
 	this.popMatrix();*/
 
+	
+	this.pushMatrix();
+		this.translate(5, 0, 3);
+		this.rotate(Math.PI/2, 1, 0, 0);
+		this.boia.apply();
+		this.torus.display();
+	this.popMatrix();
 
-	/*this.torus.display();*/
 };
 
 /**FROM HERE ON THE FUNCTIONS ARE OURS**/

@@ -5,12 +5,17 @@
 
  /* Desenvolvido durante CGRA */
  
- function MyQuad(scene, minS, maxS, minT, maxT) {
+function MyQuad(scene, x1, x2, y1, y2) {
  	CGFobject.call(this,scene);
-   	this.minS = minS;
- 	this.maxS = maxS;
- 	this.minT = minT;
- 	this.maxT = maxT;
+	this.x1=x1;
+	this.x2=x2;
+	this.y1=y1;
+	this.y2=y2;
+   	this.minS = 0;
+ 	this.maxS = 1;
+ 	this.minT = 0;
+ 	this.maxT = 1;
+	 
  	this.initBuffers();
  };
 
@@ -19,10 +24,10 @@
 
  MyQuad.prototype.initBuffers = function() {
  	this.vertices = [
- 	this.minS, this.maxT, 0,
- 	this.maxS, this.maxT, 0,
- 	this.minS, this.minT, 0,
- 	this.maxS, this.minT, 0,
+ 	this.x1, this.y2, 0,
+ 	this.x2, this.y2, 0,
+ 	this.x1, this.y1, 0,
+ 	this.x2, this.y1, 0,
  	];
 
  	this.indices = [
@@ -42,13 +47,11 @@
 
     
  	this.texCoords = [
- 	this.minS, this.minT, 
- 	this.maxS, this.minT, 
-    this.minS, this.maxT, 
- 	this.maxS, this.maxT
+ 	this.minS, this.maxT, 
+ 	this.maxS, this.maxT, 
+    this.minS, this.minT, 
+ 	this.maxS, this.minT
  	];
 
-
- 	
  	this.initGLBuffers();
  };
