@@ -43,6 +43,9 @@ function MySceneGraph(filename, scene) {
 	//Transformations
 	this.transformations=[];
 
+	//Primitives
+	this.primitives =[];
+
 };
 
 /*
@@ -628,9 +631,36 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 
 		var primitiveShapesList = primitive[i].children;
 
-		console.log(primitive[i].children);
+		if (primitiveShapesList.length > 1)
+			return this.onXMLError("There can only be one primitive.");
 
-		this.parseRectangles(primitive[i].children[0]);
+		/** 
+		 * Rectangles
+		 */
+		if (primitiveShapesList[0].tagName == "rectangle"){
+				
+				var rectangle = this.parseRectangles(primitiveShapesList[0]);
+				this.primitives.push(rectangle);
+		}
+
+		/** 
+		 * Triangles
+		 */
+		if (primitiveShapesList[0].tagName == "triangle"){
+				
+				var triangle = this.parseTriangles(primitiveShapesList[0]);
+				this.primitives.push(triangle);
+		}
+
+		/** 
+		 * Sphere
+		 */
+		if (primitiveShapesList[0].tagName == "sphere"){
+				
+				var sphere = this.parseSpheres(primitiveShapesList[0]);
+				this.primitives.push(sphere);
+		}
+		console.log(this.primitives);
 	}
 };
 
@@ -643,8 +673,43 @@ MySceneGraph.prototype.parseRectangles = function (rectangleElement){
 	var y1 = this.reader.getFloat(rectangleElement, 'y1');
 	var y2 = this.reader.getFloat(rectangleElement, 'y2');
 
-	console.log(x1,x2,y1,y2);
+	var rectangle = new MyQuad(this.scene, x1, x2, y1, y2);
 
+	return rectangle;
+};
+
+/** Parses Triangles information **/
+
+MySceneGraph.prototype.parseTriangles = function (triangleElement){
+
+	var x1 = this.reader.getFloat(triangleElement, 'x1');
+	var x2 = this.reader.getFloat(triangleElement, 'x2');
+	var x3 = this.reader.getFloat(triangleElement, 'x3');
+	var y1 = this.reader.getFloat(triangleElement, 'y1');
+	var y2 = this.reader.getFloat(triangleElement, 'y2');
+	var y3 = this.reader.getFloat(triangleElement, 'y3');
+	var z1 = this.reader.getFloat(triangleElement, 'z1');
+	var z2 = this.reader.getFloat(triangleElement, 'z2');
+	var z3 = this.reader.getFloat(triangleElement, 'z3');
+
+	var triangle = new MyTriangle(this.scene, x1, x2, x3, y1, y2, y3, z1, z2, z3);
+
+	return triangle;
+};
+
+
+
+MySceneGraph.prototype.parseSpheres = function (sphereElement){
+
+	var radius = this.reader.getFloat(sphereElement, 'radius');
+	var slices = this.reader.getFloat(sphereElement, 'slices');
+	var stacks = this.reader.getFloat(sphereElement, 'stacks');
+
+	var sphere = new MySphere(this.scene, slices, stacks, radius);
+
+	console.log(sphere);
+
+	return sphere;
 };
 
 
@@ -688,12 +753,12 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 	
 	this.parseDSXScene(rootElement);
 	this.parseDSXIllumination(rootElement);
-	this.parseDSXViews(rootElement);
-	this.parseDSXTextures(rootElement);
-	this.parseDSXMaterials(rootElement);
-	this.parseDSXTransformations(rootElement);
+	//this.parseDSXViews(rootElement);
+	//this.parseDSXTextures(rootElement);
+	//this.parseDSXMaterials(rootElement);
+	//this.parseDSXTransformations(rootElement);
 	this.parseDSXPrimitives(rootElement);
-	this.parseDSXComponents(rootElement);
+	//this.parseDSXComponents(rootElement);
 
 };
 
