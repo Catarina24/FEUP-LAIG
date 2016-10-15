@@ -132,7 +132,8 @@
             <!--     rectangle, triangle, cylinder, sphere, torus -->
             <!-- os parametros devem ser interpretados, genericamente como-->
             <!-- em OpenGL/GLUT; o cilindro deve adicionalmente ter tampas -->
-            <rectangle x1="2" y1="3" x2="4" y2="7" />
+            <rectangle x1="0" y1="0" x2="4" y2="6" /> 
+
             <!--
      
 
@@ -141,6 +142,18 @@
             <sphere radius="ff" slices="ii" stacks="ii" />
             <torus inner="ff" outer="ff" slices="ii" loops="ii" />
 			-->
+            
+        </primitive>
+
+        <primitive id="prim2">
+
+            <triangle x1="0" y1="0" z1="0" x2="3" y2="3" z2="3" x3="6" y3="6" z3="6" />
+            
+        </primitive>
+
+        <primitive id="prim3">
+
+             <sphere radius="5" slices="10" stacks="10" />
             
         </primitive>
         
