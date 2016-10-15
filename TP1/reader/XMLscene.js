@@ -29,6 +29,14 @@ XMLscene.prototype.init = function (application) {
 	this.cameras = [];
 	this.textures = [];
 	this.materials = [];
+	this.primitives = [];
+
+
+
+/** TESTES */
+	this.quad = new MyQuad(this, -1.5,1.5, -1, 1);
+	this.triangle = new MyTriangle(this, 0, 2, 0, 0, 0, 3, 0, 0, 0);
+
 };
 
 XMLscene.prototype.initLights = function () {
@@ -68,10 +76,12 @@ XMLscene.prototype.init_variables = function(){
 	this.cameras = this.graph.cameras;
 	this.textures = this.graph.textures;
 	this.materials = this.graph.materials;
+	this.primitives = this.graph.primitives;
+
+	
 }
 
 
-//Added function - MERDOU
 XMLscene.prototype.changeCamera = function(i){
 	//verificação nao faz nada ??
 	if (i >= this.cameras.length)
@@ -108,6 +118,19 @@ XMLscene.prototype.display = function () {
 	{
 		this.lights[0].update();
 	};	
+
+
+	/**					TESTES!!!!!! 				 */
+
+	this.pushMatrix();
+		this.translate(3, 3, 0);
+		this.quad.display();
+
+	this.popMatrix();
+
+	this.pushMatrix();
+		this.triangle.display();
+	this.popMatrix();
 };
 
 /**FROM HERE ON THE FUNCTIONS ARE OURS**/

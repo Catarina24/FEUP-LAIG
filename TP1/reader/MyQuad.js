@@ -19,10 +19,10 @@
 
  MyQuad.prototype.initBuffers = function() {
  	this.vertices = [
- 	-0.5, 0.5, 0,
- 	0.5, 0.5, 0,
- 	-0.5, -0.5, 0,
- 	0.5, -0.5, 0,
+ 	this.minS, this.maxT, 0,
+ 	this.maxS, this.maxT, 0,
+ 	this.minS, this.minT, 0,
+ 	this.maxS, this.minT, 0,
  	];
 
  	this.indices = [
@@ -40,7 +40,7 @@
  	  0, 0, 1
  	];
 
-    this
+    
  	this.texCoords = [
  	this.minS, this.minT, 
  	this.maxS, this.minT, 
