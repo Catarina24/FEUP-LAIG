@@ -588,11 +588,12 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 
 		node.id = this.reader.getString(component[i], 'id');
 
+		// TRANSFORMATIONS
 		var transformation = component[i].getElementsByTagName('transformation');
 
 		if(transformation.length == 0 || transformation.length > 1)
 		{
-			return onXMLError("There needs to be one and only one transformation block for each component.")
+			return this.onXMLError("There needs to be one and only one transformation block for each component.")
 		}
 
 		var transformationRef = transformation[0].getElementsByTagName('transformationref');
@@ -604,8 +605,78 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 		}
 		else
 		{
-			
+			node.calculateTransformMatrix(transformation[0]);
 		}
+
+		// MATERIALS
+		var materials = component[i].getElementsByTagName('materials');
+
+		if(materials.length == 0 || materials.length > 1)
+		{
+			return this.onXMLError("There needs to be one and only one materials block for each component.")
+		}
+		
+		if(materials[0].children.length == 0)
+		{
+			return this.onXMLError("At least one material id should be defined for a component.")
+		}
+
+		console.log(this.reader.getString(materials[0].children[0], 'id'));
+		for(var j = 0; j < materials[0].children.length; j++)
+		{
+			var material = materials[0].children[j];
+
+			var materialId = this.reader.getString(material, 'id');
+
+			node.materials.push(materialId);
+		}
+
+		// TEXTURE
+		var texture = component[i].getElementsByTagName('texture');
+
+		if(texture.length == 0 || texture.length > 1)
+		{
+			return this.onXMLError("There can only be one defined texture for a component.")
+		}
+		
+		node.texture = this.reader.getString(texture[0],'id');
+
+		// CHILDREN
+		var children = component[i].getElementsByTagName('children');
+
+		if(children.length == 0 || children.length > 1)
+		{
+			return this.onXMLError("There needs to be one and only one children block for each component.")
+		}
+		
+		if(children[0].children.length == 0)
+		{
+			return this.onXMLError("At least one children id should be defined for a component.")
+		}
+
+		console.log(this.reader.getString(children[0].children[0], 'id'));
+		for(var j = 0; j < children [0].children.length; j++)
+		{
+			var child = children[0].children[j];
+
+			console.log(child.nodeName);
+
+			if(child.nodeName == 'componentref')
+			{
+				node.children.push(this.reader.getString(child, 'id'));
+			}
+			else if(child.nodeName == 'primitiveref')
+			{
+				node.children.push(this.reader.getString(child, 'id'));
+			}
+			else
+			{
+				return this.onXMLError('Invalid child at ' + i + ' component.');
+			}
+
+			node.materials.push(materialId);
+		}
+
 
 		/*
 			Adicionar informação a cada node.
@@ -614,9 +685,14 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 			Depois de adicionar os componentes e as primitivas, ver componentrefs,
 			que determinam os filhos de cada nó e depois implementar DFS ao grafo.
 		*/
-		
+
+		// Add node to scene graph
+		this.nodes.set(node.id, node);
 	}
 
+	console.log(this.nodes);
+	
+	this.searchAllNodes();
 }
 
 /**********************
@@ -736,4 +812,22 @@ MySceneGraph.prototype.calculateTransformMatrix = function (transformElement)
 	}
 
 	return matrix;		
+}
+
+/* DFS Graph Search*/
+
+MySceneGraph.prototype.searchAllNodes = function(){
+
+	console.log(this.nodes.size);
+	
+	// Iterates for component nodes
+	for(var key of this.nodes.keys())
+	{
+		console.log(this.nodes.get(key));
+
+		for(var j = 0; j < this.nodes.get(key).children.length; j++)
+		{
+			console.log(this.nodes.children);
+		}
+	}
 }

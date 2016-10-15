@@ -19,13 +19,14 @@ function MyNode()
 {
     this.id = null;
     this.children = [];
-    this.material = null;
+    this.materials = [];
     this.texture = null;
     
     this.transformation = null;
 
     this.localMatrix = mat4.create();
     this.worldMatrix = mat4.create();
+
     this.isPrimitive = false;
 };
 
