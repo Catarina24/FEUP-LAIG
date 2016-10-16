@@ -43,6 +43,10 @@ XMLscene.prototype.init = function (application) {
 
 	this.sphere = new MySphere(this, 40, 10, 0.5);
 
+	this.boat = new MyBoat(this, 3, 1);
+
+	this.sphere = new MySphere(this, 40, 20, 0.2);
+
 
 	this.initAppearances();
 
@@ -109,8 +113,8 @@ XMLscene.prototype.initAppearances = function(){
 	//this.seaAppearance.setTextureWrap('CLAMP_TO_EDGE', 'CLAMP_TO_EDGE');
 
 
-	this.boia = new CGFappearance(this);
-	this.boia.loadTexture("./scenes/resources/patinhos.jpg");
+	this.buoyAppearance = new CGFappearance(this);
+	this.buoyAppearance.loadTexture("./scenes/resources/patinhos.jpg");
 }
 
 XMLscene.prototype.display = function () {
@@ -145,12 +149,20 @@ XMLscene.prototype.display = function () {
 
 	/**					TESTES!!!!!! 				 */
 
-	//this.sphere.display();
+	
+	this.pushMatrix();
+		this.translate(0.3, 3.5, 0.3);
+		this.sphere.display();
+	this.popMatrix();
 
-
+	this.pushMatrix();
+		this.translate(2, 0.5, 3);
+		this.boat.display();
+	this.popMatrix();
 
 	//left wall - mirror
-	/*this.pushMatrix();
+	this.pushMatrix();
+		this.setDefaultAppearance();
 		this.translate(0, 0, 6);
 		this.rotate(Math.PI/2, 0, 1, 0);
 		this.translate(3, 2, 0);
@@ -178,9 +190,17 @@ XMLscene.prototype.display = function () {
 		this.rotate(3*Math.PI/2, 1, 0, 0);
 		this.translate(3, 3, 0);
 		this.scale(2, 3, 0);
+		//this.seaAppearance.apply();
 		this.quad.display();
 
-	this.popMatrix();*/
+	this.popMatrix();
+
+	this.pushMatrix();
+		this.translate(5, 1.2, 3);
+		this.rotate(Math.PI/2, 1, 0, 0);
+		//this.buoyAppearance.apply();
+		this.torus.display();
+	this.popMatrix();
 
 	/*this.pushMatrix();
 		this.triangle.display();
@@ -193,12 +213,7 @@ XMLscene.prototype.display = function () {
 	this.popMatrix();*/
 
 	
-	this.pushMatrix();
-		this.translate(5, 0, 3);
-		this.rotate(Math.PI/2, 1, 0, 0);
-		this.boia.apply();
-		this.torus.display();
-	this.popMatrix();
+	
 
 };
 

@@ -23,7 +23,9 @@
  		this.base.display();
  	this.scene.popMatrix();
 
+     //topo
  	this.scene.pushMatrix();
+ 		this.scene.rotate(Math.PI, 0, 0, 1);
  		this.scene.rotate(Math.PI, 0, 1, 0);
  		this.top.display();
  	this.scene.popMatrix();

@@ -18,8 +18,8 @@
 
 	this.vertices =[];
 	this.indices = [];
-	//this.normals = [];
-	//this.texCoords = [];
+	this.normals = [];
+	this.texCoords = [];
 
 	
 	var angle = 2 * Math.PI / (this.slices);
@@ -30,12 +30,14 @@
 		x= this.radius*Math.cos(angle*i);
 		y = this.radius*Math.sin(angle*i);
 		this.vertices.push(x, y,0);
-		//this.normals.push(1,0,0);
+		this.normals.push(1,0,0);
 
 		if (i == this.slices)
 			this.indices.push(0, i, 1);
 		else
 			this.indices.push(0, i, i+1);
+
+		this.texCoords.push(0.5 + 0.5 * x, 0.5 - 0.5 * y);
 	}
 
  	this.primitiveType = this.scene.gl.TRIANGLES;

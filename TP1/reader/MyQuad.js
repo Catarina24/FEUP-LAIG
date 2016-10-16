@@ -45,6 +45,13 @@ function MyQuad(scene, x1, x2, y1, y2) {
  	  0, 0, 1
  	];
 
+ 	this.texCoords=[];
+
+	/*for (var i=0; i<=this.x2; i++){
+		for(var j=0; j<=this.y2; j++){
+			this.texCoords.push(i, j);
+		}
+	}*/
     
  	this.texCoords = [
  	this.minS, this.maxT, 
