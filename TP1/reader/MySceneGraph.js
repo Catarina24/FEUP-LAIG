@@ -30,6 +30,8 @@ function MySceneGraph(filename, scene) {
 	//Illumination
 	this.ambient = null;
 	this.background = null;
+	this.doublesidedIllumination = 0;
+	this.local = 0;
 
 	//Lights
 	this.lights =[];
@@ -43,8 +45,16 @@ function MySceneGraph(filename, scene) {
 	//Transformations
 	this.transformations=[];
 
+
+	//Transformations
+	this.transformations = {};
+
+	//Scene Nodes
+	this.nodes = new Map();
+
 	//Primitives
 	this.primitives =[];
+
 
 };
 
@@ -304,6 +314,7 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	var ambient = search[0];
 
 	if (ambient == null)
+	{
 		return this.onXMLError("ambient illumination is missing.");	
 
 	var ambientRGBA = [];
@@ -362,9 +373,22 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 	// Extrapolate omni lights
 	for (var i = 0; i < searchOmni.length; i++)
 	{
+		var light = new MyLight(this.scene);
+
+		light.omni = true;
+
 		var omni = searchOmni[i];
-		var id = this.reader.getString(omni, 'id');
-		var enabled = this.reader.getBoolean(omni, 'enabled');
+
+		light.id = this.reader.getString(omni, 'id');
+
+		//Verify if ID is UNIQUE
+		for(var j = 0; j < this.lights.length; j++)
+		{
+			if(this.lights[j].id == light.id)
+				return this.onXMLError("light in position " + (i+1) + " has a duplicated id");
+		}
+
+		light.enabled = this.reader.getBoolean(omni, 'enabled');
 
 
 		// Light location
@@ -382,13 +406,18 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 			return this.onXMLError("there's a component missing in " + id + " light.")
 		}
 
+		light.location.push(locationX);
+		light.location.push(locationY);
+		light.location.push(locationZ);
+		light.location.push(locationW);
+
 		// Light ambient
 
 		var searchAmbient = omni.getElementsByTagName('ambient');
 		var ambient = searchAmbient[0];
-		var ambientRGBA = this.getRGBAFromDSX(ambient);
+		light.ambientRGBA = this.getRGBAFromDSX(ambient);
 
-		if(ambientRGBA == null)
+		if(light.ambientRGBA == null)
 		{
 			return this.onXMLError("bad RGBA on 'ambient' component of omnilight " + id);
 		}
@@ -397,9 +426,9 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		var searchDiffuse = omni.getElementsByTagName('diffuse');
 		var diffuse = searchAmbient[0];
-		var diffuseRGBA = this.getRGBAFromDSX(diffuse);
+		light.diffuseRGBA = this.getRGBAFromDSX(diffuse);
 
-		if(diffuseRGBA == null)
+		if(light.diffuseRGBA == null)
 		{
 			return this.onXMLError("bad RGBA on 'diffuse' component of omnilight " + id);
 		}
@@ -408,12 +437,17 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		var searchSpecular = omni.getElementsByTagName('specular');
 		var specular = searchSpecular[0];
-		var specularRGBA = this.getRGBAFromDSX(specular);
+		light.specularRGBA = this.getRGBAFromDSX(specular);
 
-		if(specularRGBA == null)
+		if(light.specularRGBA == null)
 		{
 			return this.onXMLError("bad RGBA on 'specular' component of omnilight " + id);
 		}
+
+		this.lights[light.id]= light;
+
+		console.log("lights");
+		console.log(this.lights['o1']);
 
 	}
 
@@ -535,70 +569,25 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 	
 	var search = rootElement.getElementsByTagName('transformations');
 	
-	var transformation = search[0].getElementsByTagName('transformation');
+	var transformations = search[0];
+	
+	var transformation = transformations.getElementsByTagName('transformation');
 	
 	//se "transformations" não tem filhos
 	if (transformation.length == 0)
 		return this.onXMLError("Transformation element is missing");
 	
-	
-	var matrix, translate, scale, aux, id, exists, transf;
-	var rotate = [];
-	
 	for (var i=0; i<transformation.length; i++){
+
+		var matrix;
 		
 		exists=false;
 		
 		search = transformation[i];
 		
-		id = this.reader.getString(search, 'id');
-		
-		for(var j=0; j<this.transformations.length; j++){
-			if (id==this.transformations[j].id){
-				exists=true;
-				break;
-			}
-		}
-		
-		if (!exists){
-			
-			transf = new MyTransformation(this.scene);
-			
-			var list = search.children;
-			
-			//if no transformations are found
-			if (list.length == 0)
-				return this.onXMLError("no transformations can be read");
-			
-			//cria matriz identidade para as transformações
-			matrix = mat4.create();
-					
-			for (var j=list.length-1; j>=0; j--){
-			//for (var j=0; j<list-length; j++){
-				if (list[j].nodeName == 'translate'){
-						translate = this.getCoordFromDSX(list[j]);
-						mat4.translate(matrix, matrix, translate);
-				}
-				
-				else if(list[j].nodeName == 'rotate'){
-					aux = this.getRotateFromDSX(list[j]);
-					rotate.push(aux[0], aux[1], aux[2]);
-					mat4.rotate(matrix, matrix, aux[3],rotate);
-				}
-				
-				else if (list[j].nodeName == 'scale'){
-					scale = this.getCoordFromDSX(list[j]);
-					mat4.scale(matrix, matrix, scale);
-				}
-				else return this.onXMLError("There can only be translate, rotate or scale transformations");
-			}	
-			
-			transf.id=id;
-			transf.matrix = mat4.clone(matrix);
-			
-			this.transformations.push(transf);
-		}		
-		console.log(this.transformations);
+		var id = this.reader.getString(search, 'id');
+
+		matrix = mat4.clone(this.calculateTransformMatrix(search));
 	}
 	
 	
@@ -625,8 +614,18 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 	
 	for (var i = 0; i < primitive.length; i++)
 	{
+		var exists = false;
+
 		var id = this.reader.getString(primitive[i], 'id');
 
+		for (var j=0; j<this.primitives.length; j++){
+			if (id==this.primitives[j].id){
+				exists = true;
+				break;
+			}
+		}
+
+		console.log(exists);
 		console.log(primitive[i]);
 
 		var primitiveShapesList = primitive[i].children;
@@ -634,12 +633,14 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 		if (primitiveShapesList.length > 1)
 			return this.onXMLError("There can only be one primitive.");
 
+
+		if(!exists){
 		/** 
 		 * Rectangles
 		 */
 		if (primitiveShapesList[0].tagName == "rectangle"){
-				
 				var rectangle = this.parseRectangles(primitiveShapesList[0]);
+				rectangle.id = id;
 				this.primitives.push(rectangle);
 		}
 
@@ -649,6 +650,7 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 		if (primitiveShapesList[0].tagName == "triangle"){
 				
 				var triangle = this.parseTriangles(primitiveShapesList[0]);
+				triangle.id = id;
 				this.primitives.push(triangle);
 		}
 
@@ -658,9 +660,22 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 		if (primitiveShapesList[0].tagName == "sphere"){
 				
 				var sphere = this.parseSpheres(primitiveShapesList[0]);
+				sphere.id = id;
 				this.primitives.push(sphere);
 		}
+
+
+		/** 
+		 * Cylinder
+		 */
+		if (primitiveShapesList[0].tagName == "cylinder"){
+				
+				var cylinder = this.parseCylinders(primitiveShapesList[0]);
+				cylinder.id = id;
+				this.primitives.push(cylinder);
+		}
 		console.log(this.primitives);
+		}
 	}
 };
 
@@ -712,6 +727,21 @@ MySceneGraph.prototype.parseSpheres = function (sphereElement){
 	return sphere;
 };
 
+MySceneGraph.prototype.parseCylinders = function (cylinderElement){
+
+	var base = this.reader.getFloat(cylinderElement, 'base');
+	var top = this.reader.getFloat(cylinderElement, 'top');
+	var height = this.reader.getFloat(cylinderElement, 'height');
+	var slices = this.reader.getFloat(cylinderElement, 'slices');
+	var stacks = this.reader.getFloat(cylinderElement, 'stacks');
+
+	var cylinder = new MyCylinder(this.scene, slices, stacks, top, base, height);
+
+	console.log(cylinder);
+
+	return cylinder;
+};
+
 
 /** COMPONENTS PARSER
 * - build the scene graph, transforming each component into a node
@@ -738,9 +768,115 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 
 	for (var i = 0; i < component.length; i++)
 	{
+		var node = new MyNode();
 
+		node.id = this.reader.getString(component[i], 'id');
+
+		// TRANSFORMATIONS
+		var transformation = component[i].getElementsByTagName('transformation');
+
+		if(transformation.length == 0 || transformation.length > 1)
+		{
+			return this.onXMLError("There needs to be one and only one transformation block for each component.")
+		}
+
+		var transformationRef = transformation[0].getElementsByTagName('transformationref');
+
+		if(transformationRef != null && transformationRef.length == 1)
+		{
+			node.transformation = transformationRef[0].id;
+			console.log(node.transformation);
+		}
+		else
+		{
+			node.calculateTransformMatrix(transformation[0]);
+		}
+
+		// MATERIALS
+		var materials = component[i].getElementsByTagName('materials');
+
+		if(materials.length == 0 || materials.length > 1)
+		{
+			return this.onXMLError("There needs to be one and only one materials block for each component.")
+		}
+		
+		if(materials[0].children.length == 0)
+		{
+			return this.onXMLError("At least one material id should be defined for a component.")
+		}
+
+		console.log(this.reader.getString(materials[0].children[0], 'id'));
+		for(var j = 0; j < materials[0].children.length; j++)
+		{
+			var material = materials[0].children[j];
+
+			var materialId = this.reader.getString(material, 'id');
+
+			node.materials.push(materialId);
+		}
+
+		// TEXTURE
+		var texture = component[i].getElementsByTagName('texture');
+
+		if(texture.length == 0 || texture.length > 1)
+		{
+			return this.onXMLError("There can only be one defined texture for a component.")
+		}
+		
+		node.texture = this.reader.getString(texture[0],'id');
+
+		// CHILDREN
+		var children = component[i].getElementsByTagName('children');
+
+		if(children.length == 0 || children.length > 1)
+		{
+			return this.onXMLError("There needs to be one and only one children block for each component.")
+		}
+		
+		if(children[0].children.length == 0)
+		{
+			return this.onXMLError("At least one children id should be defined for a component.")
+		}
+
+		console.log(this.reader.getString(children[0].children[0], 'id'));
+		for(var j = 0; j < children [0].children.length; j++)
+		{
+			var child = children[0].children[j];
+
+			console.log(child.nodeName);
+
+			if(child.nodeName == 'componentref')
+			{
+				node.children.push(this.reader.getString(child, 'id'));
+			}
+			else if(child.nodeName == 'primitiveref')
+			{
+				node.children.push(this.reader.getString(child, 'id'));
+			}
+			else
+			{
+				return this.onXMLError('Invalid child at ' + i + ' component.');
+			}
+
+			node.materials.push(materialId);
+		}
+
+
+		/*
+			Adicionar informação a cada node.
+			Adicionar node a this.nodes com [id (key), node(value)].
+
+			Depois de adicionar os componentes e as primitivas, ver componentrefs,
+			que determinam os filhos de cada nó e depois implementar DFS ao grafo.
+		*/
+
+		// Add node to scene graph
+		this.nodes.set(node.id, node);
 	}
 
+	console.log(this.nodes);
+	
+	this.searchAllNodes();
 }
 
 /**********************
@@ -753,12 +889,14 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 	
 	this.parseDSXScene(rootElement);
 	this.parseDSXIllumination(rootElement);
-	//this.parseDSXViews(rootElement);
-	//this.parseDSXTextures(rootElement);
-	//this.parseDSXMaterials(rootElement);
-	//this.parseDSXTransformations(rootElement);
+	this.parseDSXLights(rootElement);
+	this.parseDSXViews(rootElement);
+	this.parseDSXTextures(rootElement);
+	this.parseDSXMaterials(rootElement);
+	this.parseDSXTransformations(rootElement);
 	this.parseDSXPrimitives(rootElement);
 	//this.parseDSXComponents(rootElement);
+
 
 };
 
@@ -819,3 +957,61 @@ MySceneGraph.prototype.getCoordFromDSX = function (attributeName){
 	
 	return coord;
 };
+
+/*
+* 	Receives a transformation element and returns a single mat4 representing it
+*/
+MySceneGraph.prototype.calculateTransformMatrix = function (transformElement)
+{
+	var matrix, translate, scale, aux;
+	var rotate = [];
+
+	var list = transformElement.children;
+		
+	//if no transformations are found
+	if (list.length == 0)
+		return this.onXMLError("no transformations can be read");
+		
+	//cria matriz identidade para as transformações
+	matrix = mat4.create();
+				
+	for (var j=list.length-1; j>=0; j--){
+	//for (var j=0; j<list-length; j++){
+		if (list[j].nodeName == 'translate'){
+				translate = this.getCoordFromDSX(list[j]);
+				mat4.translate(matrix, matrix, translate);
+		}
+			
+		else if(list[j].nodeName == 'rotate'){
+			aux = this.getRotateFromDSX(list[j]);
+			rotate.push(aux[0], aux[1], aux[2]);
+			mat4.rotate(matrix, matrix, aux[3],rotate);
+		}
+			
+		else if (list[j].nodeName == 'scale'){
+			scale = this.getCoordFromDSX(list[j]);
+			mat4.scale(matrix, matrix, scale);
+		}
+		else return this.onXMLError("There can only be translate, rotate or scale transformations");
+	}
+
+	return matrix;		
+}
+
+/* DFS Graph Search*/
+
+MySceneGraph.prototype.searchAllNodes = function(){
+
+	console.log(this.nodes.size);
+	
+	// Iterates for component nodes
+	for(var key of this.nodes.keys())
+	{
+		console.log(this.nodes.get(key));
+
+		for(var j = 0; j < this.nodes.get(key).children.length; j++)
+		{
+			console.log(this.nodes.children);
+		}
+	}
+}

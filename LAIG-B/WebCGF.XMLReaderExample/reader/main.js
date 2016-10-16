@@ -4,21 +4,22 @@ serialInclude=function(a){var b=console,c=serialInclude.l;if(a.length>0)c.splice
 
 function getUrlVars() {
     var vars = {};
-    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,    
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
     function(m,key,value) {
       vars[decodeURIComponent(key)] = decodeURIComponent(value);
     });
     return vars;
-}	 
+}
 
-serialInclude(['../lib/CGF.js', 'XMLscene.js', 'MySceneGraph.js', 'MyNode.js', 'MyQuad.js','MyShape.js', 'MyView.js', 'MyTexture.js', 'MyMaterial.js', 'MyTransformation.js', 'MyTriangle.js', 'MySphere.js', 'MyCylinder.js', 'MyCylinderBase.js','MyBoat.js', 'MyCylinderSurface.js', 'MyTorus.js',
+serialInclude(['../lib/CGF.js', 'XMLscene.js', 'MySceneGraph.js','utils.js', 'Sphere.js', 'Rectangle.js', 'Triangle.js',
+    'Cylinder.js', 'CylinderSurface.js', 'CylinderBase.js', 'Torus.js', 'DataStructures.js','MyInterface.js',
 
 main=function()
 {
 	// Standard application, scene and interface setup
     var app = new CGFapplication(document.body);
-    var myScene = new XMLscene();
-    var myInterface = new CGFinterface();
+    var myInterface = new MyInterface();
+    var myScene = new XMLscene(myInterface);
 
     app.init();
 
@@ -27,17 +28,15 @@ main=function()
 
     myInterface.setActiveCamera(myScene.camera);
 
-	// get file name provided in URL, e.g. http://localhost/myproj/?file=myfile.xml 
-	// or use "demo.xml" as default (assumes files in subfolder "scenes", check MySceneGraph constructor) 
-	
-	
-	//open dsx file (dsxFile)
+	// get file name provided in URL, e.g. http://localhost/myproj/?file=myfile.xml
+	// or use "demo.xml" as default (assumes files in subfolder "scenes", check MySceneGraph constructor)
+
 	var filename=getUrlVars()['file'] || "dsxFile.xml";
 
-	// create and load graph, and associate it to scene. 
+	// create and load graph, and associate it to scene.
 	// Check console for loading errors
 	var myGraph = new MySceneGraph(filename, myScene);
-	
+
 	// start
     app.run();
 }

@@ -20,10 +20,15 @@ function MyNode(){
     
     this.id = null;
     this.children = [];
-    this.material = null;
+    this.materials = [];
     this.texture = null;
+    
     this.mat = null;
     this.transformations = [];
+
+    this.localMatrix = mat4.create();
+    this.worldMatrix = mat4.create();
+
     this.isPrimitive = false;
 };
 
@@ -47,6 +52,24 @@ MyNode.prototype.push = function (childNode){
 
 MyNode.prototype.numOfChildren = function(){
     return this.children.length;
+}
+
+MyNode.prototype.updateWorldMatrix = function (parentWorldMatrix){
+    if(parentWorldMatrix)   // if there is a matrix to be applied
+    {
+        mat4.multiply(this.worldMatrix, this.localMatrix, parentWorldMatrix);
+    }
+    else    // apply node matrix
+    {
+        this.worldMatrix = mat4.clone(this.localMatrix);
+    }
+
+    // process childrens matrix
+    var worldMatrix = this.worldMatrix;
+    this.children.forEach(function(child){
+        child.updateWorldMatrix(worldMatrix);
+    });
+
 }
 
 MyNode.prototype.isPrimitive = function(){
