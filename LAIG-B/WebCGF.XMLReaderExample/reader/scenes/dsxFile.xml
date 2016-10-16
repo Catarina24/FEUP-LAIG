@@ -113,6 +113,9 @@
 
         <texture id="chimney_fireplace" file="./scenes/resources/chimney_fireplace.jpg" length_s="0.1" length_t="0.1"/>
 
+        <texture id="chimney_fireplace" file="./scenes/resources/chimney_fireplace.jpg" length_s="1.0" length_t="1.0"/>
+
+        <texture id="beige_wall" file="./scenes/resources/beige_wall.jpg" length_s="0.1" length_t="0.1"/>
         
     </textures>
 
@@ -212,19 +215,15 @@
         </primitive>
 
 		<primitive id="cylinder">
-            <cylinder base="0.5" top="0.5" height="1" slices="50" stacks="20" />
-        </primitive>
-
-        <primitive id="cone">
-            <cylinder base="0" top="0.5" height="1" slices="50" stacks="20" />
+            <cylinder base="0.5" top="0.5" height="1" slices="30" stacks="20" />
         </primitive>
 
 		<primitive id="sphere">
-            <sphere radius="0.5" slices="40" stacks="40" />
+            <sphere radius="0.5" slices="20" stacks="20" />
         </primitive>
 
 		<primitive id="torus">
-            <torus inner="0.5" outer="1" slices="40" loops="40" />
+            <torus inner="0.5" outer="1" slices="20" loops="20" />
         </primitive>
         
     </primitives>
@@ -512,6 +511,7 @@
          <component id="table">
         
             <transformation>
+                <translate x="3" y="0" z="3"/>
                 <rotate axis="x" angle="-90"/>
             </transformation>
 
@@ -986,10 +986,10 @@
             </transformation>
 
             <materials>
-                <material id="m1"/>
+                <material id="normal"/>
             </materials>
 
-            <texture id="none"/>
+            <texture id="beige_wall"/>
 
             <children>
                 <primitiveref id="rectangle"/>
@@ -1005,10 +1005,10 @@
             </transformation>
 
             <materials>
-                <material id="m1"/>
+                <material id="normal"/>
             </materials>
 
-            <texture id="none"/>
+            <texture id="beige_wall"/>
 
             <children>
                 <primitiveref id="rectangle"/>
@@ -1025,10 +1025,10 @@
             </transformation>
 
             <materials>
-                <material id="m1"/>
+                <material id="normal"/>
             </materials>
 
-            <texture id="none"/>
+            <texture id="beige_wall"/>
 
             <children>
                 <primitiveref id="rectangle"/>
@@ -1042,10 +1042,10 @@
             </transformation>
 
             <materials>
-                <material id="m1"/>
+                <material id="normal"/>
             </materials>
 
-            <texture id="none"/>
+            <texture id="beige_wall"/>
 
             <children>
                 <primitiveref id="rectangle"/>
