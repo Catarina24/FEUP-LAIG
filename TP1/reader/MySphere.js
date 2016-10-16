@@ -22,7 +22,7 @@ MySphere.prototype.constructor = MySphere;
 	this.vertices = [];
 	this.normals = [];
 	this.indices = [];
-	//this.texCoords = [];
+	this.texCoords = [];
 
 	var u = Math.PI/this.stacks;
  	var v = Math.PI*2/this.slices;
@@ -38,7 +38,8 @@ MySphere.prototype.constructor = MySphere;
 			z = this.radius * Math.sin(j*v) * Math.sin(i*u);
 			this.vertices.push(x, y, z);
 			this.normals.push(x, y, z);
-			//this.texCoords.push(1 - i / this.slices, 1 - j / this.stacks);
+
+			this.texCoords.push(1 - i / this.slices, 1 - j / this.stacks);
 			counter++;
  		}
 	}
@@ -54,7 +55,6 @@ MySphere.prototype.constructor = MySphere;
  		} 
 	}
 
-	//this.texCoords.push(0.5, 0.5);
 
  	this.primitiveType = this.scene.gl.TRIANGLES;
  	this.initGLBuffers();

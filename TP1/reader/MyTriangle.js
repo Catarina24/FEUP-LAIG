@@ -45,15 +45,12 @@
  	  0, 0, 1
  	];
 
-    /*
+    
  	this.texCoords = [
- 	this.minS, this.minT, 
- 	this.maxS, this.minT, 
-    this.minS, this.maxT, 
- 	this.maxS, this.maxT
- 	];*/
-
-
+ 	0, 0, 
+ 	1, 0, 
+    0, 1
+ 	];
  	
  	this.initGLBuffers();
  };

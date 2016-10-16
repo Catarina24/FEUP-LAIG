@@ -115,6 +115,10 @@ XMLscene.prototype.initAppearances = function(){
 
 	this.buoyAppearance = new CGFappearance(this);
 	this.buoyAppearance.loadTexture("./scenes/resources/patinhos.jpg");
+
+
+	this.woodAppearance = new CGFappearance(this);
+	this.woodAppearance.loadTexture("./scenes/resources/wood.jpg");
 }
 
 XMLscene.prototype.display = function () {
@@ -152,11 +156,16 @@ XMLscene.prototype.display = function () {
 	
 	this.pushMatrix();
 		this.translate(0.3, 3.5, 0.3);
+		this.enableTextures(false);
 		this.sphere.display();
 	this.popMatrix();
 
 	this.pushMatrix();
 		this.translate(2, 0.5, 3);
+		this.enableTextures(false);
+		this.setDiffuse(0.21, 0.16, 0.10, 1.0);
+		this.setSpecular(0.21, 0.16, 0.10, 1.0);
+		this.setAmbient(0.21, 0.16, 0.10, 1.0);
 		this.boat.display();
 	this.popMatrix();
 
@@ -167,11 +176,8 @@ XMLscene.prototype.display = function () {
 		this.rotate(Math.PI/2, 0, 1, 0);
 		this.translate(3, 2, 0);
 		this.scale(2, 2, 0);
-
-
-		//this.setDiffuse(0.2, 0.5, 0.1, 1.0);
-		//this.setSpecular(1, 1, 1, 1);
-		this.setAmbient(1, 1, 1, 1);
+		
+		this.enableTextures(false);
 		this.quad.display();
 
 	this.popMatrix();
@@ -180,6 +186,11 @@ XMLscene.prototype.display = function () {
 	this.pushMatrix();
 		this.translate(3, 2, 0);
 		this.scale(2, 2, 0);
+
+		this.setDiffuse(0.21, 0.47, 0.86, 1.0);
+		this.setSpecular(0.21, 0.47, 0.86, 1.0);
+		this.setAmbient(0.21, 0.47, 0.86, 1);
+
 		this.quad.display();
 
 	this.popMatrix();
@@ -198,7 +209,8 @@ XMLscene.prototype.display = function () {
 	this.pushMatrix();
 		this.translate(5, 1.2, 3);
 		this.rotate(Math.PI/2, 1, 0, 0);
-		//this.buoyAppearance.apply();
+		this.enableTextures(true);
+		this.buoyAppearance.apply();
 		this.torus.display();
 	this.popMatrix();
 

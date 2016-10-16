@@ -52,6 +52,11 @@
  		this.scene.translate(this.width/3, 10*this.width/11, 0);
  		this.scene.rotate(3*Math.PI/2, 0, 1, 0);
  		this.scene.rotate(Math.PI, 1, 0, 0);
+
+ 		this.scene.setDiffuse(0.4, 0.8, 0, 1.0);
+		this.scene.setSpecular(0.4, 0.8, 0, 1.0);
+		this.scene.setAmbient(0.4, 0.8, 0, 1.0);
+
 		this.triangle.display(); 
  	this.scene.popMatrix();
 
@@ -65,12 +70,17 @@
  	this.scene.pushMatrix();
  		this.scene.translate(this.width/3, this.height/2, 0);
  		this.scene.rotate(3*Math.PI/2, 1, 0, 0);
+ 		this.scene.setDiffuse(0.21, 0.16, 0.10, 1.0);
+		this.scene.setSpecular(0.21, 0.16, 0.10, 1.0);
+		this.scene.setAmbient(0.21, 0.16, 0.10, 1.0);
 		this.cylinder2.display();
  	this.scene.popMatrix();
 
 	this.scene.pushMatrix();
 		this.scene.rotate(3*Math.PI/2, 1, 0, 0);
 		this.scene.rotate(Math.PI/2, 0, 1, 0);
+
+        this.scene.woodAppearance.apply();
  		this.cylinder.display();
  	this.scene.popMatrix();
 	
