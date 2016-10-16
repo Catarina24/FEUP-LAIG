@@ -101,7 +101,6 @@
         <texture id="floor" file="./scenes/resources/wood.jpg" length_s="1.0" length_t="1.0" /> 
         <texture id="ducks" file="./scenes/resources/patinhos.jpg" length_s="1.0" length_t="1.0" /> 
         <texture id="dark_wood" file="./scenes/resources/dark_wood.jpg" length_s="1.0" length_t="1.0" />
-        <texture id="seamless_wood" file="./scenes/resources/seamless_wood.jpg" length_s="1.0" length_t="1.0" /> 
         <texture id="cherry_wood" file="./scenes/resources/cherry.jpg" length_s="1.0" length_t="1.0" /> 
         <texture id="cherry_wood2" file="./scenes/resources/cherry2.jpg" length_s="1.0" length_t="1.0" /> 
         <texture id="earth" file="./scenes/resources/earth.jpg" length_s="1.0" length_t="1.0" />  
@@ -117,6 +116,8 @@
         <texture id="beige_wall" file="./scenes/resources/beige_wall.jpg" length_s="0.1" length_t="0.1"/>
         <texture id="screen" file="./scenes/resources/series.jpg" length_s="0.1" length_t="0.1"/>
         <texture id="sofa" file="./scenes/resources/sofa.jpg" length_s="0.1" length_t="0.1"/>
+        <texture id="sofa_blue" file="./scenes/resources/sofa_green.jpg" length_s="0.1" length_t="0.1"/>
+        <texture id="sofa_red" file="./scenes/resources/sofa_red.jpg" length_s="0.1" length_t="0.1"/>
         
     </textures>
 
@@ -125,37 +126,6 @@
 
         <!-- Deve existir um ou mais blocos "material" -->
         <!-- Os identificadores "id" nao podem ser repetidos -->
-        <material id="m1" >
-            <emission r="0.2" g="0.2" b="0.2" a="0.2" />
-            <ambient r="0.3" g="0.3" b="0.3" a="0.3" />
-            <diffuse r="0" g="0" b="0" a="0" />
-            <specular r="1.0" g="1.0" b="1.0" a="1" />
-            <shininess value="0.8" />
-        </material>
-
-        <material id="m2" >
-          <emission r="0.2" g="0.2" b="0.2" a="0.2" />
-          <ambient r="0.3" g="0.3" b="0.3" a="0.3" />
-          <diffuse r="0" g="0" b="0" a="0" />
-          <specular r="0" g="1.0" b="0" a="0" />
-          <shininess value="0.8" />
-        </material>
-
-        <material id="m3" >
-          <emission r="0.2" g="0.2" b="0.2" a="0.2" />
-          <ambient r="0.3" g="0.3" b="0.3" a="0.3" />
-          <diffuse r="0" g="0" b="0" a="0" />
-            <specular r="1.0" g="0" b="0" a="0" />
-            <shininess value="0.8" />
-        </material>
-
-        <material id="m4" >
-            <emission r="0.2" g="0.2" b="0.2" a="0.2" />
-            <ambient r="0.3" g="0.3" b="0.3" a="0.3" />
-             <diffuse r="0" g="0" b="0" a="0" />
-            <specular r="1.0" g="1.0" b="0" a="0" />
-            <shininess value="0.8" />
-        </material>
 
         <material id="fire" >
             <emission r="0.8" g="0.2" b="0.2" a="0.2" />
@@ -273,7 +243,7 @@
             <!-- o material muda para o proximo material da lista; do --> 
             <!-- ultimo material da lista volta ao primeiro -->
             <materials>
-                <material id="m4" />
+                <material id="normal" />
             </materials>
                          
             <!-- declaracao obrigatoria de texture -->
@@ -486,7 +456,7 @@
             </transformation>
 
             <materials>
-                <material id="m1"/>
+                <material id="normal"/>
             </materials>
 
             <texture id="inherit"/>
@@ -503,7 +473,7 @@
             </transformation>
 
             <materials>
-                <material id="m1"/>
+                <material id="normal"/>
             </materials>
 
             <texture id="black_fireplace"/>
@@ -563,7 +533,7 @@
                 <material id="normal"/>
             </materials>
 
-            <texture id="sofa"/>
+            <texture id="sofa_red"/>
 
             <children>
                 <componentref id="float"/>
@@ -582,7 +552,7 @@
                 <material id="normal"/>
             </materials>
 
-            <texture id="sofa"/>
+            <texture id="sofa_green"/>
 
             <children>
                 <componentref id="float"/>
@@ -738,7 +708,7 @@
             </transformation>
 
             <materials>
-                <material id="m1"/>
+                <material id="normal"/>
             </materials>
 
             <texture id="cherry_wood2"/>
@@ -1016,7 +986,7 @@
             </transformation>
 
             <materials>
-                <material id="m1"/>
+                <material id="normal"/>
             </materials>
 
             <texture id="inherit"/>
@@ -1034,7 +1004,7 @@
             </transformation>
 
             <materials>
-                <material id="m1"/>
+                <material id="normal"/>
             </materials>
 
             <texture id="inherit"/>
@@ -1075,7 +1045,7 @@
             </transformation>
 
             <materials>
-                <material id="m1"/>
+                <material id="normal"/>
             </materials>
 
             <texture id="floor"/>
@@ -1094,7 +1064,7 @@
             </transformation>
 
             <materials>
-                <material id="m1"/>
+                <material id="normal"/>
             </materials>
 
             <texture id="none"/>
