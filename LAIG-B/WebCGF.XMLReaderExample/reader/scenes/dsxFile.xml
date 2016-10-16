@@ -98,8 +98,7 @@
         <!-- objetos respetivos podem a violar esta regra.         -->
         <!-- Nao necessario aplicar fatores de escala em  -->
         <!-- quadricas (esfera, ciclindro...) -->
-        <texture id="wood" file="./scenes/resources/wood.jpg" length_s="1.0" length_t="1.0" />  
-        <texture id="floor" file="./scenes/resources/floor.jpg" length_s="1.0" length_t="1.0" /> 
+        <texture id="floor" file="./scenes/resources/wood.jpg" length_s="1.0" length_t="1.0" /> 
         <texture id="ducks" file="./scenes/resources/patinhos.jpg" length_s="1.0" length_t="1.0" /> 
         <texture id="dark_wood" file="./scenes/resources/dark_wood.jpg" length_s="1.0" length_t="1.0" />
         <texture id="seamless_wood" file="./scenes/resources/seamless_wood.jpg" length_s="1.0" length_t="1.0" /> 
@@ -116,6 +115,8 @@
         <texture id="chimney_fireplace" file="./scenes/resources/chimney_fireplace.jpg" length_s="1.0" length_t="1.0"/>
 
         <texture id="beige_wall" file="./scenes/resources/beige_wall.jpg" length_s="0.1" length_t="0.1"/>
+        <texture id="screen" file="./scenes/resources/series.jpg" length_s="0.1" length_t="0.1"/>
+        <texture id="sofa" file="./scenes/resources/sofa.jpg" length_s="0.1" length_t="0.1"/>
         
     </textures>
 
@@ -178,6 +179,22 @@
             <diffuse r="0.3" g="0.3" b="0.3" a="0.3" />
             <specular r="0.6" g="0.6" b="0.6" a="0.6" />
             <shininess value="100" />
+        </material>
+
+         <material id="globe" >
+            <emission r="0.8" g="0.8" b="0.2" a="0.2" />
+            <ambient r="0.6" g="0.6" b="0.6" a="0.3" />
+            <diffuse r="0" g="0" b="0" a="0" />
+            <specular r="0" g="0" b="0" a="0" />
+            <shininess value="0.1" />
+        </material>
+
+         <material id="black" >
+            <emission r="0" g="0" b="0" a="0" />
+            <ambient r="0" g="0" b="0" a="0" />
+            <diffuse r="0" g="0" b="0" a="0" />
+            <specular r="0" g="0" b="0" a="0" />
+            <shininess value="0.8" />
         </material>
 
     </materials>
@@ -275,17 +292,68 @@
                 <!-- <componentref id="ss" /> -->
                 <componentref id="stairs" />
                 <componentref id="fireplace"/>
-                <componentref id="float"/>
                 <componentref id="table"/>
 
                 <componentref id="walls" />
                 <componentref id="globe" />
+                <componentref id="tv" />
+                <componentref id="sofa" />
+                <componentref id="sofa2" />
                 
             </children>
             
         </component>
 
+        <!-- *** BEGIN OF TV *** -->
+
+         <component id="tv">
+        
+            <transformation>
+                <translate x="0" y="2" z="5"/>
+                <rotate axis="y" angle="90"/>
+                <scale x="3" y="2" z="0.1"/>
+            </transformation>
+
+            <materials>
+                <material id="black"/>
+            </materials>
+
+            <texture id="none"/>
+
+            <children>
+                <componentref id="cube"/>
+                <componentref id="screen"/>
+            </children>
+
+        </component>
+
+         <!-- *** END OF TV *** -->
+
+            <!-- *** BEGIN OF TV *** -->
+
+         <component id="screen">
+        
+            <transformation>
+                <translate x="0.05" y="0.05" z="1.1"/>
+                <scale x="0.9" y="0.9" z="1"/>
+            </transformation>
+
+            <materials>
+                <material id="globe"/>
+            </materials>
+
+            <texture id="screen"/>
+
+            <children>
+                <componentref id="rectangle"/>
+            </children>
+
+        </component>
+
+         <!-- *** END OF TV *** -->
+
         <!-- *** BEGIN OF BASIC SOLIDS*** -->
+
 
         <component id="cubeTop">
             <transformation>
@@ -413,7 +481,8 @@
         <!-- *** BEGIN OF FIREPLACE*** -->
         <component id="fireplace">
             <transformation>
-                <translate x="7" y="0" z="0" />
+                --<translate x="3.5" y="0" z="10" />
+                <rotate axis="y" angle="180"/>
             </transformation>
 
             <materials>
@@ -424,14 +493,13 @@
 
             <children>
                 <componentref id="fireplaceCube"/>
-                <componentref id="fireplaceDoor"/>
                 <componentref id="fireplaceChimney"/>
             </children>
         </component>
 
         <component id="fireplaceCube">
             <transformation>
-                
+                <scale x="2" y="2" z="2"/>
             </transformation>
 
             <materials>
@@ -442,6 +510,7 @@
 
             <children>
                 <componentref id="cube"/>
+                <componentref id="fireplaceDoor"/>
             </children>
         </component>
 
@@ -463,8 +532,8 @@
 
         <component id="fireplaceChimney">
             <transformation> 
-                <translate x="0.25" y="0" z="0"/> 
-                <scale x="0.5" y="5" z="0.5"/>
+                <translate x="0" y="0" z="0"/> 
+                <scale x="2" y="7" z="0.5"/>
                 
             </transformation>
 
@@ -482,21 +551,58 @@
         <!-- *** END OF FIREPLACE*** -->
 
 
-         <!-- *** BEGIN OF FLOAT *** -->
+          <!-- *** BEGIN OF SOFA *** -->
 
-         <component id="float">
+           <component id="sofa2">
         
             <transformation>
-                <translate x="0" y="4" z="4"/>
-                <rotate axis="y" angle="90"/>
-                <scale x="0.5" y="0.5" z="0.5"/>
+                <translate x="4.5" y="0.35" z="3.2"/>
             </transformation>
 
             <materials>
                 <material id="normal"/>
             </materials>
 
-            <texture id="ducks"/>
+            <texture id="sofa"/>
+
+            <children>
+                <componentref id="float"/>
+                <componentref id="float2"/>
+            </children>
+
+        </component>
+
+         <component id="sofa">
+        
+            <transformation>
+                <translate x="3.5" y="0.35" z="5.5"/>
+            </transformation>
+
+            <materials>
+                <material id="normal"/>
+            </materials>
+
+            <texture id="sofa"/>
+
+            <children>
+                <componentref id="float"/>
+                <componentref id="float2"/>
+            </children>
+
+        </component>
+
+         <component id="float">
+        
+            <transformation>
+                <rotate axis="x" angle="90"/>
+                <scale x="0.75" y="0.75" z="0.75"/>
+            </transformation>
+
+            <materials>
+                <material id="inherit"/>
+            </materials>
+
+            <texture id="inherit"/>
 
             <children>
                 <primitiveref id="torus"/>
@@ -504,14 +610,35 @@
 
         </component>
 
-         <!-- *** END OF FLOAT *** -->
+        <component id="float2">
+        
+            <transformation>
+                <translate x="0" y="0.75" z="0"/>
+                <rotate axis="x" angle="90"/>
+                <scale x="0.75" y="0.75" z="0.75"/>
+            </transformation>
+
+            <materials>
+                <material id="inherit"/>
+            </materials>
+
+            <texture id="inherit"/>
+
+            <children>
+                <primitiveref id="torus"/>
+            </children>
+
+        </component>
+
+         <!-- *** END OF SOFA *** -->
 
          <!-- *** BEGIN OF TABLE *** -->
 
          <component id="table">
         
             <transformation>
-                <translate x="3" y="0" z="3"/>
+                <translate x="2" y="0" z="3.5"/>
+                <rotate axis="y" angle="-90"/>
                 <rotate axis="x" angle="-90"/>
             </transformation>
 
@@ -519,7 +646,7 @@
                 <material id="normal"/>
             </materials>
 
-            <texture id="wood"/>
+            <texture id="cherry_wood"/>
 
             <children>
                 <componentref id="tableLeg"/>
@@ -588,11 +715,11 @@
          <component id="globe">
         
             <transformation>
-                 <translate x="3" y="1" z="3" />
+                 <translate x="2.55" y="2.5" z="8.7" />
             </transformation>
 
             <materials>
-                <material id="m2"/>
+                <material id="globe"/>
             </materials>
 
             <texture id="earth"/>
@@ -607,7 +734,7 @@
           <component id="stairs">
         
             <transformation> 
-                <translate x="7.5" y="0" z="2.5" />
+                <translate x="7.5" y="0" z="7.5" />
             </transformation>
 
             <materials>
@@ -951,7 +1078,7 @@
                 <material id="m1"/>
             </materials>
 
-            <texture id="cherry_wood"/>
+            <texture id="floor"/>
 
             <children>
                 <primitiveref id="rectangle"/>
