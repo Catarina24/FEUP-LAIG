@@ -24,7 +24,8 @@ function MySceneGraph(filename, scene) {
 	this.axis_length = 10; 
 	
 	//Cameras
-	this.cameras = {};
+	this.default_view=null;
+	this.cameras = [];
 
 	//Illumination
 	this.ambient = null;
@@ -34,12 +35,26 @@ function MySceneGraph(filename, scene) {
 
 	//Lights
 	this.lights =[];
+	
+	//Textures
+	this.textures = [];
+	
+	//Materials
+	this.materials=[];
+	
+	//Transformations
+	this.transformations=[];
+
 
 	//Transformations
 	this.transformations = {};
 
 	//Scene Nodes
 	this.nodes = new Map();
+
+	//Primitives
+	this.primitives =[];
+
 
 };
 
@@ -194,6 +209,9 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 
 	var root = this.reader.getString(scene, 'root');
 	var axis_length = this.reader.getString(scene, 'axis_length');
+	
+	this.sceneRoot = root;
+	this.axis_length = axis_length;
 
 };
 
@@ -217,6 +235,8 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 
 	if (perspectives.length == 0)
 		return this.onXMLError("perspective element is missing");
+	
+	var exists;
 		
 	for (var i=0; i< perspectives.length; i++){
 		
@@ -224,33 +244,54 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 		//var default_view = search[0];
 		
 		var perspective = perspectives[i];
+		
+		//verifies if the id already exists
+		exists = false;
+		
 		var id = this.reader.getString(perspective, 'id');
-		var near = this.reader.getFloat(perspective, 'near');
-		var far = this.reader.getFloat(perspective, 'far');
-		var angle = this.reader.getFloat(perspective, 'angle');
-
-		//get from - x y z
-		search = perspective.getElementsByTagName('from');
 		
-		var fromp = search[0];
-		if (fromp == null)
-			return "no perspective (from failed)";
-
+		for (var j=0; j<this.cameras.length; j++){
+			if (id==this.cameras[j].id){
+				exists = true;
+				break;
+			}
+		}
+		
+		if (!exists){
+			var view = new MyView(this.scene);
 			
-		var coordf = this.getCoordFromDSX(fromp);
+			view.id = id;
+			view.near = this.reader.getFloat(perspective, 'near');
+			view.far = this.reader.getFloat(perspective, 'far');
+			var angle = this.reader.getFloat(perspective, 'angle');
 
-		//get to - x y z
-		search = perspective.getElementsByTagName('to');
+			view.angle = this.convertDegreesToRadians(angle);
 
-		var to = search[0];
+			//get from - x y z
+			search = perspective.getElementsByTagName('from');
+			
+			var fromp = search[0];
+			if (fromp == null)
+				return "no perspective (from failed)";
 
-		if (to == null)
-			return "no perspective (to failed)";
+				
+			var pos = this.getCoordFromDSX(fromp);
+			view.position = vec3.fromValues(pos[0], pos[1], pos[2]);
 
-		var coordt = this.getCoordFromDSX(to);
-		
-		console.log("coordenadas:" ,coordt);
+			//get to - x y z
+			search = perspective.getElementsByTagName('to');
 
+			var to = search[0];
+
+			if (to == null)
+				return "no perspective (to failed)";
+
+			var targ = this.getCoordFromDSX(to);
+			view.target = vec3.fromValues(targ[0], targ[1], targ[2]);
+			
+			this.cameras.push(view);
+		}
+		this.default_view = this.cameras[0];
 		
 	}
 
@@ -275,7 +316,6 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	if (ambient == null)
 	{
 		return this.onXMLError("ambient illumination is missing.");	
-	};
 
 	var ambientRGBA = [];
 
@@ -307,7 +347,7 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	bgRGBA.push(this.reader.getFloat(background, 'a'));
 
 	this.background = bgRGBA;
-
+	
 };
 
 /* LIGHTS PARSER
@@ -430,14 +470,34 @@ MySceneGraph.prototype.parseDSXTextures = function (rootElement){
 	if (texture.length == 0)
 		return this.onXMLError("Texture element is missing");
 	
+	var exists;
+	var tex;
+	var id;
+	
 	for (var i=0; i<texture.length; i++){
+		
+		exists=false;
 		
 		search = texture[i];
 		
-		var id = this.reader.getString(search, 'id');
-		var file = this.reader.getString(search, 'file');
-		var length_s = this.reader.getFloat(search, 'length_s');
-		var length_t = this.reader.getFloat(search, 'length_t');
+		id = this.reader.getString(search, 'id');
+		
+		for (var j=0; j<this.textures.length; j++){
+			if (id==this.textures[j].id){
+				exists=true;
+				break;
+			}
+		}
+		
+		if (!exists){
+			tex = new MyTexture(this.scene);
+			tex.id=id;
+			tex.file = this.reader.getString(search, 'file');
+			tex.length_s = this.reader.getFloat(search, 'length_s');
+			tex.length_t = this.reader.getFloat(search, 'length_t');
+			this.textures.push(tex);
+		}
+		console.log(this.textures);
 		
 	}
 };
@@ -449,38 +509,55 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 	
 	var search = rootElement.getElementsByTagName('materials');
 	
-	var materials = search[0];
-	
-	var material = materials.getElementsByTagName('material');
+	var material = search[0].getElementsByTagName('material');
 	
 	//se "materials" não tem filhos
 	if (material.length == 0)
 		return this.onXMLError("Material element is missing");
 	
+	var exists, mat, id;
+	
 	for (var i=0; i<material.length; i++){
+		
+		exists = false;
 		
 		search = material[i];
 		
-		var emission = search.getElementsByTagName('emission');
-		var ergb = this.getRGBAFromDSX(emission[0]);
-		console.log("emission" + ergb);
+		id=this.reader.getString(search, 'id');
 		
-		var ambient = search.getElementsByTagName('ambient');
-		var argb = this.getRGBAFromDSX(ambient[0]);
-		console.log(argb);
+		for (var j=0; j<this.materials.length; j++){
+			if (id==this.materials[j].id){
+				exists=true;
+				break;
+			}
+		}
 		
-		var diffuse = search.getElementsByTagName('diffuse');
-		var drgb = this.getRGBAFromDSX(diffuse[0]);
-		console.log(drgb);
-		
-		var specular = search.getElementsByTagName('specular');
-		var srgb = this.getRGBAFromDSX(specular[0]);
-		console.log(srgb);
-		
-		var shininess = search.getElementsByTagName('shininess');
-		var value = this.reader.getFloat(shininess[0], 'value');
-		console.log(value);
+		if (!exists){
 			
+			mat = new MyMaterial(this.scene);
+			
+			mat.id=id;
+			
+			var emission = search.getElementsByTagName('emission');
+			mat.emission = this.getRGBAFromDSX(emission[0]);
+			
+			var ambient = search.getElementsByTagName('ambient');
+			mat.ambient = this.getRGBAFromDSX(ambient[0]);
+			
+			var diffuse = search.getElementsByTagName('diffuse');
+			mat.diffuse = this.getRGBAFromDSX(diffuse[0]);
+			
+			var specular = search.getElementsByTagName('specular');
+			mat.specular= this.getRGBAFromDSX(specular[0]);
+			
+			var shininess = search.getElementsByTagName('shininess');
+			mat.shininess= this.reader.getFloat(shininess[0], 'value');
+			
+			this.materials.push(mat);
+			
+		}
+		
+		console.log(this.materials);
 	}
 };
 
@@ -504,12 +581,16 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 
 		var matrix;
 		
+		exists=false;
+		
 		search = transformation[i];
 		
 		var id = this.reader.getString(search, 'id');
 
 		matrix = mat4.clone(this.calculateTransformMatrix(search));
 	}
+	
+	
 };
 
 /*
@@ -533,15 +614,68 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 	
 	for (var i = 0; i < primitive.length; i++)
 	{
+		var exists = false;
+
 		var id = this.reader.getString(primitive[i], 'id');
 
+		for (var j=0; j<this.primitives.length; j++){
+			if (id==this.primitives[j].id){
+				exists = true;
+				break;
+			}
+		}
+
+		console.log(exists);
 		console.log(primitive[i]);
 
 		var primitiveShapesList = primitive[i].children;
 
-		console.log(primitive[i].children);
+		if (primitiveShapesList.length > 1)
+			return this.onXMLError("There can only be one primitive.");
 
-		this.parseRectangles(primitive[i].children[0]);
+
+		if(!exists){
+		/** 
+		 * Rectangles
+		 */
+		if (primitiveShapesList[0].tagName == "rectangle"){
+				var rectangle = this.parseRectangles(primitiveShapesList[0]);
+				rectangle.id = id;
+				this.primitives.push(rectangle);
+		}
+
+		/** 
+		 * Triangles
+		 */
+		if (primitiveShapesList[0].tagName == "triangle"){
+				
+				var triangle = this.parseTriangles(primitiveShapesList[0]);
+				triangle.id = id;
+				this.primitives.push(triangle);
+		}
+
+		/** 
+		 * Sphere
+		 */
+		if (primitiveShapesList[0].tagName == "sphere"){
+				
+				var sphere = this.parseSpheres(primitiveShapesList[0]);
+				sphere.id = id;
+				this.primitives.push(sphere);
+		}
+
+
+		/** 
+		 * Cylinder
+		 */
+		if (primitiveShapesList[0].tagName == "cylinder"){
+				
+				var cylinder = this.parseCylinders(primitiveShapesList[0]);
+				cylinder.id = id;
+				this.primitives.push(cylinder);
+		}
+		console.log(this.primitives);
+		}
 	}
 };
 
@@ -554,8 +688,58 @@ MySceneGraph.prototype.parseRectangles = function (rectangleElement){
 	var y1 = this.reader.getFloat(rectangleElement, 'y1');
 	var y2 = this.reader.getFloat(rectangleElement, 'y2');
 
-	console.log(x1,x2,y1,y2);
+	var rectangle = new MyQuad(this.scene, x1, x2, y1, y2);
 
+	return rectangle;
+};
+
+/** Parses Triangles information **/
+
+MySceneGraph.prototype.parseTriangles = function (triangleElement){
+
+	var x1 = this.reader.getFloat(triangleElement, 'x1');
+	var x2 = this.reader.getFloat(triangleElement, 'x2');
+	var x3 = this.reader.getFloat(triangleElement, 'x3');
+	var y1 = this.reader.getFloat(triangleElement, 'y1');
+	var y2 = this.reader.getFloat(triangleElement, 'y2');
+	var y3 = this.reader.getFloat(triangleElement, 'y3');
+	var z1 = this.reader.getFloat(triangleElement, 'z1');
+	var z2 = this.reader.getFloat(triangleElement, 'z2');
+	var z3 = this.reader.getFloat(triangleElement, 'z3');
+
+	var triangle = new MyTriangle(this.scene, x1, x2, x3, y1, y2, y3, z1, z2, z3);
+
+	return triangle;
+};
+
+
+
+MySceneGraph.prototype.parseSpheres = function (sphereElement){
+
+	var radius = this.reader.getFloat(sphereElement, 'radius');
+	var slices = this.reader.getFloat(sphereElement, 'slices');
+	var stacks = this.reader.getFloat(sphereElement, 'stacks');
+
+	var sphere = new MySphere(this.scene, slices, stacks, radius);
+
+	console.log(sphere);
+
+	return sphere;
+};
+
+MySceneGraph.prototype.parseCylinders = function (cylinderElement){
+
+	var base = this.reader.getFloat(cylinderElement, 'base');
+	var top = this.reader.getFloat(cylinderElement, 'top');
+	var height = this.reader.getFloat(cylinderElement, 'height');
+	var slices = this.reader.getFloat(cylinderElement, 'slices');
+	var stacks = this.reader.getFloat(cylinderElement, 'stacks');
+
+	var cylinder = new MyCylinder(this.scene, slices, stacks, top, base, height);
+
+	console.log(cylinder);
+
+	return cylinder;
 };
 
 
@@ -711,7 +895,7 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 	this.parseDSXMaterials(rootElement);
 	this.parseDSXTransformations(rootElement);
 	this.parseDSXPrimitives(rootElement);
-	this.parseDSXComponents(rootElement);
+	//this.parseDSXComponents(rootElement);
 
 
 };
