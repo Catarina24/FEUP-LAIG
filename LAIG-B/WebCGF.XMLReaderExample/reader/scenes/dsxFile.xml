@@ -36,10 +36,21 @@
         <!-- primeira vista; de cada vez que se pressione a tecla v/V, -->
         <!-- a vista muda para a proxima da lista; da --> 
         <!-- ultima vista da lista volta 'a primeira -->
-        <perspective id="p1" near="0.1" far="500" angle="22">
+        <perspective id="p1" near="0.1" far="100" angle="22">
             <from x="15" y="20" z="35" />
             <to x="5" y="5" z="5" />
         </perspective>
+
+        <perspective id="p2" near="0.1" far="100" angle="50">
+            <from x="-15" y="20" z="-35" />
+            <to x="5" y="0" z="5" />
+        </perspective>
+
+        <perspective id="p3" near="0.1" far="100" angle="50">
+            <from x="0" y="3" z="5" />
+            <to x="10" y="3" z="5" />
+        </perspective>
+		
 		
 		<!-- Cada conjunto de blocos perspective define uma camara. Para deifnir 10 camaras, precisamos de 10 blocos. -->
         
@@ -64,9 +75,9 @@
 		
 		<!-- omni e' ilumina de forma igual em todas as direcoes -->
         <omni id="omni1" enabled="1" >
-            <location x="3" y="3" z="3" w="0.2" />
+            <location x="5" y="5" z="5" w="0.2" />
             <ambient r="0.1" g="0.1" b="0.1" a="1" />
-            <diffuse r="1" g="1" b="1" a="1" />
+            <diffuse r="0.7" g="0.7" b="0.7" a="1" />
             <specular r="0.1" g="0.1" b="0.1" a="0.1" />
         </omni>
         
@@ -75,11 +86,20 @@
 
         <spot id="spot1" enabled="0" angle="40" exponent="0.5">
             <!-- atencao, "target" e' diferente de "direction" -->
-            <target x="3" y="3" z="0.5" />
-            <location x="4" y="2" z="2" />
+            <target x="10" y="10" z="5"/>
+            <location x="2" y="5.2" z="0.1" />
             <ambient r="0.5" g="0.5" b="0.5" a="0.5" />
             <diffuse r="0.5" g="0.5" b="0.5" a="0.5" />
             <specular r="0.5" g="0.5" b="0.5" a="0.5" />
+        </spot>
+
+        <spot id="spot2" enabled="0" angle="10" exponent="1">
+            <!-- atencao, "target" e' diferente de "direction" -->
+            <target x="10" y="3.5" z="3.5"/>
+            <location x="5" y="6.7" z="5" />
+            <ambient r="0" g="0" b="0" a="0" />
+            <diffuse r="0" g="0" b="0" a="0" />
+            <specular r="1" g="1" b="1" a="1" />
         </spot>
     </lights>
     
@@ -99,10 +119,15 @@
         <!-- Nao necessario aplicar fatores de escala em  -->
         <!-- quadricas (esfera, ciclindro...) -->
         <texture id="floor" file="./scenes/resources/wood.jpg" length_s="1.0" length_t="1.0" /> 
+
         <texture id="ducks" file="./scenes/resources/patinhos.jpg" length_s="1.0" length_t="1.0" /> 
+
         <texture id="dark_wood" file="./scenes/resources/dark_wood.jpg" length_s="1.0" length_t="1.0" />
+        
         <texture id="cherry_wood" file="./scenes/resources/cherry.jpg" length_s="1.0" length_t="1.0" /> 
+
         <texture id="cherry_wood2" file="./scenes/resources/cherry2.jpg" length_s="1.0" length_t="1.0" /> 
+        
         <texture id="earth" file="./scenes/resources/earth.jpg" length_s="1.0" length_t="1.0" />  
 
         <texture id="black_fireplace" file="./scenes/resources/black_fireplace.jpg" length_s="1.0" length_t="1.0"/>
@@ -111,13 +136,17 @@
 
         <texture id="chimney_fireplace" file="./scenes/resources/chimney_fireplace.jpg" length_s="0.1" length_t="0.1"/>
 
-        <texture id="chimney_fireplace" file="./scenes/resources/chimney_fireplace.jpg" length_s="1.0" length_t="1.0"/>
-
-        <texture id="beige_wall" file="./scenes/resources/beige_wall.jpg" length_s="0.1" length_t="0.1"/>
         <texture id="screen" file="./scenes/resources/series.jpg" length_s="0.1" length_t="0.1"/>
-        <texture id="sofa" file="./scenes/resources/sofa.jpg" length_s="0.1" length_t="0.1"/>
-        <texture id="sofa_blue" file="./scenes/resources/sofa_green.jpg" length_s="0.1" length_t="0.1"/>
-        <texture id="sofa_red" file="./scenes/resources/sofa_red.jpg" length_s="0.1" length_t="0.1"/>
+       
+        <texture id="sofa_cream" file="./scenes/resources/sofa_cream.jpg" length_s="0.1" length_t="0.1"/>
+        
+        <texture id="beige_wall" file="./scenes/resources/beige_wall.jpg" length_s="0.5" length_t="0.5"/>
+
+        <texture id="wood_door" file="./scenes/resources/wood_door.jpg" length_s="1" length_t="1"/>
+
+        <texture id="white_frame" file="./scenes/resources/white_frame.png" length_s="1" length_t="1"/>
+
+        
         
     </textures>
 
@@ -128,7 +157,7 @@
         <!-- Os identificadores "id" nao podem ser repetidos -->
 
         <material id="fire" >
-            <emission r="0.8" g="0.2" b="0.2" a="0.2" />
+            <emission r="1" g="0.2" b="0.2" a="0.2" />
             <ambient r="0.6" g="0.6" b="0.6" a="0.3" />
             <diffuse r="0" g="0" b="0" a="0" />
             <specular r="0" g="0" b="0" a="0" />
@@ -166,6 +195,33 @@
             <specular r="0" g="0" b="0" a="0" />
             <shininess value="0.8" />
         </material>
+
+
+        <material id="shinyRed">
+            <emission r="0.3" g="0.1" b="0.1" a="0.1" />
+            <ambient r="1" g="0.3" b="0.3" a="0.3" />
+            <diffuse r="1" g="0.3" b="0.3" a="0.3" />
+            <specular r="1" g="0.6" b="0.6" a="0.6" />
+            <shininess value="1000" />
+        </material>
+
+        <material id="shinyGreen">
+            <emission r="0.1" g="0.3" b="0.1" a="0.1" />
+            <ambient r="0.3" g="1" b="0.3" a="0.3" />
+            <diffuse r="0.3" g="1" b="0.3" a="0.3" />
+            <specular r="0.6" g="1" b="0.6" a="0.6" />
+            <shininess value="1000" />
+        </material>
+
+        <material id="shinyBlue">
+            <emission r="0.1" g="0.1" b="0.3" a="0.1" />
+            <ambient r="0.3" g="0.3" b="1" a="0.3" />
+            <diffuse r="0.3" g="0.3" b="1" a="0.3" />
+            <specular r="0.6" g="0.6" b="1" a="0.6" />
+            <shininess value="1000" />
+        </material>
+        
+
 
     </materials>
     
@@ -266,9 +322,13 @@
 
                 <componentref id="walls" />
                 <componentref id="globe" />
+
                 <componentref id="tv" />
                 <componentref id="sofa" />
                 <componentref id="sofa2" />
+
+                <componentref id="door"/>
+                <componentref id="paint"/>
                 
             </children>
             
@@ -310,6 +370,7 @@
 
             <materials>
                 <material id="globe"/>
+                <material id="black"/>
             </materials>
 
             <texture id="screen"/>
@@ -533,7 +594,7 @@
                 <material id="normal"/>
             </materials>
 
-            <texture id="sofa"/>
+            <texture id="sofa_cream"/>
 
             <children>
                 <componentref id="float"/>
@@ -552,7 +613,7 @@
                 <material id="normal"/>
             </materials>
 
-            <texture id="sofa"/>
+            <texture id="sofa_cream"/>
 
             <children>
                 <componentref id="float"/>
@@ -679,6 +740,134 @@
         </component>
 
          <!-- *** END OF TABLE *** -->
+
+         <!-- *** BEGIN OF DOOR *** -->
+         
+         <component id="door">
+            <transformation>
+                <translate x="7" y="0" z="0.1"/>
+                <scale x="2" y="5" z="0"/>
+            </transformation>
+
+            <materials>
+                <material id="normal"/>
+            </materials>
+
+            <texture id="wood_door"/>
+
+            <children>
+                <primitiveref id="rectangle"/>
+            </children>
+
+        </component>
+
+         <!-- *** END OF DOOR *** -->
+
+         <!-- *** BEGIN OF PAINT *** -->
+
+         <component id="paint">
+            <transformation>
+                <translate x="9.9" y="2" z="3"/>
+                <rotate axis="y" angle="-90"/>
+            </transformation>
+
+            <materials>
+                <material id="normal"/>
+            </materials>
+
+            <texture id="none"/>
+
+            <children>
+                <componentref id="frame"/>
+                <componentref id="triangle1"/>
+                <componentref id="triangle2"/>
+                <componentref id="triangle3"/>
+            </children>
+
+        </component>
+
+        <component id="frame">
+            <transformation>
+                <scale x= "5" y="3" z= "0"/>
+                <translate x="0" y="0" z="0.05"/>
+            </transformation>
+
+            <materials>
+                <material id="inherit"/>
+            </materials>
+
+            <texture id="white_frame"/>
+
+            <children>
+                <primitiveref id="rectangle"/>
+            </children>
+
+        </component>
+
+        <component id="triangle1">
+            <transformation>
+                <translate x="2.5" y="1" z="0.01"/>
+                <scale x="2.5" y="1" z="1"/>  
+                <rotate axis="z" angle="34"/>
+            </transformation>
+
+            <materials>
+                <material id="shinyRed"/>
+                <material id="shinyBlue"/>
+                <material id="shinyGreen"/>
+            </materials>
+
+            <texture id="none"/>
+
+            <children>
+                <primitiveref id="triangle"/>
+            </children>
+
+        </component>
+
+        <component id="triangle2">
+            <transformation>
+                <translate x="2" y="1" z="0.03"/>
+                <scale x="2.5" y="1" z="1"/>  
+                <rotate axis="z" angle="60"/>
+            </transformation>
+
+            <materials>
+                <material id="shinyGreen"/>
+                <material id="shinyRed"/>
+                <material id="shinyBlue"/>
+            </materials>
+
+            <texture id="none"/>
+
+            <children>
+                <primitiveref id="triangle"/>
+            </children>
+
+        </component>
+
+        <component id="triangle3">
+            <transformation>
+                <translate x="2" y="0" z="0.05"/>
+                <scale x="1" y="3" z="1"/>  
+                <rotate axis="z" angle="70"/>
+            </transformation>
+
+            <materials>
+                <material id="shinyBlue"/>
+                <material id="shinyRed"/>
+                <material id="shinyGreen"/>
+            </materials>
+
+            <texture id="none"/>
+
+            <children>
+                <primitiveref id="triangle"/>
+            </children>
+
+        </component>
+
+         <!-- *** END OF PAINT *** -->
 
          <!-- *** BEGIN OF CAT's *** -->
          
