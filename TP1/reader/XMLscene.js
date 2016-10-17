@@ -36,9 +36,9 @@ XMLscene.prototype.init = function (application) {
 
 XMLscene.prototype.initLights = function () {
 
-	this.lights[0].setPosition(2, 3, 3, 1);
-    this.lights[0].setDiffuse(1.0,1.0,1.0,1.0);
-    this.lights[0].setSpecular(1.0,1.0,1.0,1.0);
+	this.lights[0].setPosition(2, 3, 3, 0.5);
+    this.lights[0].setDiffuse(1.0,1.0,1.0,0.5);
+    this.lights[0].setSpecular(1.0,1.0,1.0,0.5);
     this.lights[0].update();
 	
 };
@@ -49,10 +49,10 @@ XMLscene.prototype.initCameras = function () {
 };
 
 XMLscene.prototype.setDefaultAppearance = function () {
-    this.setAmbient(0.2, 0.4, 0.8, 1.0);
-    this.setDiffuse(0.2, 0.4, 0.8, 1.0);
-    this.setSpecular(0.2, 0.4, 0.8, 1.0);
-    this.setShininess(10.0);	
+    this.setAmbient(0.5, 0.4, 0.8, 1.0);
+    this.setDiffuse(0.9, 0.4, 0.8, 1.0);
+    this.setSpecular(0.9, 0.4, 0.8, 1.0);
+    this.setShininess(1.0);	
 };
 
 // Handler called when the graph is finally loaded. 
@@ -143,7 +143,7 @@ XMLscene.prototype.processGraph = function(nodeName)
 		
 		if(material != null)
 		{
-			//this.applyMaterial(material);
+			//this.apply(material);
 		}
 
 		this.multMatrix(node.mat);

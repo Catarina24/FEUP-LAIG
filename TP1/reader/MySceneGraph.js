@@ -230,9 +230,8 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 	var perspectives = views.getElementsByTagName('perspective');
 
 	if (perspectives.length == 0)
-		return this.onXMLError("perspective element is missing");
+		return this.onXMLError("Perspective element is missing");
 	
-	var exists;
 		
 	for (var i=0; i< perspectives.length; i++){
 		
@@ -240,23 +239,13 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 		//var default_view = search[0];
 		
 		var perspective = perspectives[i];
-		
-		//verifies if the id already exists
-		exists = false;
+
 		
 		var id = this.reader.getString(perspective, 'id');
 		
-		for (var j=0; j<this.cameras.length; j++){
-			if (id==this.cameras[j].id){
-				exists = true;
-				break;
-			}
-		}
-		
-		if (!exists){
+		if (this.cameras[id] == null){
 			var view = new MyView(this.scene);
 			
-			view.id = id;
 			view.near = this.reader.getFloat(perspective, 'near');
 			view.far = this.reader.getFloat(perspective, 'far');
 			var angle = this.reader.getFloat(perspective, 'angle');
@@ -285,7 +274,10 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 			var targ = this.getCoordFromDSX(to);
 			view.target = vec3.fromValues(targ[0], targ[1], targ[2]);
 			
-			this.cameras.push(view);
+			this.cameras[id] = view;
+		}
+		else{
+			return this.onXMLError("Perspectives: Repeated ids");
 		}
 		this.default_view = this.cameras[0];
 		
@@ -320,7 +312,6 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	ambientRGBA.push(this.reader.getFloat(ambient, 'a'));
 
 	this.ambient = ambientRGBA;
-
 
 	//Get background color
 
@@ -461,33 +452,27 @@ MySceneGraph.prototype.parseDSXTextures = function (rootElement){
 	if (texture.length == 0)
 		return this.onXMLError("Texture element is missing");
 	
-	var exists;
 	var tex;
 	var id;
 	
 	for (var i=0; i<texture.length; i++){
 		
-		exists=false;
-		
 		search = texture[i];
 		
 		id = this.reader.getString(search, 'id');
 		
-		for (var j=0; j<this.textures.length; j++){
-			if (id==this.textures[j].id){
-				exists=true;
-				break;
-			}
-		}
-		
-		if (!exists){
+		if (this.textures[id] == null){
 			tex = new MyTexture(this.scene);
-			tex.id=id;
 			tex.file = this.reader.getString(search, 'file');
 			tex.length_s = this.reader.getFloat(search, 'length_s');
 			tex.length_t = this.reader.getFloat(search, 'length_t');
-			this.textures.push(tex);
+			this.textures[id] = tex;
 		}
+
+		else{
+			return this.onXMLError("Textures: repeated ids");
+		}
+		
 	}
 };
 
@@ -504,28 +489,17 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 	if (material.length == 0)
 		return this.onXMLError("Material element is missing");
 	
-	var exists, mat, id;
+	var mat, id;
 	
 	for (var i=0; i<material.length; i++){
-		
-		exists = false;
 		
 		search = material[i];
 		
 		id=this.reader.getString(search, 'id');
 		
-		for (var j=0; j<this.materials.length; j++){
-			if (id==this.materials[j].id){
-				exists=true;
-				break;
-			}
-		}
-		
-		if (!exists){
+		if (this.materials[id] == null){
 			
 			mat = new MyMaterial(this.scene);
-			
-			mat.id=id;
 			
 			var emission = search.getElementsByTagName('emission');
 			mat.emission = this.getRGBAFromDSX(emission[0]);
@@ -542,8 +516,12 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 			var shininess = search.getElementsByTagName('shininess');
 			mat.shininess= this.reader.getFloat(shininess[0], 'value');
 			
-			this.materials.push(mat);
+			this.materials[id] = mat;
 			
+		}
+
+		else{
+			return this.onXMLError("Materials: Repeated ids.");
 		}
 	}
 };
@@ -608,106 +586,96 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 	if(primitive.length == 0)
 		return this.onXMLError('There are no primitives defined inside the primitives block.');
 	
-	for (var i = 0; i < primitive.length; i++)
-	{
-		var exists = false;
+		for (var i = 0; i < primitive.length; i++){
 
-		var id = this.reader.getString(primitive[i], 'id');
+			var id = this.reader.getString(primitive[i], 'id');
 
-		for (var j=0; j<this.primitives.length; j++){
-			if (id==this.primitives[j].id){
-				exists = true;
-				break;
+			var primitiveShapesList = primitive[i].children;
+
+			if (primitiveShapesList.length > 1)
+				return this.onXMLError("There can only be one primitive.");
+
+
+			if(this.primitives[id] == null){
+			/** 
+			 * Rectangles
+			 */
+			if (primitiveShapesList[0].tagName == "rectangle"){
+					var rectangle = this.parseRectangles(primitiveShapesList[0]);
+
+					var node = new MyNode();
+
+					node.id = id;
+					node.isPrimitive = true;
+					node.primitive = rectangle;
+
+					this.nodes.set(node.id, node);
+
+					this.primitives[id] = rectangle;
 			}
-		}
 
-		var primitiveShapesList = primitive[i].children;
+			/** 
+			 * Triangles
+			 */
+			if (primitiveShapesList[0].tagName == "triangle"){
 
-		if (primitiveShapesList.length > 1)
-			return this.onXMLError("There can only be one primitive.");
+					var triangle = this.parseTriangles(primitiveShapesList[0]);
+					triangle.id = id;
 
+					var node = new MyNode();
 
-		if(!exists){
-		/** 
-		 * Rectangles
-		 */
-		if (primitiveShapesList[0].tagName == "rectangle"){
-				var rectangle = this.parseRectangles(primitiveShapesList[0]);
-				rectangle.id = id;
+					node.id = id;
+					node.isPrimitive = true;
+					node.primitive = triangle;
 
-				var node = new MyNode();
+					this.nodes.set(node.id, node);
 
-				node.id = id;
-				node.isPrimitive = true;
-				node.primitive = rectangle;
+					this.primitives[id] = triangle;
+			}
 
-				this.nodes.set(node.id, node);
-			
-				//this.primitives.push(rectangle);
-		}
+			/** 
+			 * Sphere
+			 */
+			if (primitiveShapesList[0].tagName == "sphere"){
 
-		/** 
-		 * Triangles
-		 */
-		if (primitiveShapesList[0].tagName == "triangle"){
-				
-				var triangle = this.parseTriangles(primitiveShapesList[0]);
-				triangle.id = id;
+					var sphere = this.parseSpheres(primitiveShapesList[0]);
+					sphere.id = id;
 
-				var node = new MyNode();
+					var node = new MyNode();
 
-				node.id = id;
-				node.isPrimitive = true;
-				node.primitive = triangle;
+					node.id = id;
+					node.isPrimitive = true;
+					node.primitive = sphere;
 
-				this.nodes.set(node.id, node);
-				
-				//this.primitives.push(triangle);
-		}
+					this.nodes.set(node.id, node);
 
-		/** 
-		 * Sphere
-		 */
-		if (primitiveShapesList[0].tagName == "sphere"){
-				
-				var sphere = this.parseSpheres(primitiveShapesList[0]);
-				sphere.id = id;
-
-				var node = new MyNode();
-
-				node.id = id;
-				node.isPrimitive = true;
-				node.primitive = sphere;
-
-				this.nodes.set(node.id, node);
-				
-				//this.primitives.push(sphere);
-		}
+					this.primitives[id] = sphere;
+			}
 
 
-		/** 
-		 * Cylinder
-		 */
-		if (primitiveShapesList[0].tagName == "cylinder"){
-				
-				var cylinder = this.parseCylinders(primitiveShapesList[0]);
-				cylinder.id = id;
+			/** 
+			 * Cylinder
+			 */
+			if (primitiveShapesList[0].tagName == "cylinder"){
 
-				var node = new MyNode();
+					var cylinder = this.parseCylinders(primitiveShapesList[0]);
+					cylinder.id = id;
 
-				node.id = id;
-				node.isPrimitive = true;
-				node.primitive = cylinder;
+					var node = new MyNode();
 
-				this.nodes.set(node.id, node);
+					node.id = id;
+					node.isPrimitive = true;
+					node.primitive = cylinder;
 
-				//this.primitives.push(cylinder);
-		}
+					this.nodes.set(node.id, node);
 
-		/** 
-		 * Torus
-		 */
-		if (primitiveShapesList[0].tagName == "torus"){
+					this.primitives[id] = cylinder;
+			}
+
+			/** 
+		 	* Torus
+		 	*/
+			if (primitiveShapesList[0].tagName == "torus"){
 				
 				var torus = this.parseTorus(primitiveShapesList[0]);
 				torus.id = id;
@@ -720,8 +688,8 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 
 				this.nodes.set(node.id, node);
 				
-				//this.primitives.push(torus);
-		}
+				this.primitives[id] = torus;
+			}
 		}
 	}
 };
@@ -834,24 +802,35 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 
 		var transformations = this.searchChildren(component[i], 'transformation');
 
-		//console.log(transformations);
-
-		if(transformations.length == 0 || transformations.length > 1)
+		if(transformations.length != 1)
 		{
-			return this.onXMLError("There needs to be one and only one transformation block for each component.")
+			return this.onXMLError("There can't be more than one transformation block for each component.")
 		}
 
-		var transformationRef = transformations[0].getElementsByTagName('transformationref');
+	
+		//If the block is empty, matrix is identity; it will then be multiplied by its parent
+		if (transformations[0].length == 0){
+				node.mat = mat4.create();
+		}
 
+		//Checks if there is any reference to a transformation previously defined
+		var transformationRef = this.searchChildren(transformations[0], 'transformationref');
+
+		if (transformationRef.length > 1)
+			return this.onXMLError("There needs to be one and only one transformationref block for each component.")
+		
 		if(transformationRef.length == 1)
 		{
-			node.transformation = transformationRef[0].id;
-			node.mat
+			var matrix = this.transformations[transformationRef[0].id];
+			node.mat = mat4.clone(matrix);
 		}
 		else
 		{
 			node.mat = this.calculateTransformMatrix(transformations[0]);
 		}
+
+	console.log("lol");
+		console.log(node.mat);
 
 		// MATERIALS
 		var searchMaterials = this.searchChildren(component[i],'materials');
@@ -1031,7 +1010,6 @@ MySceneGraph.prototype.getCoordFromDSX = function (attributeName){
 MySceneGraph.prototype.calculateTransformMatrix = function (transformElement)
 {
 	var matrix, translate, scale, aux;
-	var rotate = [];
 
 	var list = transformElement.children;
 	
@@ -1040,8 +1018,8 @@ MySceneGraph.prototype.calculateTransformMatrix = function (transformElement)
 
 	if (list.length != 0)
 	{		
-		for (var j=list.length-1; j>=0; j--){
-		//for (var j=0; j<list-length; j++){
+		//for (var j=list.length-1; j>=0; j--){
+		for (var j=0; j<list.length; j++){
 			if (list[j].nodeName == 'translate'){
 					translate = this.getCoordFromDSX(list[j]);
 					mat4.translate(matrix, matrix, translate);
@@ -1049,6 +1027,7 @@ MySceneGraph.prototype.calculateTransformMatrix = function (transformElement)
 
 			else if(list[j].nodeName == 'rotate'){
 				aux = this.getRotateFromDSX(list[j]);
+				var rotate = [];
 				rotate.push(aux[0], aux[1], aux[2]);
 				mat4.rotate(matrix, matrix, aux[3],rotate);
 			}
