@@ -586,7 +586,9 @@ MySceneGraph.prototype.visitGraph = function(root, transformationStack, material
         else if (textureId == "none")
             textureStack.push("none");
         else
+        {
             textureStack.push(this.textures[textureId].texture);
+        }
 
 
         for (var i = 0; i < node.childrenIDs.length; i++) {

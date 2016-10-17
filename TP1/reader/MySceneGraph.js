@@ -314,7 +314,6 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	var ambient = search[0];
 
 	if (ambient == null)
-	{
 		return this.onXMLError("ambient illumination is missing.");	
 
 	var ambientRGBA = [];
@@ -877,7 +876,7 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 	console.log(this.nodes);
 	
 	this.searchAllNodes();
-}
+};
 
 /**********************
 *	DSX Global Parser *
@@ -996,7 +995,7 @@ MySceneGraph.prototype.calculateTransformMatrix = function (transformElement)
 	}
 
 	return matrix;		
-}
+};
 
 /* DFS Graph Search*/
 
@@ -1014,4 +1013,4 @@ MySceneGraph.prototype.searchAllNodes = function(){
 			console.log(this.nodes.children);
 		}
 	}
-}
+};

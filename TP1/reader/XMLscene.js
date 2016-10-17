@@ -23,7 +23,7 @@ XMLscene.prototype.init = function (application) {
 	this.axis=new CGFaxis(this);
 
 	//this.myInterface = new CGFinterface();
-	this.enableTextures(true);
+	//this.enableTextures(true);
 
 	//declaração das variáveis do MySceneGraph
 	this.cameras = [];
@@ -31,24 +31,6 @@ XMLscene.prototype.init = function (application) {
 	this.materials = [];
 	this.primitives = [];
 
-
-
-/** TESTES */
-	this.quad = new MyQuad(this, -1.5,1.5, -1, 1);
-	this.triangle = new MyTriangle(this, 0, 2, 0, 0, 0, 3, 0, 0, 0);
-
-	this.cylinder = new MyCylinder(this, 40, 10, 2, 0.5, 0.5);
-
-	this.torus = new MyTorus(this, 0.2, 0.5, 50, 40);
-
-	this.sphere = new MySphere(this, 40, 10, 0.5);
-
-	this.boat = new MyBoat(this, 3, 1);
-
-	this.sphere = new MySphere(this, 40, 20, 0.2);
-
-
-	this.initAppearances();
 
 };
 
@@ -85,10 +67,6 @@ XMLscene.prototype.onGraphLoaded = function ()
 
 	this.init_variables();
 	this.changeCamera(0);
-
-    this.lights[1] = this.graph.lights['o1'].myLightToCGFlight();
-    this.lights[1].setVisible(true);
-    this.lights[1].enable();
 };
 
 XMLscene.prototype.init_variables = function(){
@@ -98,7 +76,7 @@ XMLscene.prototype.init_variables = function(){
 	this.primitives = this.graph.primitives;
 
 	
-}
+};
 
 
 XMLscene.prototype.changeCamera = function(i){
@@ -109,21 +87,7 @@ XMLscene.prototype.changeCamera = function(i){
 	//this.myInterface.setActive(this.camera);
 }
 
-//FUNCAO TESTE
-XMLscene.prototype.initAppearances = function(){
-	this.seaAppearance = new CGFappearance(this);
-	this.seaAppearance.loadTexture("./scenes/resources/sea.png");
-	//this.seaAppearance.setTextureWrap('REPEAT', 'REPEAT');
-	//this.seaAppearance.setTextureWrap('CLAMP_TO_EDGE', 'CLAMP_TO_EDGE');
 
-
-	this.buoyAppearance = new CGFappearance(this);
-	this.buoyAppearance.loadTexture("./scenes/resources/patinhos.jpg");
-
-
-	this.woodAppearance = new CGFappearance(this);
-	this.woodAppearance.loadTexture("./scenes/resources/wood.jpg");
-}
 
 XMLscene.prototype.display = function () {
 	// ---- BEGIN Background, camera and axis setup
@@ -153,83 +117,8 @@ XMLscene.prototype.display = function () {
 	{
 		this.lights[0].update();
 		//this.lights[1].update();
-	};	
+	}
 
-
-	/**					TESTES!!!!!! 				 */
-
-	
-	this.pushMatrix();
-		this.translate(0.3, 3.5, 0.3);
-		this.enableTextures(false);
-		this.sphere.display();
-	this.popMatrix();
-
-	this.pushMatrix();
-		this.translate(2, 0.5, 3);
-		this.enableTextures(false);
-		this.setDiffuse(0.21, 0.16, 0.10, 1.0);
-		this.setSpecular(0.21, 0.16, 0.10, 1.0);
-		this.setAmbient(0.21, 0.16, 0.10, 1.0);
-		this.boat.display();
-	this.popMatrix();
-
-	//left wall - mirror
-	this.pushMatrix();
-		this.setDefaultAppearance();
-		this.translate(0, 0, 6);
-		this.rotate(Math.PI/2, 0, 1, 0);
-		this.translate(3, 2, 0);
-		this.scale(2, 2, 0);
-		
-		this.enableTextures(false);
-		this.quad.display();
-
-	this.popMatrix();
-
-	//right wall
-	this.pushMatrix();
-		this.translate(3, 2, 0);
-		this.scale(2, 2, 0);
-
-		this.setDiffuse(0.21, 0.47, 0.86, 1.0);
-		this.setSpecular(0.21, 0.47, 0.86, 1.0);
-		this.setAmbient(0.21, 0.47, 0.86, 1);
-
-		this.quad.display();
-
-	this.popMatrix();
-
-	//floor
-	this.pushMatrix();
-		this.translate(0, 0, 6);
-		this.rotate(3*Math.PI/2, 1, 0, 0);
-		this.translate(3, 3, 0);
-		this.scale(2, 3, 0);
-		//this.seaAppearance.apply();
-		this.quad.display();
-
-	this.popMatrix();
-
-	this.pushMatrix();
-		this.translate(5, 1.2, 3);
-		this.rotate(Math.PI/2, 1, 0, 0);
-		this.enableTextures(true);
-		this.buoyAppearance.apply();
-		this.torus.display();
-	this.popMatrix();
-
-	/*this.pushMatrix();
-		this.triangle.display();
-	this.popMatrix();*/
-
-	/*this.pushMatrix();
-		this.translate(0, 2, 0);
-		this.rotate(Math.PI/2, 1, 0, 0);
-		this.cylinder.display();
-	this.popMatrix();*/
-
-	
 	
 
 };
