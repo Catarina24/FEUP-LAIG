@@ -444,10 +444,6 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 		}
 
 		this.lights[light.id]= light;
-
-		console.log("lights");
-		console.log(this.lights['o1']);
-
 	}
 
 };
@@ -496,8 +492,6 @@ MySceneGraph.prototype.parseDSXTextures = function (rootElement){
 			tex.length_t = this.reader.getFloat(search, 'length_t');
 			this.textures.push(tex);
 		}
-		console.log(this.textures);
-		
 	}
 };
 
@@ -555,8 +549,6 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 			this.materials.push(mat);
 			
 		}
-		
-		console.log(this.materials);
 	}
 };
 
@@ -593,7 +585,7 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 };
 
 /*
-* PRIMITVES PARSER ** UNFINISHED
+* PRIMITVES PARSER
 -Available primitives for scene drawing
 */
 
@@ -624,9 +616,6 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 			}
 		}
 
-		console.log(exists);
-		console.log(primitive[i]);
-
 		var primitiveShapesList = primitive[i].children;
 
 		if (primitiveShapesList.length > 1)
@@ -640,7 +629,16 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 		if (primitiveShapesList[0].tagName == "rectangle"){
 				var rectangle = this.parseRectangles(primitiveShapesList[0]);
 				rectangle.id = id;
-				this.primitives.push(rectangle);
+
+				var node = new MyNode();
+
+				node.id = id;
+				node.isPrimitive = true;
+				node.primitive = rectangle;
+
+				this.nodes.set(node.id, node);
+			
+				//this.primitives.push(rectangle);
 		}
 
 		/** 
@@ -650,7 +648,16 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 				
 				var triangle = this.parseTriangles(primitiveShapesList[0]);
 				triangle.id = id;
-				this.primitives.push(triangle);
+
+				var node = new MyNode();
+
+				node.id = id;
+				node.isPrimitive = true;
+				node.primitive = triangle;
+
+				this.nodes.set(node.id, node);
+				
+				//this.primitives.push(triangle);
 		}
 
 		/** 
@@ -660,7 +667,16 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 				
 				var sphere = this.parseSpheres(primitiveShapesList[0]);
 				sphere.id = id;
-				this.primitives.push(sphere);
+
+				var node = new MyNode();
+
+				node.id = id;
+				node.isPrimitive = true;
+				node.primitive = sphere;
+
+				this.nodes.set(node.id, node);
+				
+				//this.primitives.push(sphere);
 		}
 
 
@@ -671,9 +687,36 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 				
 				var cylinder = this.parseCylinders(primitiveShapesList[0]);
 				cylinder.id = id;
-				this.primitives.push(cylinder);
+
+				var node = new MyNode();
+
+				node.id = id;
+				node.isPrimitive = true;
+				node.primitive = cylinder;
+
+				this.nodes.set(node.id, node);
+
+				//this.primitives.push(cylinder);
 		}
-		console.log(this.primitives);
+
+		/** 
+		 * Torus
+		 */
+		if (primitiveShapesList[0].tagName == "torus"){
+				
+				var torus = this.parseTorus(primitiveShapesList[0]);
+				torus.id = id;
+
+				var node = new MyNode();
+
+				node.id = id;
+				node.isPrimitive = true;
+				node.primitive = torus;
+
+				this.nodes.set(node.id, node);
+				
+				//this.primitives.push(torus);
+		}
 		}
 	}
 };
@@ -721,8 +764,6 @@ MySceneGraph.prototype.parseSpheres = function (sphereElement){
 
 	var sphere = new MySphere(this.scene, slices, stacks, radius);
 
-	console.log(sphere);
-
 	return sphere;
 };
 
@@ -736,10 +777,21 @@ MySceneGraph.prototype.parseCylinders = function (cylinderElement){
 
 	var cylinder = new MyCylinder(this.scene, slices, stacks, top, base, height);
 
-	console.log(cylinder);
-
 	return cylinder;
 };
+
+MySceneGraph.prototype.parseTorus = function (torusElement){
+
+	var inner = this.reader.getFloat(torusElement, 'inner');
+	var outer = this.reader.getFloat(torusElement, 'outer');
+	var slices = this.reader.getFloat(torusElement, 'slices');
+	var loops = this.reader.getFloat(torusElement, 'loops');
+
+	var torus = new MyTorus(this.scene, inner, outer, slices, loops);
+
+	return torus;
+};
+
 
 
 /** COMPONENTS PARSER
@@ -784,7 +836,6 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 		if(transformationRef != null && transformationRef.length == 1)
 		{
 			node.transformation = transformationRef[0].id;
-			console.log(node.transformation);
 		}
 		else
 		{
@@ -792,22 +843,32 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 		}
 
 		// MATERIALS
-		var materials = component[i].getElementsByTagName('materials');
+		var searchMaterials = component[i].getElementsByTagName('materials');
 
-		if(materials.length == 0 || materials.length > 1)
+		if(searchMaterials.length == 0 || searchMaterials.length > 1)
 		{
 			return this.onXMLError("There needs to be one and only one materials block for each component.")
 		}
 		
-		if(materials[0].children.length == 0)
+		// materials[0] is the first BLOCK
+
+		var materials = searchMaterials[0].children;
+		console.log("materiais:" + materials);
+
+		if(materials.length == 0)
 		{
 			return this.onXMLError("At least one material id should be defined for a component.")
 		}
 
-		console.log(this.reader.getString(materials[0].children[0], 'id'));
-		for(var j = 0; j < materials[0].children.length; j++)
+		
+		for(var j = 0; j < materials.length; j++)
 		{
-			var material = materials[0].children[j];
+			var material = materials[j];
+
+			if(material.tagName != 'material')
+			{
+				return this.onXMLError("Bad tag name inside materials block.");
+			}
 
 			var materialId = this.reader.getString(material, 'id');
 
@@ -837,12 +898,9 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 			return this.onXMLError("At least one children id should be defined for a component.")
 		}
 
-		console.log(this.reader.getString(children[0].children[0], 'id'));
 		for(var j = 0; j < children [0].children.length; j++)
 		{
 			var child = children[0].children[j];
-
-			console.log(child.nodeName);
 
 			if(child.nodeName == 'componentref')
 			{
@@ -873,9 +931,9 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 		this.nodes.set(node.id, node);
 	}
 
-	console.log(this.nodes);
+	//console.log(this.nodes);
 	
-	this.searchAllNodes();
+	//this.searchAllNodes();
 };
 
 /**********************

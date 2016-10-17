@@ -23,13 +23,14 @@ function MyNode(){
     this.materials = [];
     this.texture = null;
     
-    this.mat = null;
+    this.mat = mat4.create();
     this.transformations = [];
 
     this.localMatrix = mat4.create();
     this.worldMatrix = mat4.create();
 
     this.isPrimitive = false;
+    this.primitive = null;
 };
 
 MyNode.prototype.constructor = MyNode;  // defining which function is the constructor

@@ -67,12 +67,6 @@ XMLscene.prototype.onGraphLoaded = function ()
 
 	this.init_variables();
 	//this.changeCamera(0);
-	
-	console.log("Start process graph.");
-	console.log(this.graph.sceneRoot);
-	this.processGraph(this.graph.sceneRoot);
-	console.log("End process graph.");
-
 };
 
 XMLscene.prototype.init_variables = function(){
@@ -126,6 +120,7 @@ XMLscene.prototype.display = function () {
 	}
 
 	
+	this.processGraph(this.graph.sceneRoot);
 
 };
 
@@ -135,13 +130,9 @@ XMLscene.prototype.processGraph = function(nodeName)
 {
 	var material = null;
 
-	console.log(nodeName);
-
 	if(nodeName != null)
 	{
 		var node = this.graph.nodes.get(nodeName);
-
-		console.log(node);
 
 		if(node.materials[0] != null)
 		{
@@ -157,21 +148,22 @@ XMLscene.prototype.processGraph = function(nodeName)
 
 		if(node.isPrimitive)
 		{
-			//primitive.display;
+			node.primitive.display();
 		}
-
-		for(var i = 0; i < node.children.length; i++)
+		
+		else
 		{
-			this.pushMatrix();
+			for(var i = 0; i < node.children.length; i++)
+			{
+				this.pushMatrix();
 
-			//this.applyMaterial(material);
+				//this.applyMaterial(material);
 
-			this.processGraph(node.children[i]);
+				this.processGraph(node.children[i]);
 
-			this.popMatrix();
+				this.popMatrix();
+			}
 		}
-
-		console.log("Process graph: " + node);
 
 	}
 };
