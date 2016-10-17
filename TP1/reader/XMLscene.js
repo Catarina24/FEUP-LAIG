@@ -66,7 +66,9 @@ XMLscene.prototype.onGraphLoaded = function ()
     this.lights[0].enable();
 
 	this.init_variables();
-	this.changeCamera(0);
+	//this.changeCamera(0);
+
+	console.log(this.graph.nodes);
 };
 
 XMLscene.prototype.init_variables = function(){
@@ -120,9 +122,50 @@ XMLscene.prototype.display = function () {
 	}
 
 	
+	this.processGraph(this.graph.sceneRoot);
 
 };
 
 /**FROM HERE ON THE FUNCTIONS ARE OURS**/
 
+XMLscene.prototype.processGraph = function(nodeName)
+{
+	var material = null;
 
+	if(nodeName != null)
+	{
+		var node = this.graph.nodes.get(nodeName);
+
+		if(node.materials[0] != null)
+		{
+			material = node.materials[0];
+		}
+		
+		if(material != null)
+		{
+			//this.applyMaterial(material);
+		}
+
+		this.multMatrix(node.mat);
+
+		if(node.isPrimitive)
+		{
+			node.primitive.display();
+		}
+		
+		else
+		{
+			for(var i = 0; i < node.children.length; i++)
+			{
+				this.pushMatrix();
+
+				//this.applyMaterial(material);
+
+				this.processGraph(node.children[i]);
+
+				this.popMatrix();
+			}
+		}
+
+	}
+};
