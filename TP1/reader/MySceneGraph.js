@@ -788,7 +788,7 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 		}
 		else
 		{
-			node.calculateTransformMatrix(transformation[0]);
+			node.mat = this.calculateTransformMatrix(transformation[0]);
 		}
 
 		// MATERIALS
@@ -894,7 +894,7 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 	this.parseDSXMaterials(rootElement);
 	this.parseDSXTransformations(rootElement);
 	this.parseDSXPrimitives(rootElement);
-	//this.parseDSXComponents(rootElement);
+	this.parseDSXComponents(rootElement);
 
 
 };
@@ -967,31 +967,32 @@ MySceneGraph.prototype.calculateTransformMatrix = function (transformElement)
 
 	var list = transformElement.children;
 		
-	//if no transformations are found
-	if (list.length == 0)
-		return this.onXMLError("no transformations can be read");
-		
+	
+	
 	//cria matriz identidade para as transformações
 	matrix = mat4.create();
-				
-	for (var j=list.length-1; j>=0; j--){
-	//for (var j=0; j<list-length; j++){
-		if (list[j].nodeName == 'translate'){
-				translate = this.getCoordFromDSX(list[j]);
-				mat4.translate(matrix, matrix, translate);
+
+	if (list.length == 0)
+	{		
+		for (var j=list.length-1; j>=0; j--){
+		//for (var j=0; j<list-length; j++){
+			if (list[j].nodeName == 'translate'){
+					translate = this.getCoordFromDSX(list[j]);
+					mat4.translate(matrix, matrix, translate);
+			}
+
+			else if(list[j].nodeName == 'rotate'){
+				aux = this.getRotateFromDSX(list[j]);
+				rotate.push(aux[0], aux[1], aux[2]);
+				mat4.rotate(matrix, matrix, aux[3],rotate);
+			}
+
+			else if (list[j].nodeName == 'scale'){
+				scale = this.getCoordFromDSX(list[j]);
+				mat4.scale(matrix, matrix, scale);
+			}
+			else return this.onXMLError("There can only be translate, rotate or scale transformations");
 		}
-			
-		else if(list[j].nodeName == 'rotate'){
-			aux = this.getRotateFromDSX(list[j]);
-			rotate.push(aux[0], aux[1], aux[2]);
-			mat4.rotate(matrix, matrix, aux[3],rotate);
-		}
-			
-		else if (list[j].nodeName == 'scale'){
-			scale = this.getCoordFromDSX(list[j]);
-			mat4.scale(matrix, matrix, scale);
-		}
-		else return this.onXMLError("There can only be translate, rotate or scale transformations");
 	}
 
 	return matrix;		
