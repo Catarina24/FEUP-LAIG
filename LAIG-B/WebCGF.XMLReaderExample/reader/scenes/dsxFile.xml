@@ -533,7 +533,7 @@
                 <material id="normal"/>
             </materials>
 
-            <texture id="sofa_red"/>
+            <texture id="sofa"/>
 
             <children>
                 <componentref id="float"/>
@@ -552,7 +552,7 @@
                 <material id="normal"/>
             </materials>
 
-            <texture id="sofa_green"/>
+            <texture id="sofa"/>
 
             <children>
                 <componentref id="float"/>
