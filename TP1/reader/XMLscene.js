@@ -77,6 +77,8 @@ XMLscene.prototype.setDefaultAppearance = function () {
 // As loading is asynchronous, this may be called already after the application has started the run loop
 XMLscene.prototype.onGraphLoaded = function () 
 {
+	this.axis=new CGFaxis(this, this.graph.axis_length);
+	
 	this.gl.clearColor(this.graph.background[0],this.graph.background[1],this.graph.background[2],this.graph.background[3]);
 	this.lights[0].setVisible(true);
     this.lights[0].enable();
@@ -84,7 +86,9 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.init_variables();
 	this.changeCamera(0);
 
-	
+    this.lights[1] = this.graph.lights['o1'].myLightToCGFlight();
+    this.lights[1].setVisible(true);
+    this.lights[1].enable();
 };
 
 XMLscene.prototype.init_variables = function(){
@@ -148,6 +152,7 @@ XMLscene.prototype.display = function () {
 	if (this.graph.loadedOk)
 	{
 		this.lights[0].update();
+		//this.lights[1].update();
 	};	
 
 
