@@ -45,10 +45,6 @@ function MySceneGraph(filename, scene) {
 	//Transformations
 	this.transformations=[];
 
-
-	//Transformations
-	this.transformations = {};
-
 	//Scene Nodes
 	this.nodes = new Map();
 
@@ -558,27 +554,36 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
  */
 MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 	
-	var search = rootElement.getElementsByTagName('transformations');
+	var search = this.searchChildren(rootElement, 'transformations');
+
+	console.log('search');
+	console.log(search);
+	console.log("confusa");
 	
 	var transformations = search[0];
-	
-	var transformation = transformations.getElementsByTagName('transformation');
+
+	var transformation = this.searchChildren(transformations, 'transformation');
 	
 	//se "transformations" não tem filhos
 	if (transformation.length == 0)
 		return this.onXMLError("Transformation element is missing");
 	
 	for (var i=0; i<transformation.length; i++){
-
-		var matrix;
-		
-		exists=false;
 		
 		search = transformation[i];
 		
 		var id = this.reader.getString(search, 'id');
 
-		matrix = mat4.clone(this.calculateTransformMatrix(search));
+		if (this.transformations[id] ==null){
+
+			var matrix = mat4.clone(this.calculateTransformMatrix(search));
+			this.transformations[id]=matrix;
+			console.log(this.transformations);
+		}
+		else
+		{
+			return this.onXMLError("There are two or more transformations with the same id: " + id);
+		}
 	}
 	
 	
@@ -823,27 +828,33 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 
 		node.id = this.reader.getString(component[i], 'id');
 
-		// TRANSFORMATIONS
-		var transformation = component[i].getElementsByTagName('transformation');
+		var children = node.childNodes;
 
-		if(transformation.length == 0 || transformation.length > 1)
+		// TRANSFORMATIONS
+
+		var transformations = this.searchChildren(component[i], 'transformation');
+
+		//console.log(transformations);
+
+		if(transformations.length == 0 || transformations.length > 1)
 		{
 			return this.onXMLError("There needs to be one and only one transformation block for each component.")
 		}
 
-		var transformationRef = transformation[0].getElementsByTagName('transformationref');
+		var transformationRef = transformations[0].getElementsByTagName('transformationref');
 
-		if(transformationRef != null && transformationRef.length == 1)
+		if(transformationRef.length == 1)
 		{
 			node.transformation = transformationRef[0].id;
+			node.mat
 		}
 		else
 		{
-			node.mat = this.calculateTransformMatrix(transformation[0]);
+			node.mat = this.calculateTransformMatrix(transformations[0]);
 		}
 
 		// MATERIALS
-		var searchMaterials = component[i].getElementsByTagName('materials');
+		var searchMaterials = this.searchChildren(component[i],'materials');
 
 		if(searchMaterials.length == 0 || searchMaterials.length > 1)
 		{
@@ -851,9 +862,8 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 		}
 		
 		// materials[0] is the first BLOCK
-
 		var materials = searchMaterials[0].children;
-		console.log("materiais:" + materials);
+		//console.log("materiais:" + materials);
 
 		if(materials.length == 0)
 		{
@@ -1024,13 +1034,11 @@ MySceneGraph.prototype.calculateTransformMatrix = function (transformElement)
 	var rotate = [];
 
 	var list = transformElement.children;
-		
-	
 	
 	//cria matriz identidade para as transformações
 	matrix = mat4.create();
 
-	if (list.length == 0)
+	if (list.length != 0)
 	{		
 		for (var j=list.length-1; j>=0; j--){
 		//for (var j=0; j<list-length; j++){
@@ -1055,6 +1063,26 @@ MySceneGraph.prototype.calculateTransformMatrix = function (transformElement)
 
 	return matrix;		
 };
+
+/**
+*	Return ONLY children elements with a certain tag name 
+(does NOT return children of children)
+*/
+
+MySceneGraph.prototype.searchChildren = function (parentElement, childrenTag)
+{
+	var children = [];
+
+	for (var i = 0; i < parentElement.children.length; i++)
+	{
+		if(parentElement.children[i].tagName == childrenTag)
+		{
+			children.push(parentElement.children[i]);
+		}
+	}
+
+	return children;
+}
 
 /* DFS Graph Search*/
 

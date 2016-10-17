@@ -67,6 +67,8 @@ XMLscene.prototype.onGraphLoaded = function ()
 
 	this.init_variables();
 	//this.changeCamera(0);
+
+	console.log(this.graph.nodes);
 };
 
 XMLscene.prototype.init_variables = function(){
