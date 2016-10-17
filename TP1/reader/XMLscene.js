@@ -66,7 +66,7 @@ XMLscene.prototype.onGraphLoaded = function ()
     this.lights[0].enable();
 
 	this.init_variables();
-	this.changeCamera(0);
+	//this.changeCamera(0);
 };
 
 XMLscene.prototype.init_variables = function(){
