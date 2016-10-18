@@ -31,7 +31,6 @@ XMLscene.prototype.init = function (application) {
 	this.materials = [];
 	this.primitives = [];
 
-
 };
 
 XMLscene.prototype.initLights = function () {
@@ -62,13 +61,14 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.axis=new CGFaxis(this, this.graph.axis_length);
 	
 	this.gl.clearColor(this.graph.background[0],this.graph.background[1],this.graph.background[2],this.graph.background[3]);
-	this.lights[0].setVisible(true);
-    this.lights[0].enable();
+	//this.lights[0].setVisible(true);
+    //this.lights[0].enable();
 
 	this.init_variables();
 	//this.changeCamera(0);
+	this.updateLights();
 
-	console.log(this.graph.nodes);
+	//console.log(this.graph.nodes);
 };
 
 XMLscene.prototype.init_variables = function(){
@@ -76,8 +76,87 @@ XMLscene.prototype.init_variables = function(){
 	this.textures = this.graph.textures;
 	this.materials = this.graph.materials;
 	this.primitives = this.graph.primitives;
+	console.log(this.lights);
+};
 
-	
+
+XMLscene.prototype.updateLights = function(){
+	/*this.lights[0].setPosition(2, 3, 3, 0.5);
+    this.lights[0].setDiffuse(1.0,1.0,1.0,0.5);
+    this.lights[0].setSpecular(1.0,1.0,1.0,0.5);
+    this.lights[0].update();*/
+
+    for (var i=0; i<this.graph.lights.length; i++){
+			
+
+    	//spot lights
+    	if (this.graph.lights[i].omni != true){
+
+ 			//target
+			var x= this.graph.lights[i].target[0];
+			var y= this.graph.lights[i].target[1];
+			var z= this.graph.lights[i].target[2];
+
+			this.lights[i].setSpotDirection(x, y, z);
+
+			//angle
+			var angle= this.graph.lights[i].angle;
+
+			this.lights[i].setSpotCutOff(angle);
+
+			//Exponent
+			var n= this.graph.lights[i].exponent;
+
+			this.lights[i].setSpotCutOff(n);
+
+			console.log(this.lights[i]);
+    	}
+
+    	//common properties
+
+
+		//location
+    	var x= this.graph.lights[i].location[0];
+		var y= this.graph.lights[i].location[1];
+		var z= this.graph.lights[i].location[2];
+		var w= this.graph.lights[i].location[3];
+		this.lights[i].setPosition(x, y, z, w);
+
+    	var r, g, b, a;
+
+		//ambient
+		r= this.graph.lights[i].ambientRGBA[0];
+		g= this.graph.lights[i].ambientRGBA[1];
+		b= this.graph.lights[i].ambientRGBA[2];
+		a= this.graph.lights[i].ambientRGBA[3];
+
+		this.lights[i].setAmbient(r, g, b, a);
+
+		//diffuse
+		r= this.graph.lights[i].diffuseRGBA[0];
+		g= this.graph.lights[i].diffuseRGBA[1];
+		b= this.graph.lights[i].diffuseRGBA[2];
+		a= this.graph.lights[i].diffuseRGBA[3];
+
+		this.lights[i].setDiffuse(r, g, b, a);
+
+
+		//specular
+		r= this.graph.lights[i].specularRGBA[0];
+		g= this.graph.lights[i].specularRGBA[1];
+		b= this.graph.lights[i].specularRGBA[2];
+		a= this.graph.lights[i].specularRGBA[3];
+
+		this.lights[i].setSpecular(r, g, b, a);
+
+		//enable lights
+		if (this.graph.lights[i].enabled == 1){
+			this.lights[i].setVisible();
+			this.lights[i].enable();
+		}
+
+		this.lights[i].update();
+    }
 };
 
 
@@ -117,7 +196,7 @@ XMLscene.prototype.display = function () {
 	// This is one possible way to do it
 	if (this.graph.loadedOk)
 	{
-		this.lights[0].update();
+		//this.lights[0].update();
 		//this.lights[1].update();
 	}
 

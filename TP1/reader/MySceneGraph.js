@@ -353,7 +353,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 	if (searchOmni.length == 0 && searchSpot == 0)
 	{
-		return this.onXMLError("no lights are defined. Please defined either an omnilight or a spotlight.");
+		return this.onXMLError("no lights are defined. Please defined either an omni light or a spotlight.");
 	}
 
 	// Extrapolate omni lights
@@ -389,7 +389,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 		if(locationX == null || locationY == null || 
 		locationZ == null || locationW == null)
 		{
-			return this.onXMLError("there's a component missing in " + id + " light.")
+			return this.onXMLError("there's a component missing in " + i + " light.")
 		}
 
 		light.location.push(locationX);
@@ -405,7 +405,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		if(light.ambientRGBA == null)
 		{
-			return this.onXMLError("bad RGBA on 'ambient' component of omnilight " + id);
+			return this.onXMLError("bad RGBA on 'ambient' component of omnilight " + i);
 		}
 
 		// Light diffuse
@@ -416,7 +416,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		if(light.diffuseRGBA == null)
 		{
-			return this.onXMLError("bad RGBA on 'diffuse' component of omnilight " + id);
+			return this.onXMLError("bad RGBA on 'diffuse' component of omnilight " + i);
 		}
 
 		// Light specular
@@ -427,12 +427,107 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		if(light.specularRGBA == null)
 		{
-			return this.onXMLError("bad RGBA on 'specular' component of omnilight " + id);
+			return this.onXMLError("bad RGBA on 'specular' component of omnilight " + i);
 		}
 
-		this.lights[light.id]= light;
+		this.lights.push(light);
 	}
 
+	// Extrapolate spot lights
+	for (var i = 0; i < searchSpot.length; i++)
+	{
+		var light = new MyLight(this.scene);
+
+		light.omni = false;
+
+		var spot = searchSpot[i];
+
+		light.id = this.reader.getString(spot, 'id');
+
+		//Verify if ID is UNIQUE
+		for(var j = 0; j < this.lights.length; j++)
+		{
+			if(this.lights[j].id == light.id)
+				return this.onXMLError("light in position " + (i+1) + " has a duplicated id");
+		}
+	
+
+		//VERIFICAÇOES DE ERROS - FAZER
+		light.enabled = this.reader.getBoolean(spot, 'enabled');
+
+		light.angle = this.reader.getFloat(spot, 'angle');
+
+		light.exponent = this.reader.getFloat(spot, 'exponent');
+
+		//Light Target
+		var searchTarget = spot.getElementsByTagName('target');
+		var target = searchTarget[0];
+
+		var targetX = this.reader.getFloat(target, 'x');
+		var targetY = this.reader.getFloat(target, 'y');
+		var targetZ = this.reader.getFloat(target, 'z');
+
+		if(targetX == null || targetY == null || targetZ == null){
+			return this.onXMLError("there's a component missing in " + i + " light.")
+		}
+
+		light.target.push(targetX);
+		light.target.push(targetY);
+		light.target.push(targetZ);
+
+		// Light location
+		var searchLocation = spot.getElementsByTagName('location');
+		var location = searchLocation[0];
+
+		var locationX = this.reader.getFloat(location, 'x');
+		var locationY = this.reader.getFloat(location, 'y');
+		var locationZ = this.reader.getFloat(location, 'z');
+
+		if(locationX == null || locationY == null || 
+		locationZ == null)
+		{
+			return this.onXMLError("there's a component missing in " + i + " light.")
+		}
+
+		light.location.push(locationX);
+		light.location.push(locationY);
+		light.location.push(locationZ);
+
+		// Light ambient
+
+		var searchAmbient = spot.getElementsByTagName('ambient');
+		var ambient = searchAmbient[0];
+		light.ambientRGBA = this.getRGBAFromDSX(ambient);
+
+		if(light.ambientRGBA == null)
+		{
+			return this.onXMLError("bad RGBA on 'ambient' component of omnilight " + i);
+		}
+
+		// Light diffuse
+
+		var searchDiffuse = spot.getElementsByTagName('diffuse');
+		var diffuse = searchAmbient[0];
+		light.diffuseRGBA = this.getRGBAFromDSX(diffuse);
+
+		if(light.diffuseRGBA == null)
+		{
+			return this.onXMLError("bad RGBA on 'diffuse' component of omnilight " + i);
+		}
+
+		// Light specular
+
+		var searchSpecular = spot.getElementsByTagName('specular');
+		var specular = searchSpecular[0];
+		light.specularRGBA = this.getRGBAFromDSX(specular);
+
+		if(light.specularRGBA == null)
+		{
+			return this.onXMLError("bad RGBA on 'specular' component of omnilight " + i);
+		}
+
+		this.lights.push(light);
+	}
 };
 
 
@@ -829,8 +924,8 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 			node.mat = this.calculateTransformMatrix(transformations[0]);
 		}
 
-	console.log("lol");
-		console.log(node.mat);
+		//console.log("lol");
+		//console.log(node.mat);
 
 		// MATERIALS
 		var searchMaterials = this.searchChildren(component[i],'materials');
