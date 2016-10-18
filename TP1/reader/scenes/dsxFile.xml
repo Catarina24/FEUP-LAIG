@@ -530,7 +530,7 @@
 
         <component id="fireplaceCube">
             <transformation>
-                <scale x="2" y="2" z="2"/>
+                <transformationref id= "scale2"/>
             </transformation>
 
             <materials>
