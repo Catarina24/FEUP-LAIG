@@ -9,11 +9,14 @@ function MyLight(scene)
 {
     this.id = null;
     this.omni = false;
-    this.enable = false;
+    this.enabled = false;
+    this.angle = null;
+    this.exponent = null;
     this.location = [];
     this.ambientRGBA = [];
     this.diffuseRGBA = [];
     this.specularRGBA = [];
+    this.target=[];
 
     this.scene = scene;
 };
