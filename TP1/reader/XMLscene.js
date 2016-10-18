@@ -83,6 +83,7 @@ XMLscene.prototype.init_variables = function(){
 	this.textures = this.graph.textures;
 	this.materials = this.graph.materials;
 	this.primitives = this.graph.primitives;
+	
 	console.log(this.lights);
 };
 
