@@ -68,7 +68,7 @@ XMLscene.prototype.onGraphLoaded = function ()
 	//this.changeCamera(0);
 	this.updateLights();
 
-	//console.log(this.graph.nodes);
+	console.log(this.graph.nodes);
 };
 
 XMLscene.prototype.init_variables = function(){
@@ -200,7 +200,8 @@ XMLscene.prototype.display = function () {
 		//this.lights[1].update();
 	}
 
-	
+	var myCylinder = new MyCylinder(this, 30, 20, 6, 0.5, 0.5);
+	//myCylinder.display();
 	this.processGraph(this.graph.sceneRoot);
 
 };

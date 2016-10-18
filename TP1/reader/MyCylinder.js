@@ -15,7 +15,10 @@
  MyCylinder.prototype.constructor = MyCylinder;
 
  MyCylinder.prototype.display = function(){
- 	this.surface.display();
+ 	
+	this.scene.pushMatrix();
+ 		this.surface.display();
+ 	this.scene.popMatrix();
 
  	//base
  	this.scene.pushMatrix();

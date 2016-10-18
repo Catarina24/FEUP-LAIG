@@ -843,7 +843,7 @@ MySceneGraph.prototype.parseCylinders = function (cylinderElement){
 	var slices = this.reader.getFloat(cylinderElement, 'slices');
 	var stacks = this.reader.getFloat(cylinderElement, 'stacks');
 
-	var cylinder = new MyCylinder(this.scene, slices, stacks, top, base, height);
+	var cylinder = new MyCylinder(this.scene, slices, stacks, height, base, top);
 
 	return cylinder;
 };
