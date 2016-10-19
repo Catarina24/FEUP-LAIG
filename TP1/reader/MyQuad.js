@@ -24,15 +24,15 @@ function MyQuad(scene, x1, x2, y1, y2) {
 
  MyQuad.prototype.initBuffers = function() {
  	this.vertices = [
- 	this.x1, this.y2, 0,
- 	this.x2, this.y2, 0,
- 	this.x1, this.y1, 0,
- 	this.x2, this.y1, 0,
+		this.x1, this.y1, 0,
+		this.x2, this.y1, 0,
+		this.x2, this.y2, 0,
+		this.x1, this.y2, 0,
  	];
 
  	this.indices = [
- 	0, 2, 3,
- 	3, 1, 0
+ 	0, 1, 3,
+ 	1, 2, 3
  	];
 
 
@@ -47,17 +47,11 @@ function MyQuad(scene, x1, x2, y1, y2) {
 
  	this.texCoords=[];
 
-	/*for (var i=0; i<=this.x2; i++){
-		for(var j=0; j<=this.y2; j++){
-			this.texCoords.push(i, j);
-		}
-	}*/
-    
  	this.texCoords = [
- 	this.minS, this.maxT, 
- 	this.maxS, this.maxT, 
-    this.minS, this.minT, 
- 	this.maxS, this.minT
+		this.minS, this.maxT, 
+		this.maxS, this.maxT, 
+		this.maxS, this.minT, 
+		this.minS, this.minT
  	];
 
  	this.initGLBuffers();
