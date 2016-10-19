@@ -267,97 +267,77 @@ XMLscene.prototype.display = function () {
 		//this.lights[1].update();
 	}
 
-	this.processGraph(this.graph.sceneRoot);
+	this.processGraph(this.graph.sceneRoot, null, null);
 
 };
 
 /**FROM HERE ON THE FUNCTIONS ARE OURS**/
 
-XMLscene.prototype.processGraph = function(nodeName)
+XMLscene.prototype.processGraph = function(nodeName, material, texture)
 {
 
-
-	//COMPOR FUNÇAO - DESORGANIZAÇAO
-	var material = null;
-
-	if(nodeName != null)
-	{
-		var node = this.graph.nodes.get(nodeName);
-
-		if(node.materials[0] != null)
-		{
-			material = node.materials[0];
-		}
-
-		if (material != "inherit"){
-
-			var texture;
-
-			if (node.isPrimitive){
-				
-			}
-
-			else{
-				if (node.texture == null){
-					console.log(node);
-					return "Error: texture null";
-				}
-
-
-				if (node.texture == "none" ){
-
-					this.materials[material].setTexture(null);
-				}
-
-				else{
-					texture = this.textures[node.texture];
-
-				}
-
-				if(material != null && texture!=null)
-				{	
-
-					if (node.texture != "inherit"){
-
-						this.materials[material].setTexture(texture);
-
-						this.materials[material].apply();
-					}
-
-
-				}
-			}
-		}
-
-		if (material == "inherit"){
-			//FAZER
-		}
-
-		this.multMatrix(node.mat);
-
-		if(node.isPrimitive)
-		{
-			node.primitive.display();
-		}
-		
-		else
-		{
-			for(var i = 0; i < node.children.length; i++)
-			{
-				this.pushMatrix();
-
-				//this.applyMaterial(material);
-
-				this.processGraph(node.children[i]);
-
-				this.popMatrix();
-			}
-		}
-
-		//TEXTURES
-
-		if (node.texture == "none"){
-			//pai
-		}
+	if (nodeName == null){
+		return "Process Graph: null node name.";
 	}
+
+	var node = this.graph.nodes.get(nodeName);
+	var mat = node.materials[0];
+	var tex = node.texture;
+
+	//if is primitive
+	if (node.isPrimitive){
+		node.primitive.display();
+	}
+	
+	//if materials is empty
+	if (mat == null){
+		return "Process Graph: material needs to be declared.";
+	}
+
+	//if texture is null
+	if (tex == null){
+		return "Process Graph: texture needs to be declared.";
+	}
+
+
+	if (mat == "inherit"){
+		//NADA
+	}
+
+	else{
+		material = mat;		
+	}
+	
+	if (tex == "none"){
+		//texture = null;
+		this.materials[material].setTexture(null);
+	}
+	else{
+		
+
+		if (tex == "inherit"){
+			//texture não muda
+		}
+
+		else{
+			texture = tex;		
+		}
+		this.materials[material].setTexture(this.textures[texture]);
+	}
+	
+	
+	
+	this.materials[material].apply();
+
+	this.multMatrix(node.mat);
+
+		
+	for(var i = 0; i < node.children.length; i++){
+		this.pushMatrix();
+
+			this.processGraph(node.children[i], material, texture);
+
+		this.popMatrix();
+	}
+
 };
