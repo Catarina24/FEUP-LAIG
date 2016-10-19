@@ -32,11 +32,19 @@ XMLscene.prototype.init = function (application) {
 	this.primitives = [];
 
 	//Interface variables declaration
+	this.application = application;
 
-	this.light0 = true;
-	this.light1 = true;
+	this.numOfLights = 0;
+
+	// if this.lightsInterface[i] == true, then the light i is enabled
+	this.lightsInterface = [false, false, false, false,
+							false, false, false, false];
+
+	
 
 	// Complete with following lights
+
+	console.log(this);
 
 };
 
@@ -77,8 +85,9 @@ XMLscene.prototype.onGraphLoaded = function ()
 	
 	this.loadMaterials();
 	this.loadTextures();
-	//this.loadTextures();
-	console.log(this.graph.nodes);
+	this.loadLights();
+
+	console.log(this.graph);
 };
 
 XMLscene.prototype.init_variables = function(){
@@ -93,7 +102,6 @@ XMLscene.prototype.loadMaterials = function(){
 		var id=this.graph.materials[i].id;
 		this.materials[id] = new CGFappearance(this);
 
-		console.log(this.materials);
 		var r, g, b, a;
 		
 		//ambient
@@ -152,11 +160,9 @@ XMLscene.prototype.loadTextures = function(){
 };
 
 
-XMLscene.prototype.updateLights = function(){
-
-    for (var i=0; i<this.graph.lights.length; i++){
-			
-
+XMLscene.prototype.loadLights = function()
+{
+	for (var i=0; i<this.graph.lights.length; i++){
     	//spot lights
     	if (this.graph.lights[i].omni != true){
 
@@ -220,7 +226,37 @@ XMLscene.prototype.updateLights = function(){
 		if (this.graph.lights[i].enabled == 1){
 			this.lights[i].setVisible();
 			this.lights[i].enable();
+
+			// creates a variable in this (XMLscene) with [this.graph.lights[i].id] name
+			// so you can access this.<light ID> = false
+			// for example: this.omni1 = false
+			this[this.graph.lights[i].id] = true;
 		}
+
+		else
+		{
+		
+		this[this.graph.lights[i].id] = false;
+		}
+		
+		// to have the number of lights in the scene
+		this.numOfLights++;
+	}
+
+	console.log(this.graph.lights);
+
+	this.application.interface.addLightsMenu(this.graph.lights, this.numOfLights);
+	
+
+}
+
+XMLscene.prototype.updateLights = function(){
+
+    for (var i=0; i<this.graph.lights.length; i++){
+		if(this[this.graph.lights[i].id])
+			this.lights[i].enable();
+		else
+			this.lights[i].disable();
 
 		this.lights[i].update();
     }
@@ -263,8 +299,7 @@ XMLscene.prototype.display = function () {
 	// This is one possible way to do it
 	if (this.graph.loadedOk)
 	{
-		//this.lights[0].update();
-		//this.lights[1].update();
+		this.updateLights();	
 	}
 
 	this.processGraph(this.graph.sceneRoot, null, null);

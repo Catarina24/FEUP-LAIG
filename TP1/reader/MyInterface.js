@@ -30,13 +30,6 @@ MyInterface.prototype.init = function(application) {
 	// the identifier 'doSomething' must be a function declared as part of that object (i.e. a member of the scene class)
 	// e.g. LightingScene.prototype.doSomething = function () { console.log("Doing something..."); }; 
 
-	var lightGroup=this.gui.addFolder('Lights');	
-	lightGroup.open();
-	/*lightGroup.add(this.scene, 'light0');
-	lightGroup.add(this.scene, 'light1');
-	lightGroup.add(this.scene, 'light2');
-	lightGroup.add(this.scene, 'light3');*/
-
 	/*appearanceGroup.add(this.scene, 'DroneBodyAppearance', this.scene.droneAppearanceList);
 	appearanceGroup.add(this.scene, 'DroneLegAppearance', this.scene.droneAppearanceList);
 	appearanceGroup.add(this.scene, 'DroneHeliceAppearance',  this.scene.droneAppearanceList);*/
@@ -52,6 +45,23 @@ MyInterface.prototype.init = function(application) {
 
 	return true;
 };
+
+MyInterface.prototype.addLightsMenu = function(lights, numOfLights){
+	var lightGroup=this.gui.addFolder('Lights');
+
+	console.log(lights);
+		
+	lightGroup.open();
+	
+	for (var i = 0; i < numOfLights; i++)
+	{
+		lightGroup.add(this.scene, lights[i].id);
+	}
+	/*lightGroup.add(this.scene, 'light0');
+	lightGroup.add(this.scene, 'light1');
+	lightGroup.add(this.scene, 'light2');
+	lightGroup.add(this.scene, 'light3');*/
+}
 
 MyInterface.prototype.processKeyDown = function(event) {
 	// call CGFinterface default code (omit if you want to override)
