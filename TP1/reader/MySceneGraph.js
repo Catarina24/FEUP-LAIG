@@ -554,20 +554,18 @@ MySceneGraph.prototype.parseDSXTextures = function (rootElement){
 		
 		search = texture[i];
 		
-		id = this.reader.getString(search, 'id');
-		
-		if (this.textures[id] == null){
-			tex = new MyTexture(this.scene);
-			tex.file = this.reader.getString(search, 'file');
-			tex.length_s = this.reader.getFloat(search, 'length_s');
-			tex.length_t = this.reader.getFloat(search, 'length_t');
-			this.textures[id] = tex;
-		}
+		tex = new MyTexture(this.scene);
+		tex.id = this.reader.getString(search, 'id');
 
-		else{
-			return this.onXMLError("Textures: repeated ids");
+		for (var j=0; j<this.textures.length; j++){
+			if (id == this.textures[j].id)
+				return this.onXMLError("Textures: there can only be one texture per id.");
 		}
 		
+		tex.file = this.reader.getString(search, 'file');
+		tex.length_s = this.reader.getFloat(search, 'length_s');
+		tex.length_t = this.reader.getFloat(search, 'length_t');
+		this.textures.push(tex);
 	}
 };
 
@@ -591,33 +589,34 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 		search = material[i];
 		
 		id=this.reader.getString(search, 'id');
-		
-		if (this.materials[id] == null){
-			
-			mat = new MyMaterial(this.scene);
-			
-			var emission = search.getElementsByTagName('emission');
-			mat.emission = this.getRGBAFromDSX(emission[0]);
-			
-			var ambient = search.getElementsByTagName('ambient');
-			mat.ambient = this.getRGBAFromDSX(ambient[0]);
-			
-			var diffuse = search.getElementsByTagName('diffuse');
-			mat.diffuse = this.getRGBAFromDSX(diffuse[0]);
-			
-			var specular = search.getElementsByTagName('specular');
-			mat.specular= this.getRGBAFromDSX(specular[0]);
-			
-			var shininess = search.getElementsByTagName('shininess');
-			mat.shininess= this.reader.getFloat(shininess[0], 'value');
-			
-			this.materials[id] = mat;
-			
-		}
 
-		else{
-			return this.onXMLError("Materials: Repeated ids.");
+		for (var j=0; j<this.materials.length; j++){
+			if (this.materials[j].id == id)
+				return this.onXMLError("There can only be one material per id.");
 		}
+		
+		mat = new MyMaterial(this.scene);
+
+		
+		mat.id=id;
+			
+		var emission = search.getElementsByTagName('emission');
+		mat.emission = this.getRGBAFromDSX(emission[0]);
+		
+		var ambient = search.getElementsByTagName('ambient');
+		mat.ambient = this.getRGBAFromDSX(ambient[0]);
+			
+		var diffuse = search.getElementsByTagName('diffuse');
+		mat.diffuse = this.getRGBAFromDSX(diffuse[0]);
+			
+		var specular = search.getElementsByTagName('specular');
+		mat.specular= this.getRGBAFromDSX(specular[0]);
+			
+		var shininess = search.getElementsByTagName('shininess');
+		mat.shininess= this.reader.getFloat(shininess[0], 'value');
+			
+		this.materials.push(mat);
+	
 	}
 };
 
@@ -923,9 +922,6 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 		{
 			node.mat = this.calculateTransformMatrix(transformations[0]);
 		}
-
-		//console.log("lol");
-		//console.log(node.mat);
 
 		// MATERIALS
 		var searchMaterials = this.searchChildren(component[i],'materials');

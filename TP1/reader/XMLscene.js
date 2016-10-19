@@ -23,7 +23,7 @@ XMLscene.prototype.init = function (application) {
 	this.axis=new CGFaxis(this);
 
 	//this.myInterface = new CGFinterface();
-	//this.enableTextures(true);
+	this.enableTextures(true);
 
 	//declaração das variáveis do MySceneGraph
 	this.cameras = [];
@@ -61,30 +61,90 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.axis=new CGFaxis(this, this.graph.axis_length);
 	
 	this.gl.clearColor(this.graph.background[0],this.graph.background[1],this.graph.background[2],this.graph.background[3]);
-	//this.lights[0].setVisible(true);
-    //this.lights[0].enable();
+	this.lights[0].setVisible(true);
+    this.lights[0].enable();
 
 	this.init_variables();
 	//this.changeCamera(0);
 	this.updateLights();
-
+	this.loadMaterials();
+	this.loadTextures();
+	//this.loadTextures();
 	//console.log(this.graph.nodes);
 };
 
 XMLscene.prototype.init_variables = function(){
 	this.cameras = this.graph.cameras;
-	this.textures = this.graph.textures;
-	this.materials = this.graph.materials;
 	this.primitives = this.graph.primitives;
-	console.log(this.lights);
+};
+
+
+XMLscene.prototype.loadMaterials = function(){
+	for (var i=0; i <this.graph.materials.length; i++){
+
+		var id=this.graph.materials[i].id;
+		this.materials[id] = new CGFappearance(this);
+
+		console.log(this.materials);
+		var r, g, b, a;
+		
+		//ambient
+		r = this.graph.materials[i].ambient[0];
+		g = this.graph.materials[i].ambient[1];
+		b = this.graph.materials[i].ambient[2];
+		a = this.graph.materials[i].ambient[3];
+
+		this.materials[id].setAmbient(r, g, b, a);
+
+		//diffuse
+		r = this.graph.materials[i].diffuse[0];
+		g = this.graph.materials[i].diffuse[1];
+		b = this.graph.materials[i].diffuse[2];
+		a = this.graph.materials[i].diffuse[3];
+
+		this.materials[id].setDiffuse(r, g, b, a);
+
+		//specular
+		r = this.graph.materials[i].specular[0];
+		g = this.graph.materials[i].specular[1];
+		b = this.graph.materials[i].specular[2];
+		a = this.graph.materials[i].specular[3];
+
+		this.materials[id].setSpecular(r, g, b, a);
+
+		//emission
+		r = this.graph.materials[i].emission[0];
+		g = this.graph.materials[i].emission[1];
+		b = this.graph.materials[i].emission[2];
+		a = this.graph.materials[i].emission[3];
+
+		this.materials[id].setEmission(r, g, b, a);
+
+		//shininess
+		s = this.graph.materials[i].shininess;
+
+		this.materials[id].setShininess(s);
+	}
+};
+
+XMLscene.prototype.loadTextures = function(){
+	for (var i=0; i <this.graph.textures.length; i++){
+
+		var id=this.graph.textures[i].id;
+		var url = this.graph.textures[i].file;
+		this.textures[id] = new CGFtexture(this, url);
+
+		var length_s, length_t;
+		
+		//PROBLEMA - RESOLVER
+		length_s = this.graph.textures[i].length_s;
+		length_t = this.graph.textures[i].length_t;
+	
+	}
 };
 
 
 XMLscene.prototype.updateLights = function(){
-	/*this.lights[0].setPosition(2, 3, 3, 0.5);
-    this.lights[0].setDiffuse(1.0,1.0,1.0,0.5);
-    this.lights[0].setSpecular(1.0,1.0,1.0,0.5);
-    this.lights[0].update();*/
 
     for (var i=0; i<this.graph.lights.length; i++){
 			
@@ -109,7 +169,6 @@ XMLscene.prototype.updateLights = function(){
 
 			this.lights[i].setSpotCutOff(n);
 
-			console.log(this.lights[i]);
     	}
 
     	//common properties
@@ -200,7 +259,6 @@ XMLscene.prototype.display = function () {
 		//this.lights[1].update();
 	}
 
-	
 	this.processGraph(this.graph.sceneRoot);
 
 };
@@ -209,6 +267,9 @@ XMLscene.prototype.display = function () {
 
 XMLscene.prototype.processGraph = function(nodeName)
 {
+
+
+	//COMPOR FUNÇAO - DESORGANIZAÇAO
 	var material = null;
 
 	if(nodeName != null)
@@ -219,10 +280,49 @@ XMLscene.prototype.processGraph = function(nodeName)
 		{
 			material = node.materials[0];
 		}
-		
-		if(material != null)
-		{
-			//this.apply(material);
+
+		if (material != "inherit"){
+
+			var texture;
+
+			if (node.isPrimitive){
+				
+			}
+
+			else{
+				if (node.texture == null){
+					console.log(node);
+					return "Error: texture null";
+				}
+
+
+				if (node.texture == "none" ){
+
+					this.materials[material].setTexture(null);
+				}
+
+				else{
+					texture = this.textures[node.texture];
+
+				}
+
+				if(material != null && texture!=null)
+				{	
+
+					if (node.texture != "inherit"){
+
+						this.materials[material].setTexture(texture);
+
+						this.materials[material].apply();
+					}
+
+
+				}
+			}
+		}
+
+		if (material == "inherit"){
+			//FAZER
 		}
 
 		this.multMatrix(node.mat);
@@ -246,5 +346,10 @@ XMLscene.prototype.processGraph = function(nodeName)
 			}
 		}
 
+		//TEXTURES
+
+		if (node.texture == "none"){
+			//pai
+		}
 	}
 };

@@ -12,7 +12,7 @@
 function MyTexture(scene) {
 
     this.scene = scene;
-
+	this.id = null;
 	this.file=null;
 	this.length_s=null;
 	this.length_t=null;
