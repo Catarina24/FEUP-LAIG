@@ -276,72 +276,71 @@ XMLscene.prototype.display = function () {
 XMLscene.prototype.processGraph = function(nodeName)
 {
 
+	if (nodeName == null){
+		return "Process Graph: null node name.";
+	}
 
-	//COMPOR FUNÇAO - DESORGANIZAÇAO
-	var material = null;
+	var node = this.graph.nodes.get(nodeName);
+	var texture = null;
 
-	if(nodeName != null)
-	{
-		var node = this.graph.nodes.get(nodeName);
+	//if is primitive
+	if (node.isPrimitive){
+		node.primitive.display();
+	}
+	
+	//if materials is empty
+	if (node.materials.length == 0){
+		return "Process Graph: material needs to be declared.";
+	}
 
-		if(node.materials[0] != null)
-		{
-			material = node.materials[0];
-		}
+	//if texture is null
+	if (node.texture == null){
+		return "Process Graph: texture needs to be declared.";
+	}
 
-		if (material != "inherit"){
+	var material = node.materials[0];
 
-			var texture;
+	if (material == "inherit"){
+		
+	}
+	
+	else{
 
-			if (node.isPrimitive){
-				
+			if (node.texture == "none" ){
+				this.materials[material].setTexture(null);
 			}
+
+			if (node.texture != "inherit")
+				texture = this.textures[node.texture];
 
 			else{
-				if (node.texture == null){
-					console.log(node);
-					return "Error: texture null";
-				}
+				
 
-
-				if (node.texture == "none" ){
-
-					this.materials[material].setTexture(null);
-				}
-
-				else{
-					texture = this.textures[node.texture];
-
-				}
-
-				if(material != null && texture!=null)
-				{	
-
-					if (node.texture != "inherit"){
-
-						this.materials[material].setTexture(texture);
-
-						this.materials[material].apply();
-					}
-
-
-				}
 			}
-		}
 
-		if (material == "inherit"){
-			//FAZER
+			if(material != null && texture!=null)
+			{	
+
+				if (node.texture != "inherit"){
+
+					this.materials[material].setTexture(texture);
+
+					this.materials[material].apply();
+				}
+
+
+				}
 		}
 
 		this.multMatrix(node.mat);
 
-		if(node.isPrimitive)
+		/*if(node.isPrimitive)
 		{
 			node.primitive.display();
-		}
+		}*/
 		
-		else
-		{
+		//else
+		//{
 			for(var i = 0; i < node.children.length; i++)
 			{
 				this.pushMatrix();
@@ -352,12 +351,11 @@ XMLscene.prototype.processGraph = function(nodeName)
 
 				this.popMatrix();
 			}
-		}
+		//}
 
 		//TEXTURES
 
 		if (node.texture == "none"){
 			//pai
 		}
-	}
 };
