@@ -24,7 +24,6 @@ function MyNode(){
     this.texture = null;
     
     this.mat = mat4.create();
-    this.transformations = [];
 
     this.localMatrix = mat4.create();
     this.worldMatrix = mat4.create();

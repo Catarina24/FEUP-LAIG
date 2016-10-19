@@ -369,7 +369,7 @@
             </transformation>
 
             <materials>
-                <material id="globe"/>
+                <material id="inherit"/>
                 <material id="black"/>
             </materials>
 
