@@ -15,14 +15,14 @@ serialInclude(['../lib/CGF.js', 'XMLscene.js', 'MySceneGraph.js',
 'MyNode.js', 'MyQuad.js','MyShape.js', 'MyView.js', 'MyTexture.js', 
 'MyMaterial.js', 'MyTransformation.js', 'MyTriangle.js', 'MySphere.js', 
 'MyCylinder.js', 'MyCylinderBase.js', 'MyCylinderSurface.js', 
-'MyTorus.js', 'MyLight.js',
+'MyTorus.js', 'MyLight.js', 'MyInterface.js',
 
 main=function()
 {
 	// Standard application, scene and interface setup
     var app = new CGFapplication(document.body);
     var myScene = new XMLscene();
-    var myInterface = new CGFinterface();
+    var myInterface = new MyInterface();
 
     app.init();
 
