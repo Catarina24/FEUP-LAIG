@@ -84,7 +84,7 @@
 		<!-- spot e' um foco. Tem um angulo onde a luz e' maxima. Tem uma zona que nao ilumina. E' feita uma transicao suave da zona
 		iluminada para a zona nao iluminada, definida pelo exponent. -->
 
-        <spot id="spot1" enabled="0" angle="40" exponent="0.5">
+        <spot id="spot1" enabled="1" angle="40" exponent="0.5">
             <!-- atencao, "target" e' diferente de "direction" -->
             <target x="10" y="10" z="5"/>
             <location x="2" y="5.2" z="0.1" />
@@ -93,7 +93,7 @@
             <specular r="0.5" g="0.5" b="0.5" a="0.5" />
         </spot>
 
-        <spot id="spot2" enabled="0" angle="10" exponent="1">
+        <spot id="spot2" enabled="1" angle="10" exponent="1">
             <!-- atencao, "target" e' diferente de "direction" -->
             <target x="10" y="3.5" z="3.5"/>
             <location x="5" y="6.7" z="5" />
