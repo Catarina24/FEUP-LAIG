@@ -356,6 +356,11 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 		return this.onXMLError("no lights are defined. Please defined either an omni light or a spotlight.");
 	}
 
+	if(this.lights.children > 8)
+	{
+		return this.onXMLError("There can not be more than 7 lights.");
+	}
+
 	// Extrapolate omni lights
 	for (var i = 0; i < searchOmni.length; i++)
 	{
@@ -628,10 +633,6 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 	
 	var search = this.searchChildren(rootElement, 'transformations');
 
-	console.log('search');
-	console.log(search);
-	console.log("confusa");
-	
 	var transformations = search[0];
 
 	var transformation = this.searchChildren(transformations, 'transformation');
@@ -650,7 +651,7 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 
 			var matrix = mat4.clone(this.calculateTransformMatrix(search));
 			this.transformations[id]=matrix;
-			console.log(this.transformations);
+			//console.log(this.transformations);
 		}
 		else
 		{
@@ -842,7 +843,7 @@ MySceneGraph.prototype.parseCylinders = function (cylinderElement){
 	var slices = this.reader.getFloat(cylinderElement, 'slices');
 	var stacks = this.reader.getFloat(cylinderElement, 'stacks');
 
-	var cylinder = new MyCylinder(this.scene, slices, stacks, top, base, height);
+	var cylinder = new MyCylinder(this.scene, slices, stacks, height, base, top);
 
 	return cylinder;
 };

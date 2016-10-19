@@ -31,6 +31,13 @@ XMLscene.prototype.init = function (application) {
 	this.materials = [];
 	this.primitives = [];
 
+	//Interface variables declaration
+
+	this.light0 = true;
+	this.light1 = true;
+
+	// Complete with following lights
+
 };
 
 XMLscene.prototype.initLights = function () {
@@ -67,10 +74,11 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.init_variables();
 	//this.changeCamera(0);
 	this.updateLights();
+	
 	this.loadMaterials();
 	this.loadTextures();
 	//this.loadTextures();
-	//console.log(this.graph.nodes);
+	console.log(this.graph.nodes);
 };
 
 XMLscene.prototype.init_variables = function(){
