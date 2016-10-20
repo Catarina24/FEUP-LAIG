@@ -36,12 +36,11 @@ XMLscene.prototype.init = function (application) {
 
 	this.numOfLights = 0;
 
-	// if this.lightsInterface[i] == true, then the light i is enabled
-	this.lightsInterface = [false, false, false, false,
-							false, false, false, false];
+	// see @ loadLights to see how lights are activated/deactivated
 
+	this.materialCounter = 0;
 	
-
+	
 	// Complete with following lights
 
 	console.log(this);
@@ -316,7 +315,10 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 	}
 
 	var node = this.graph.nodes.get(nodeName);
-	var mat = node.materials[0];
+
+	var matPosition = this.materialCounter % node.materials.length;
+
+	var mat = node.materials[matPosition];
 	var tex = node.texture;
 
 	//if is primitive

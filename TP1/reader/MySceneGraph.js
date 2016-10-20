@@ -935,6 +935,8 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 		// materials[0] is the first BLOCK
 		var materials = searchMaterials[0].children;
 		//console.log("materiais:" + materials);
+		console.log(node);
+		console.log(materials);
 
 		if(materials.length == 0)
 		{
@@ -955,6 +957,9 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 
 			node.materials.push(materialId);
 		}
+		
+		
+		console.log(node.materials);
 
 		// TEXTURE
 		var texture = component[i].getElementsByTagName('texture');
@@ -995,8 +1000,6 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 			{
 				return this.onXMLError('Invalid child at ' + i + ' component.');
 			}
-
-			node.materials.push(materialId);
 		}
 
 

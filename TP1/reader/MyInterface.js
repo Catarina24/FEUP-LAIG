@@ -71,7 +71,7 @@ MyInterface.prototype.processKeyDown = function(event) {
 	{
 		case (77):	
 		case (77+32):	// 'M' or 'm'
-			console.log("Pressed M");
+			this.scene.materialCounter++;
 			break;
 		case(86):
 		case(86+32):	// 'D' or 'd'
