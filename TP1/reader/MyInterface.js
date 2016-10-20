@@ -75,7 +75,8 @@ MyInterface.prototype.processKeyDown = function(event) {
 			break;
 		case(86):
 		case(86+32):	// 'D' or 'd'
-			console.log("Pressed V");
+			this.scene.viewCounter++;
+			this.scene.changeCamera(this.scene.viewCounter);
 			break;
 	};
 }
