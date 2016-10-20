@@ -36,12 +36,12 @@ XMLscene.prototype.init = function (application) {
 
 	this.numOfLights = 0;
 
-	// if this.lightsInterface[i] == true, then the light i is enabled
-	this.lightsInterface = [false, false, false, false,
-							false, false, false, false];
+	// see @ loadLights to see how lights are activated/deactivated
 
+	this.materialCounter = 0;
+	this.viewCounter = 0;
 	
-
+	
 	// Complete with following lights
 
 	console.log(this);
@@ -80,7 +80,7 @@ XMLscene.prototype.onGraphLoaded = function ()
     this.lights[0].enable();
 
 	this.init_variables();
-	//this.changeCamera(0);
+	this.changeCamera(0);
 	this.updateLights();
 	
 	this.loadMaterials();
@@ -88,10 +88,12 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.loadLights();
 
 	console.log(this.graph);
+	console.log(this.cameras);
 };
 
 XMLscene.prototype.init_variables = function(){
 	this.cameras = this.graph.cameras;
+
 	this.primitives = this.graph.primitives;
 };
 
@@ -174,7 +176,7 @@ XMLscene.prototype.loadLights = function()
 			this.lights[i].setSpotDirection(x, y, z);
 
 			//angle
-			var angle= this.graph.lights[i].angle;
+			var angle= (2*Math.PI)/360 * this.graph.lights[i].angle;
 
 			this.lights[i].setSpotCutOff(angle);
 
@@ -183,6 +185,10 @@ XMLscene.prototype.loadLights = function()
 
 			this.lights[i].setSpotCutOff(n);
 
+    	}
+    	else
+    	{
+    		this.angle = (2*Math.PI)/360;
     	}
 
     	//common properties
@@ -264,11 +270,19 @@ XMLscene.prototype.updateLights = function(){
 
 
 XMLscene.prototype.changeCamera = function(i){
-	//verificação nao faz nada ??
-	if (i >= this.cameras.length)
+
+	var orderedLights = Object.keys(this.cameras);
+	i = i % orderedLights.length;
+
+	console.log(orderedLights);
+	console.log(this.cameras);
+	
+	if (i >= orderedLights.length)
 		return "i out of range";
-	this.camera = new CGFcamera(this.cameras[i].angle, this.cameras[i].near, this.cameras[i].far, this.cameras[i].position, this.cameras[i].target);
-	//this.myInterface.setActive(this.camera);
+
+	this.camera = new CGFcamera(this.cameras[orderedLights[i]].angle, this.cameras[orderedLights[i]].near, this.cameras[orderedLights[i]].far, this.cameras[orderedLights[i]].position, this.cameras[orderedLights[i]].target);
+	
+	this.application.interface.setActiveCamera(this.camera);
 }
 
 
@@ -316,7 +330,10 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 	}
 
 	var node = this.graph.nodes.get(nodeName);
-	var mat = node.materials[0];
+
+	var matPosition = this.materialCounter % node.materials.length;
+
+	var mat = node.materials[matPosition];
 	var tex = node.texture;
 
 	//if is primitive
