@@ -122,51 +122,6 @@ MySceneGraph.prototype.getRotateFromDSX = function (attributeName){
 	return coord;
 };
 
-
-
-/*
- * Example of method that parses elements of one block and stores information in a specific data structure
- */
-MySceneGraph.prototype.parseGlobalsExample= function(rootElement) {
-
-	var elems =  rootElement.getElementsByTagName('globals');
-	if (elems == null) {
-		return "globals element is missing.";
-	}
-
-	if (elems.length != 1) {
-		return "either zero or more than one 'globals' element found.";
-	}
-
-	// various examples of different types of access
-	var globals = elems[0];
-	this.background = this.reader.getRGBA(globals, 'background');
-	this.drawmode = this.reader.getItem(globals, 'drawmode', ["fill","line","point"]);
-	this.cullface = this.reader.getItem(globals, 'cullface', ["back","front","none", "frontandback"]);
-	this.cullorder = this.reader.getItem(globals, 'cullorder', ["ccw","cw"]);
-
-	console.log("Globals read from file: {background=" + this.background + ", drawmode=" + this.drawmode + ", cullface=" + this.cullface + ", cullorder=" + this.cullorder + "}");
-
-	var tempList=rootElement.getElementsByTagName('list');
-
-	if (tempList == null  || tempList.length==0) {
-		return "list element is missing.";
-	}
-
-	this.list=[];
-	// iterate over every element
-	var nnodes=tempList[0].children.length;
-	for (var i=0; i< nnodes; i++)
-	{
-		var e=tempList[0].children[i];
-
-		// process each element and store its information
-		this.list[e.id]=e.attributes.getNamedItem("coords").value;
-		console.log("Read list item id "+ e.id+" with value "+this.list[e.id]);
-	}
-
-};
-
 /*
  *	Verifies the order of the blocks
  */
@@ -174,9 +129,12 @@ MySceneGraph.prototype.parseGlobalsExample= function(rootElement) {
  MySceneGraph.prototype.verifyOrder = function(rootElement){
 	var search = rootElement.children;
 	
-	if (search.length != 9)
+	if (search.length < 9)
 		return this.onXMLError("There's one or more elements missing");
 	
+	else if (search.length > 9)
+		return this.onXMLError("There are too many <dsx> elements");
+			
 	else if (search[0].tagName != 'scene' ||
 		search[1].tagName != 'views' ||
 		search[2].tagName != 'illumination' ||
@@ -186,7 +144,7 @@ MySceneGraph.prototype.parseGlobalsExample= function(rootElement) {
 		search[6].tagName != 'transformations' ||
 		search[7].tagName != 'primitives' ||
 		search[8].tagName != 'components')
-		return this.onXMLError("The blocks are not in the right order");
+		console.warn("The blocks are not in the right order");
 	
  }
 
@@ -200,6 +158,11 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 	// getElementsByTagName(<tag>) returns a NodeList with all the elements named
 	// with the argument tag
 	var search = rootElement.getElementsByTagName('scene');
+
+	if(search.length != 1)
+	{
+		return this.onXMLError("There must be one and only one 'scene' element block.")
+	}
 
 	var scene = search[0];
 
@@ -223,6 +186,10 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 	
 	//cada vez que v/V é carregado, vista muda para a próxima da lista	
 	
+	if(search.length != 1)
+	{
+		return this.onXMLError("There must be one and only one 'views' element block.")
+	}
 		
 	//var vdefault = this.reader.getString(views, 'default');
 	//console.log("view: " + vdefault);
@@ -296,6 +263,11 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 
 	var illumination = search[0];
 
+	if(search.length != 1)
+	{
+		return this.onXMLError("There must be one and only one 'illumination' element block.")
+	}
+
 	//Get ambient illumination
 	search = illumination.getElementsByTagName('ambient');
 
@@ -346,6 +318,11 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 	var search = rootElement.getElementsByTagName('lights');
 
 	var lights = search[0];
+
+	if(search.length != 1)
+	{
+		return this.onXMLError("There must be one and only one 'lights' element block.")
+	}
 
 	// Searches both kind of lights: omni and spot
 	var searchOmni = lights.getElementsByTagName('omni');
@@ -544,6 +521,11 @@ MySceneGraph.prototype.parseDSXTextures = function (rootElement){
 	
 	var search = rootElement.getElementsByTagName('textures');
 	
+	if(search.length != 1)
+	{
+		return this.onXMLError("There must be one and only one 'textures' element block.")
+	}
+
 	var textures = search[0];
 	
 	var texture = textures.getElementsByTagName('texture');
@@ -580,6 +562,11 @@ MySceneGraph.prototype.parseDSXTextures = function (rootElement){
 MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 	
 	var search = rootElement.getElementsByTagName('materials');
+	
+	if(search.length != 1)
+	{
+		return this.onXMLError("There must be one and only one 'materials' element block.")
+	}
 	
 	var material = search[0].getElementsByTagName('material');
 	

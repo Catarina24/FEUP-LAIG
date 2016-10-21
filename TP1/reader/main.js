@@ -36,7 +36,7 @@ main=function()
 	
 	
 	//open dsx file (dsxFile)
-	var filename=getUrlVars()['file'] || "dsxFile.xml";
+	var filename=getUrlVars()['file'] || "testFile.xml";
 
 	// create and load graph, and associate it to scene. 
 	// Check console for loading errors
