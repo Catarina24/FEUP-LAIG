@@ -157,7 +157,7 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 
 	// getElementsByTagName(<tag>) returns a NodeList with all the elements named
 	// with the argument tag
-	var search = rootElement.getElementsByTagName('scene');
+	var search = this.searchChildren(rootElement, 'scene');
 
 	if(search.length != 1)
 	{
@@ -180,7 +180,7 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 
 MySceneGraph.prototype.parseDSXViews = function (rootElement){
 
-	var search = rootElement.getElementsByTagName('views');
+	var search = this.searchChildren(rootElement, 'views');
 	
 	var views = search[0];
 	
@@ -259,7 +259,7 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 
 MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 
-	var search = rootElement.getElementsByTagName('illumination');
+	var search = this.searchChildren(rootElement, 'illumination');
 
 	var illumination = search[0];
 
@@ -315,7 +315,7 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 
 MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
-	var search = rootElement.getElementsByTagName('lights');
+	var search = this.searchChildren(rootElement, 'lights');
 
 	var lights = search[0];
 
@@ -371,7 +371,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 		if(locationX == null || locationY == null || 
 		locationZ == null || locationW == null)
 		{
-			return this.onXMLError("there's a component missing in " + i + " light.")
+			return this.onXMLError("there's a component missing in " + light.id + " light.")
 		}
 
 		light.location.push(locationX);
@@ -387,7 +387,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		if(light.ambientRGBA == null)
 		{
-			return this.onXMLError("bad RGBA on 'ambient' component of omnilight " + i);
+			return this.onXMLError("bad RGBA on 'ambient' component of omnilight " + light.id);
 		}
 
 		// Light diffuse
@@ -398,7 +398,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		if(light.diffuseRGBA == null)
 		{
-			return this.onXMLError("bad RGBA on 'diffuse' component of omnilight " + i);
+			return this.onXMLError("bad RGBA on 'diffuse' component of omnilight " + light.id);
 		}
 
 		// Light specular
@@ -409,7 +409,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		if(light.specularRGBA == null)
 		{
-			return this.onXMLError("bad RGBA on 'specular' component of omnilight " + i);
+			return this.onXMLError("bad RGBA on 'specular' component of omnilight " + light.id);
 		}
 
 		this.lights.push(light);
@@ -450,7 +450,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 		var targetZ = this.reader.getFloat(target, 'z');
 
 		if(targetX == null || targetY == null || targetZ == null){
-			return this.onXMLError("there's a component missing in " + i + " light.")
+			return this.onXMLError("there's a component missing in " + light.id + " light.")
 		}
 
 		light.target.push(targetX);
@@ -468,7 +468,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 		if(locationX == null || locationY == null || 
 		locationZ == null)
 		{
-			return this.onXMLError("there's a component missing in " + i + " light.")
+			return this.onXMLError("there's a component missing in " + light.id + " light.")
 		}
 
 		light.location.push(locationX);
@@ -483,7 +483,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		if(light.ambientRGBA == null)
 		{
-			return this.onXMLError("bad RGBA on 'ambient' component of omnilight " + i);
+			return this.onXMLError("bad RGBA on 'ambient' component of omnilight " + light.id);
 		}
 
 		// Light diffuse
@@ -494,7 +494,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		if(light.diffuseRGBA == null)
 		{
-			return this.onXMLError("bad RGBA on 'diffuse' component of omnilight " + i);
+			return this.onXMLError("bad RGBA on 'diffuse' component of omnilight " + light.id);
 		}
 
 		// Light specular
@@ -505,7 +505,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		if(light.specularRGBA == null)
 		{
-			return this.onXMLError("bad RGBA on 'specular' component of omnilight " + i);
+			return this.onXMLError("bad RGBA on 'specular' component of omnilight " + light.id);
 		}
 
 		this.lights.push(light);
@@ -519,7 +519,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 MySceneGraph.prototype.parseDSXTextures = function (rootElement){
 	
-	var search = rootElement.getElementsByTagName('textures');
+	var search = this.searchChildren(rootElement, 'textures');
 	
 	if(search.length != 1)
 	{
@@ -561,7 +561,7 @@ MySceneGraph.prototype.parseDSXTextures = function (rootElement){
  */
 MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 	
-	var search = rootElement.getElementsByTagName('materials');
+	var search = this.searchChildren(rootElement, 'materials');
 	
 	if(search.length != 1)
 	{
@@ -656,7 +656,7 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 
 MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 
-	var searchPrimitives = rootElement.getElementsByTagName('primitives');
+	var searchPrimitives = this.searchChildren(rootElement, 'primitives');
 	
 	var primitives = searchPrimitives[0];
 
@@ -858,7 +858,8 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 	// Empty list that will store the component nodes
 	
 
-	var searchComponents = rootElement.getElementsByTagName('components');
+	var searchComponents = this.searchChildren(rootElement, 'components');
+
 	var components = searchComponents[0];
 
 	if(components == null)
@@ -1039,7 +1040,7 @@ MySceneGraph.prototype.getRGBAFromDSX = function(attributeName)
 	var a = this.reader.getFloat(attributeName, 'a');
 
 	if(r == null){
-		return this.onXMLError("missing component 'r''");
+		return this.onXMLError("missing component 'r'");
 	}
 
 	if(g == null){
@@ -1052,6 +1053,22 @@ MySceneGraph.prototype.getRGBAFromDSX = function(attributeName)
 
 	if(a == null){
 		return this.onXMLError("missing component 'a'");
+	}
+
+	if(r < 0 || r > 1){
+		return this.onXMLError("component 'r' does not have normalized values (between 0 and 1)");
+	}
+
+	if(g < 0 || g > 1){
+		return this.onXMLError("component 'g' does not have normalized values (between 0 and 1)");
+	}
+
+	if(b < 0 || b > 1){
+		return this.onXMLError("component 'b' does not have normalized values (between 0 and 1)");
+	}
+
+	if(a < 0 || a > 1){
+		return this.onXMLError("component 'a' does not have normalized values (between 0 and 1)");
 	}
 
 	rgba.push(r, g, b, a);

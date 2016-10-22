@@ -19,7 +19,7 @@
     <!-- como o comprimento dos tres eixos (cilindros) -->
     <scene root="sala" axis_length="5.0" /> 	<!-- ss é o identificador do node raiz, que deve ter o nome do cenario que se esta a desenhar 
 											(ex: campoFutebol) -->
-    <scene/>
+
 	
 	
 	<!-- DEVE SER DADA UMA MENSAGEM DE ERRO OU WARNING QUANDO UM DOS COMPONENTES ESTA EM FALTA E ESPECIFICAR A LINHA E O ERRO! -->
