@@ -395,7 +395,14 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 	for(var i = 0; i < node.children.length; i++){
 		this.pushMatrix();
 
-			this.processGraph(node.children[i], material, texture);
+		if(this.graph.nodes.get(node.children[i]) == null)	// if there is no node with given id
+		{
+			this.graph.onXMLError("There is no child node named " + node.children[i] + " from parent " + node.id);
+			node.children.splice(i,1); // removes 1 (one) element from index i, so the error isn't repeated every cycle
+			continue;
+		}
+
+		this.processGraph(node.children[i], material, texture);
 
 		this.popMatrix();
 	}
