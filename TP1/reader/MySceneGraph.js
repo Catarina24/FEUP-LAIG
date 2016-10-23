@@ -994,13 +994,20 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 		{
 			var child = children[0].children[j];
 
+			var childID = this.reader.getString(child, 'id');
+
 			if(child.nodeName == 'componentref')
 			{
-				node.children.push(this.reader.getString(child, 'id'));
+				node.children.push(childID);
 			}
 			else if(child.nodeName == 'primitiveref')
 			{
-				node.children.push("#" + this.reader.getString(child, 'id'));
+				if(this.primitives["#" + childID] == null)
+				{
+					this.onXMLError("No primitive with name " + childID + " in component " + component[i].id);
+					continue;
+				}
+				node.children.push("#" + childID);
 			}
 			else
 			{
