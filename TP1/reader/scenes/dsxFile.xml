@@ -376,7 +376,7 @@
             <texture id="screen"/>
 
             <children>
-                <componentref id="rectangle"/>
+                <primitiveref id="rectangle"/>
             </children>
 
         </component>

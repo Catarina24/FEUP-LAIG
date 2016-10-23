@@ -393,7 +393,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 		// Light diffuse
 
 		var searchDiffuse = omni.getElementsByTagName('diffuse');
-		var diffuse = searchAmbient[0];
+		var diffuse = searchDiffuse[0];
 		light.diffuseRGBA = this.getRGBAFromDSX(diffuse);
 
 		if(light.diffuseRGBA == null)
@@ -489,7 +489,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 		// Light diffuse
 
 		var searchDiffuse = spot.getElementsByTagName('diffuse');
-		var diffuse = searchAmbient[0];
+		var diffuse = searchDiffuse[0];
 		light.diffuseRGBA = this.getRGBAFromDSX(diffuse);
 
 		if(light.diffuseRGBA == null)
