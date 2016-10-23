@@ -76,7 +76,7 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.axis=new CGFaxis(this, this.graph.axis_length);
 	
 	this.gl.clearColor(this.graph.background[0],this.graph.background[1],this.graph.background[2],this.graph.background[3]);
-	this.lights[0].setVisible(true);
+	this.lights[0].setVisible(false);
     this.lights[0].enable();
 
 	this.init_variables();
@@ -87,7 +87,7 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.loadTextures();
 	this.loadLights();
 
-	console.log(this.lights);
+	console.log(this.graph);
 };
 
 XMLscene.prototype.init_variables = function(){
