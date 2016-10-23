@@ -80,7 +80,7 @@ XMLscene.prototype.onGraphLoaded = function ()
     this.lights[0].enable();
 
 	this.init_variables();
-	this.changeCamera(0);
+	this.changeCamera(this.graph.default_view);
 	this.updateLights();
 	
 	this.loadMaterials();
@@ -271,18 +271,18 @@ XMLscene.prototype.updateLights = function(){
 
 XMLscene.prototype.changeCamera = function(i){
 
-	var orderedLights = Object.keys(this.cameras);
-	i = i % orderedLights.length;
+	// Object.keys(obj) returns an array with the keys of the array 'obj'
+	var orderedLights = Object.keys(this.cameras);	// orderedLights[0] = <camera 0 id>, orderedLights[1] = <camera 1 id>, ...
+	i = i % orderedLights.length;	// so it cycles (ex: number of lights = 4, key was pressed 5 times -> view displayed is 1 (5 % 4 = 1))
 
-	console.log(orderedLights);
-	console.log(this.cameras);
-	
-	if (i >= orderedLights.length)
+	if (i >= orderedLights.length)	// if i is out of bounds
 		return "i out of range";
 
 	this.camera = new CGFcamera(this.cameras[orderedLights[i]].angle, this.cameras[orderedLights[i]].near, this.cameras[orderedLights[i]].far, this.cameras[orderedLights[i]].position, this.cameras[orderedLights[i]].target);
+
+	// gets the camera with the id on the i position of ordered lights
 	
-	this.application.interface.setActiveCamera(this.camera);
+	this.application.interface.setActiveCamera(this.camera); // so mouse controls work
 }
 
 
@@ -331,16 +331,18 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 
 	var node = this.graph.nodes.get(nodeName);
 
+	
+	//if is primitive
+	if (node.isPrimitive){
+		node.primitive.display();
+		return;
+	}
+	
 	var matPosition = this.materialCounter % node.materials.length;
 
 	var mat = node.materials[matPosition];
 	var tex = node.texture;
 
-	//if is primitive
-	if (node.isPrimitive){
-		node.primitive.display();
-	}
-	
 	//if materials is empty
 	if (mat == null){
 		return "Process Graph: material needs to be declared.";
