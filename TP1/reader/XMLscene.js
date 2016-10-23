@@ -182,7 +182,7 @@ XMLscene.prototype.loadLights = function()
 			this.lights[i].setSpotDirection(x1-x, y1-y, z1-z);
 
 			//angle
-			var angle= (Math.PI)/180 * this.graph.lights[i].angle;
+			var angle= this.graph.lights[i].angle;
 
 			this.lights[i].setSpotCutOff(angle);
 
