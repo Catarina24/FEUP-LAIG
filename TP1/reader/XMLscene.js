@@ -87,8 +87,7 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.loadTextures();
 	this.loadLights();
 
-	console.log(this.graph);
-	console.log(this.cameras);
+	console.log(this.lights);
 };
 
 XMLscene.prototype.init_variables = function(){
@@ -167,39 +166,46 @@ XMLscene.prototype.loadLights = function()
 	for (var i=0; i<this.graph.lights.length; i++){
     	//spot lights
     	if (this.graph.lights[i].omni != true){
+			
+			//position
+    		var x= this.graph.lights[i].location[0];
+			var y= this.graph.lights[i].location[1];
+			var z= this.graph.lights[i].location[2];
+			
+			this.lights[i].setPosition(x, y, z, this.graph.local);
 
  			//target
-			var x= this.graph.lights[i].target[0];
-			var y= this.graph.lights[i].target[1];
-			var z= this.graph.lights[i].target[2];
+			var x1= this.graph.lights[i].target[0];
+			var y1= this.graph.lights[i].target[1];
+			var z1= this.graph.lights[i].target[2];
 
-			this.lights[i].setSpotDirection(x, y, z);
+			this.lights[i].setSpotDirection(x1-x, y1-y, z1-z);
 
 			//angle
-			var angle= (2*Math.PI)/360 * this.graph.lights[i].angle;
+			var angle= (Math.PI)/180 * this.graph.lights[i].angle;
 
 			this.lights[i].setSpotCutOff(angle);
 
 			//Exponent
 			var n= this.graph.lights[i].exponent;
 
-			this.lights[i].setSpotCutOff(n);
+			this.lights[i].setSpotExponent(n);
 
     	}
     	else
     	{
-    		this.angle = (2*Math.PI)/360;
+    		//location
+			var x= this.graph.lights[i].location[0];
+			var y= this.graph.lights[i].location[1];
+			var z= this.graph.lights[i].location[2];
+			var w= this.graph.lights[i].location[3];
+			this.lights[i].setPosition(x, y, z, w);
     	}
 
     	//common properties
 
 
-		//location
-    	var x= this.graph.lights[i].location[0];
-		var y= this.graph.lights[i].location[1];
-		var z= this.graph.lights[i].location[2];
-		var w= this.graph.lights[i].location[3];
-		this.lights[i].setPosition(x, y, z, w);
+		
 
     	var r, g, b, a;
 
