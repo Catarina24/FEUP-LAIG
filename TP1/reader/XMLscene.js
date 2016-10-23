@@ -331,17 +331,18 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 
 	var node = this.graph.nodes.get(nodeName);
 
-	var matPosition = this.materialCounter % node.materials.length;
-
-	var mat = node.materials[matPosition];
-	var tex = node.texture;
-
+	
 	//if is primitive
 	if (node.isPrimitive){
 		node.primitive.display();
 		return;
 	}
 	
+	var matPosition = this.materialCounter % node.materials.length;
+
+	var mat = node.materials[matPosition];
+	var tex = node.texture;
+
 	//if materials is empty
 	if (mat == null){
 		return "Process Graph: material needs to be declared.";
