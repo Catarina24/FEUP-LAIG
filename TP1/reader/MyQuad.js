@@ -56,3 +56,15 @@ function MyQuad(scene, x1, x2, y1, y2) {
 
  	this.initGLBuffers();
  };
+
+ MyQuad.prototype.setTexCoords = function(length_s, length_t){
+	
+	this.texCoords = [
+		0, (this.y2-this.y1)/length_t,
+		(this.x2-this.x1)/length_s, (this.y2-this.y1)/length_t,
+		(this.x2-this.x1)/length_s, 0,
+		0, 0
+	 ];
+
+	 this.updateTexCoordsGLBuffers();
+ }
