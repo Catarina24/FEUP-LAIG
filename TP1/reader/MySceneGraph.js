@@ -191,7 +191,7 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 		return this.onXMLError("There must be one and only one 'views' element block.")
 	}
 		
-	//var vdefault = this.reader.getString(views, 'default');
+	var vdefault = this.reader.getString(views, 'default');
 	//console.log("view: " + vdefault);
 
 	var perspectives = views.getElementsByTagName('perspective');
@@ -242,11 +242,21 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 			view.target = vec3.fromValues(targ[0], targ[1], targ[2]);
 			
 			this.cameras[id] = view;
+			
+			if(i==0)	// first camera default
+			{
+				this.default_view = i;
+			}
+
+			if(vdefault == id)	// specified camera default
+			{
+				this.default_view = i;
+			}
 		}
 		else{
 			return this.onXMLError("Perspectives: Repeated ids");
 		}
-		this.default_view = this.cameras[0];
+		
 		
 	}
 
