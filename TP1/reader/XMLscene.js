@@ -339,6 +339,7 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 	//if is primitive
 	if (node.isPrimitive){
 		node.primitive.display();
+		return;
 	}
 	
 	//if materials is empty

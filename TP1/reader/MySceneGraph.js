@@ -620,13 +620,14 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 	
 	var search = this.searchChildren(rootElement, 'transformations');
 
+	if(search.length != 1)
+	{
+		return this.onXMLError("There must be one and only one 'transformations' element block.")
+	}
+
 	var transformations = search[0];
 
 	var transformation = this.searchChildren(transformations, 'transformation');
-	
-	//se "transformations" não tem filhos
-	if (transformation.length == 0)
-		return this.onXMLError("Transformation element is missing");
 	
 	for (var i=0; i<transformation.length; i++){
 		
@@ -691,9 +692,9 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 					node.isPrimitive = true;
 					node.primitive = rectangle;
 
-					this.nodes.set(node.id, node);
+					this.nodes.set("#"+node.id, node);
 
-					this.primitives[id] = rectangle;
+					this.primitives["#"+id] = rectangle;
 			}
 
 			/** 
@@ -710,9 +711,9 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 					node.isPrimitive = true;
 					node.primitive = triangle;
 
-					this.nodes.set(node.id, node);
+					this.nodes.set("#"+node.id, node);
 
-					this.primitives[id] = triangle;
+					this.primitives["#"+id] = triangle;
 			}
 
 			/** 
@@ -729,9 +730,9 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 					node.isPrimitive = true;
 					node.primitive = sphere;
 
-					this.nodes.set(node.id, node);
+					this.nodes.set("#"+node.id, node);
 
-					this.primitives[id] = sphere;
+					this.primitives["#"+id] = sphere;
 			}
 
 
@@ -749,9 +750,9 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 					node.isPrimitive = true;
 					node.primitive = cylinder;
 
-					this.nodes.set(node.id, node);
+					this.nodes.set("#"+node.id, node);
 
-					this.primitives[id] = cylinder;
+					this.primitives["#"+id] = cylinder;
 			}
 
 			/** 
@@ -768,9 +769,9 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 				node.isPrimitive = true;
 				node.primitive = torus;
 
-				this.nodes.set(node.id, node);
+				this.nodes.set("#"+node.id, node);
 				
-				this.primitives[id] = torus;
+				this.primitives["#"+id] = torus;
 			}
 		}
 	}
@@ -976,7 +977,7 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 			}
 			else if(child.nodeName == 'primitiveref')
 			{
-				node.children.push(this.reader.getString(child, 'id'));
+				node.children.push("#" + this.reader.getString(child, 'id'));
 			}
 			else
 			{
