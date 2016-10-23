@@ -347,8 +347,15 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 
 		if (node.primitive instanceof MyQuad){
 			var len = this.getCoordsFromTexture(texture);
+
 			if (len != null)
+			{
+				if(!(len[0] == 1 && len[1] == 1))
+				{
+					this.materials[material].setTextureWrap('REPEAT', 'REPEAT');
+				}
 				node.primitive.setTexCoords(len[0], len[1]);
+			}
 		}
 		node.primitive.display();
 		return;
@@ -392,7 +399,6 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 		else{
 			texture = tex;		
 		}
-		this.materials[material].setTextureWrap('REPEAT', 'REPEAT');
 		this.materials[material].setTexture(this.textures[texture]);
 	}
 	
