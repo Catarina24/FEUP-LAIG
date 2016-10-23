@@ -51,6 +51,8 @@ function MySceneGraph(filename, scene) {
 	//Primitives
 	this.primitives =[];
 
+	this.local = null;
+
 
 };
 
@@ -272,6 +274,8 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	var search = this.searchChildren(rootElement, 'illumination');
 
 	var illumination = search[0];
+
+	this.local = this.reader.getFloat(illumination, 'local');
 
 	if(search.length != 1)
 	{
