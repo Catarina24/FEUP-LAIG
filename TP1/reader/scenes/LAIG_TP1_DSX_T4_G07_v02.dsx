@@ -118,7 +118,7 @@
         <!-- objetos respetivos podem a violar esta regra.         -->
         <!-- Nao necessario aplicar fatores de escala em  -->
         <!-- quadricas (esfera, ciclindro...) -->
-        <texture id="floor" file="./scenes/resources/wood.jpg" length_s="1.0" length_t="1.0" /> 
+        <texture id="floor" file="./scenes/resources/wood.jpg" length_s="0.3" length_t="0.3" /> 
 
         <texture id="dark_wood" file="./scenes/resources/dark_wood.jpg" length_s="1.0" length_t="1.0" />
         
@@ -132,17 +132,20 @@
 
         <texture id="fire_fireplace" file="./scenes/resources/fire_fireplace.jpg" length_s="1.0" length_t="1.0"/>
 
-        <texture id="chimney_fireplace" file="./scenes/resources/chimney_fireplace.jpg" length_s="0.1" length_t="0.1"/>
+        <texture id="chimney_fireplace" file="./scenes/resources/chimney_fireplace.jpg" length_s="0.5" length_t="0.5"/>
 
-        <texture id="screen" file="./scenes/resources/series.jpg" length_s="0.1" length_t="0.1"/>
+        <texture id="screen" file="./scenes/resources/series.jpg" length_s="1.0" length_t="1.0"/>
        
         <texture id="sofa_cream" file="./scenes/resources/sofa_cream.jpg" length_s="0.1" length_t="0.1"/>
         
         <texture id="beige_wall" file="./scenes/resources/beige_wall.jpg" length_s="0.5" length_t="0.5"/>
 
-        <texture id="wood_door" file="./scenes/resources/wood_door.jpg" length_s="1" length_t="1"/>
+        <texture id="wood_door" file="./scenes/resources/wood_door.jpg" length_s="1.0" length_t="1.0"/>
 
         <texture id="white_frame" file="./scenes/resources/white_frame.png" length_s="1" length_t="1"/>
+
+        <texture id="ceiling" file="./scenes/resources/ceiling.jpg" length_s="0.2" length_t="0.2"/>
+
 
         
         
@@ -1254,7 +1257,7 @@
                 <material id="normal"/>
             </materials>
 
-            <texture id="none"/>
+            <texture id="ceiling"/>
 
             <children>
                 <primitiveref id="rectangle"/>

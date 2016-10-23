@@ -150,12 +150,6 @@ XMLscene.prototype.loadTextures = function(){
 		var id=this.graph.textures[i].id;
 		var url = this.graph.textures[i].file;
 		this.textures[id] = new CGFtexture(this, url);
-
-		var length_s, length_t;
-		
-		//PROBLEMA - RESOLVER
-		length_s = this.graph.textures[i].length_s;
-		length_t = this.graph.textures[i].length_t;
 	
 	}
 };
@@ -326,6 +320,17 @@ XMLscene.prototype.display = function () {
 
 };
 
+
+XMLscene.prototype.getCoordsFromTexture = function(tex){
+
+		for (var i=0; i<this.graph.textures.length; i++){
+			if (tex == this.graph.textures[i].id)
+				return vec2.fromValues(this.graph.textures[i].length_s, this.graph.textures[i].length_t);
+		}
+
+		return null;
+}
+
 /**FROM HERE ON THE FUNCTIONS ARE OURS**/
 
 XMLscene.prototype.processGraph = function(nodeName, material, texture)
@@ -337,9 +342,14 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 
 	var node = this.graph.nodes.get(nodeName);
 
-	
 	//if is primitive
 	if (node.isPrimitive){
+
+		if (node.primitive instanceof MyQuad){
+			var len = this.getCoordsFromTexture(texture);
+			if (len != null)
+				node.primitive.setTexCoords(len[0], len[1]);
+		}
 		node.primitive.display();
 		return;
 	}
@@ -382,6 +392,7 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 		else{
 			texture = tex;		
 		}
+		this.materials[material].setTextureWrap('REPEAT', 'REPEAT');
 		this.materials[material].setTexture(this.textures[texture]);
 	}
 	
