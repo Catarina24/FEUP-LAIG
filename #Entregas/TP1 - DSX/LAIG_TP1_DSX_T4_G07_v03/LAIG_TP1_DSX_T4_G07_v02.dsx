@@ -74,7 +74,7 @@
         <!-- Os identificadores "id" nao podem ser repetidos -->
 		
 		<!-- omni e' ilumina de forma igual em todas as direcoes -->
-        <omni id="omni1" enabled="1" >
+        <omni id="omni1" enabled="0" >
             <location x="5" y="5" z="5" w="0.2" />
             <ambient r="0.1" g="0.1" b="0.1" a="1" />
             <diffuse r="0.7" g="0.7" b="0.7" a="1" />
@@ -84,7 +84,7 @@
 		<!-- spot e' um foco. Tem um angulo onde a luz e' maxima. Tem uma zona que nao ilumina. E' feita uma transicao suave da zona
 		iluminada para a zona nao iluminada, definida pelo exponent. -->
 
-        <spot id="spot1" enabled="1" angle="40" exponent="0.5">
+        <spot id="spot1" enabled="1" angle="10" exponent="0.5">
             <!-- atencao, "target" e' diferente de "direction" -->
             <target x="10" y="10" z="5"/>
             <location x="2" y="5.2" z="0.1" />
@@ -93,12 +93,12 @@
             <specular r="0.5" g="0.5" b="0.5" a="0.5" />
         </spot>
 
-        <spot id="spot2" enabled="1" angle="10" exponent="1">
+        <spot id="spot2" enabled="1" angle="10" exponent="2">
             <!-- atencao, "target" e' diferente de "direction" -->
-            <target x="10" y="3.5" z="3.5"/>
-            <location x="5" y="6.7" z="5" />
-            <ambient r="0.4" g="0.2" b="0.2" a="0" />
-            <diffuse r="0.4" g="0" b="0" a="0" />
+            <target x="10" y="3.5" z="5"/>
+            <location x="0" y="0" z="5" />
+            <ambient r="0" g="0" b="0" a="0" />
+            <diffuse r="0" g="0" b="0" a="0" />
             <specular r="1" g="1" b="1" a="1" />
         </spot>
     </lights>
@@ -118,7 +118,7 @@
         <!-- objetos respetivos podem a violar esta regra.         -->
         <!-- Nao necessario aplicar fatores de escala em  -->
         <!-- quadricas (esfera, ciclindro...) -->
-        <texture id="floor" file="./scenes/resources/wood.jpg" length_s="1.0" length_t="1.0" /> 
+        <texture id="floor" file="./scenes/resources/wood.jpg" length_s="0.3" length_t="0.3" /> 
 
         <texture id="dark_wood" file="./scenes/resources/dark_wood.jpg" length_s="1.0" length_t="1.0" />
         
@@ -132,17 +132,20 @@
 
         <texture id="fire_fireplace" file="./scenes/resources/fire_fireplace.jpg" length_s="1.0" length_t="1.0"/>
 
-        <texture id="chimney_fireplace" file="./scenes/resources/chimney_fireplace.jpg" length_s="0.1" length_t="0.1"/>
+        <texture id="chimney_fireplace" file="./scenes/resources/chimney_fireplace.jpg" length_s="0.5" length_t="0.5"/>
 
-        <texture id="screen" file="./scenes/resources/series.jpg" length_s="0.1" length_t="0.1"/>
+        <texture id="screen" file="./scenes/resources/series.jpg" length_s="1.0" length_t="1.0"/>
        
         <texture id="sofa_cream" file="./scenes/resources/sofa_cream.jpg" length_s="0.1" length_t="0.1"/>
         
         <texture id="beige_wall" file="./scenes/resources/beige_wall.jpg" length_s="0.5" length_t="0.5"/>
 
-        <texture id="wood_door" file="./scenes/resources/wood_door.jpg" length_s="1" length_t="1"/>
+        <texture id="wood_door" file="./scenes/resources/wood_door.jpg" length_s="1.0" length_t="1.0"/>
 
         <texture id="white_frame" file="./scenes/resources/white_frame.png" length_s="1" length_t="1"/>
+
+        <texture id="ceiling" file="./scenes/resources/ceiling.jpg" length_s="0.2" length_t="0.2"/>
+
 
         
         
@@ -1254,7 +1257,7 @@
                 <material id="normal"/>
             </materials>
 
-            <texture id="none"/>
+            <texture id="ceiling"/>
 
             <children>
                 <primitiveref id="rectangle"/>
