@@ -451,9 +451,18 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 		//VERIFICAÇOES DE ERROS - FAZER
 		light.enabled = this.reader.getBoolean(spot, 'enabled');
 
-		light.angle = this.reader.getFloat(spot, 'angle');
+		if (light.enabled != 0 && light.enabled != 1){
+			return this.onXMLError("Light: values for enabled must be between 0 and 1");
+		}
+
+		var angle = this.reader.getFloat(spot, 'angle');
+		light.angle = this.convertDegreesToRadians(angle);
 
 		light.exponent = this.reader.getFloat(spot, 'exponent');
+
+		if (light.exponent < 0 || light.exponent > 128){
+			return this.onXMLError("Light: values for exponent must be between 0 and 128");
+		}
 
 		//Light Target
 		var searchTarget = spot.getElementsByTagName('target');
