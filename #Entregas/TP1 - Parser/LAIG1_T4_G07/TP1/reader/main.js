@@ -12,13 +12,17 @@ function getUrlVars() {
 }	 
 
 serialInclude(['../lib/CGF.js', 'XMLscene.js', 'MySceneGraph.js', 
+'MyNode.js', 'MyQuad.js','MyShape.js', 'MyView.js', 'MyTexture.js', 
+'MyMaterial.js', 'MyTransformation.js', 'MyTriangle.js', 'MySphere.js', 
+'MyCylinder.js', 'MyCylinderBase.js', 'MyCylinderSurface.js', 
+'MyTorus.js', 'MyLight.js', 'MyInterface.js',
 
 main=function()
 {
 	// Standard application, scene and interface setup
     var app = new CGFapplication(document.body);
     var myScene = new XMLscene();
-    var myInterface = new CGFinterface();
+    var myInterface = new MyInterface();
 
     app.init();
 
@@ -30,7 +34,9 @@ main=function()
 	// get file name provided in URL, e.g. http://localhost/myproj/?file=myfile.xml 
 	// or use "demo.xml" as default (assumes files in subfolder "scenes", check MySceneGraph constructor) 
 	
-	var filename=getUrlVars()['file'] || "demo.xml";
+	
+	//open dsx file (dsxFile)
+	var filename=getUrlVars()['file'] || "LAIG_TP1_DSX_T4_G07_v02.dsx";
 
 	// create and load graph, and associate it to scene. 
 	// Check console for loading errors
