@@ -15,7 +15,7 @@ serialInclude(['../lib/CGF.js', 'XMLscene.js', 'MySceneGraph.js',
 'MyNode.js', 'MyQuad.js','MyShape.js', 'MyView.js', 'MyTexture.js', 
 'MyMaterial.js', 'MyTransformation.js', 'MyTriangle.js', 'MySphere.js', 
 'MyCylinder.js', 'MyCylinderBase.js', 'MyCylinderSurface.js', 
-'MyTorus.js', 'MyLight.js', 'MyInterface.js', 'MyPlane.js',
+'MyTorus.js', 'MyLight.js', 'MyInterface.js', 'MyPlane.js', 'MyPatch.js',
 
 main=function()
 {

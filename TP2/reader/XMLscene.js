@@ -44,7 +44,10 @@ XMLscene.prototype.init = function (application) {
 	
 	// Complete with following lights
 
-	this.plane = new MyPlane(this, 2, 4, 1, 1);
+
+
+	//this.plane = new MyPlane(this, 2, 4, 1, 1);
+	//this.patch = new MyPatch(this, 2, 3, 7, 8, this.controlPoints);
 	console.log(this);
 
 };
@@ -319,7 +322,8 @@ XMLscene.prototype.display = function () {
 
 	this.processGraph(this.graph.sceneRoot, null, null);
 
-	this.plane.display();
+	//this.plane.display();
+	//this.patch.display();
 
 };
 
