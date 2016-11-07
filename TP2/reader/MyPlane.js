@@ -50,7 +50,7 @@ function MyPlane(scene, dimX, dimY, partsX, partsY){
                 return nurbsSurface.getPoint(u, v);
         };
 
-        this.plane = new CGFnurbsObject(this.scene, getSurfacePoint, this.partsX, this.partsY);
+        this.plane = new CGFnurbsObject(this.scene, getSurfacePoint, partsX, partsY);
 
         //this.initBuffers();
     

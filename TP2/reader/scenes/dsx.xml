@@ -289,7 +289,20 @@
             <torus inner="0.5" outer="1" slices="20" loops="20" />
         </primitive>
 
-
+        <primitive id="plane">
+            <plane dimX="1" dimY="1" partsX="1" partsY="1" />
+        </primitive>
+        
+        <primitive id="patch">
+            <patch orderU="2" orderV="1" partsU="7" partsV="8" >
+               <controlpoint x="-1.5" y="-1.5" z="0.0"/>
+               <controlpoint x="-1.5" y="1.5" z="0.0"/>
+               <controlpoint x="0.0" y="-1.5" z="3.0"/>
+               <controlpoint x="0.0" y="1.5" z="3.0"/>
+               <controlpoint x="1.5" y="-1.5" z="0.0"/>
+               <controlpoint x="1.5" y="1.5" z="0.0"/>
+            </patch>
+        </primitive>
       
     </primitives>
     

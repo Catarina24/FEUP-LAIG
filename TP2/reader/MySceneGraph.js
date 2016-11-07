@@ -149,6 +149,9 @@ MySceneGraph.prototype.getRotateFromDSX = function (attributeName){
 		search[9].tagName != 'components')
 		console.warn("The blocks are not in the right order");
 	
+
+	for (var i=0; i<10; i++)
+		console.log(search[i].tagName);
  }
 
 /* SCENE PARSER
@@ -704,99 +707,140 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 
 
 			if(this.primitives[id] == null){
-			/** 
-			 * Rectangles
-			 */
-			if (primitiveShapesList[0].tagName == "rectangle"){
-					var rectangle = this.parseRectangles(primitiveShapesList[0]);
+				/** 
+				 * Rectangles
+				 */
+				if (primitiveShapesList[0].tagName == "rectangle"){
+						var rectangle = this.parseRectangles(primitiveShapesList[0]);
+						rectangle.id = id;
+
+						var node = new MyNode();
+
+						node.id = id;
+						node.isPrimitive = true;
+						node.primitive = rectangle;
+
+						this.nodes.set("#"+node.id, node);
+
+						this.primitives["#"+id] = rectangle;
+				}
+
+				/** 
+				 * Triangles
+				 */
+				if (primitiveShapesList[0].tagName == "triangle"){
+
+						var triangle = this.parseTriangles(primitiveShapesList[0]);
+						triangle.id = id;
+
+						var node = new MyNode();
+
+						node.id = id;
+						node.isPrimitive = true;
+						node.primitive = triangle;
+
+						this.nodes.set("#"+node.id, node);
+
+						this.primitives["#"+id] = triangle;
+				}
+
+				/** 
+				 * Sphere
+				 */
+				if (primitiveShapesList[0].tagName == "sphere"){
+
+						var sphere = this.parseSpheres(primitiveShapesList[0]);
+						sphere.id = id;
+
+						var node = new MyNode();
+
+						node.id = id;
+						node.isPrimitive = true;
+						node.primitive = sphere;
+
+						this.nodes.set("#"+node.id, node);
+
+						this.primitives["#"+id] = sphere;
+				}
+
+
+				/** 
+				 * Cylinder
+				 */
+				if (primitiveShapesList[0].tagName == "cylinder"){
+
+						var cylinder = this.parseCylinders(primitiveShapesList[0]);
+						cylinder.id = id;
+
+						var node = new MyNode();
+
+						node.id = id;
+						node.isPrimitive = true;
+						node.primitive = cylinder;
+
+						this.nodes.set("#"+node.id, node);
+
+						this.primitives["#"+id] = cylinder;
+				}
+
+				/** 
+				 * Torus
+				 */
+				if (primitiveShapesList[0].tagName == "torus"){
+					
+					var torus = this.parseTorus(primitiveShapesList[0]);
+					torus.id = id;
 
 					var node = new MyNode();
 
 					node.id = id;
 					node.isPrimitive = true;
-					node.primitive = rectangle;
+					node.primitive = torus;
 
 					this.nodes.set("#"+node.id, node);
+					
+					this.primitives["#"+id] = torus;
+				}
 
-					this.primitives["#"+id] = rectangle;
-			}
+				/**
+				 *  Plane
+				 */
 
-			/** 
-			 * Triangles
-			 */
-			if (primitiveShapesList[0].tagName == "triangle"){
-
-					var triangle = this.parseTriangles(primitiveShapesList[0]);
-					triangle.id = id;
+				if (primitiveShapesList[0].tagName == "plane"){
+					
+					var plane = this.parsePlane(primitiveShapesList[0]);
+					plane.id = id;
 
 					var node = new MyNode();
 
 					node.id = id;
 					node.isPrimitive = true;
-					node.primitive = triangle;
+					node.primitive = plane;
 
 					this.nodes.set("#"+node.id, node);
+					
+					this.primitives["#"+id] = plane;
+				}
 
-					this.primitives["#"+id] = triangle;
-			}
+				/**
+				 *  Patch
+				 */
 
-			/** 
-			 * Sphere
-			 */
-			if (primitiveShapesList[0].tagName == "sphere"){
-
-					var sphere = this.parseSpheres(primitiveShapesList[0]);
-					sphere.id = id;
+				if (primitiveShapesList[0].tagName == "patch"){
+					
+					var patch = this.parsePatch(primitiveShapesList[0]);
+					patch.id = id;
 
 					var node = new MyNode();
 
 					node.id = id;
 					node.isPrimitive = true;
-					node.primitive = sphere;
+					node.primitive = patch;
 
 					this.nodes.set("#"+node.id, node);
-
-					this.primitives["#"+id] = sphere;
-			}
-
-
-			/** 
-			 * Cylinder
-			 */
-			if (primitiveShapesList[0].tagName == "cylinder"){
-
-					var cylinder = this.parseCylinders(primitiveShapesList[0]);
-					cylinder.id = id;
-
-					var node = new MyNode();
-
-					node.id = id;
-					node.isPrimitive = true;
-					node.primitive = cylinder;
-
-					this.nodes.set("#"+node.id, node);
-
-					this.primitives["#"+id] = cylinder;
-			}
-
-			/** 
-		 	* Torus
-		 	*/
-			if (primitiveShapesList[0].tagName == "torus"){
-				
-				var torus = this.parseTorus(primitiveShapesList[0]);
-				torus.id = id;
-
-				var node = new MyNode();
-
-				node.id = id;
-				node.isPrimitive = true;
-				node.primitive = torus;
-
-				this.nodes.set("#"+node.id, node);
-				
-				this.primitives["#"+id] = torus;
-			}
+					
+					this.primitives["#"+id] = patch;
+				}
 		}
 	}
 };
@@ -871,6 +915,63 @@ MySceneGraph.prototype.parseTorus = function (torusElement){
 
 	return torus;
 };
+
+MySceneGraph.prototype.parsePlane = function (planeElement){
+
+	var dimX = this.reader.getFloat(planeElement, 'dimX');
+	var dimY = this.reader.getFloat(planeElement, 'dimY');
+	var partsX = this.reader.getFloat(planeElement, 'partsX');
+	var partsY = this.reader.getFloat(planeElement, 'partsY');
+
+	var plane = new MyPlane(this.scene, dimX, dimY, partsX, partsY);
+
+	console.log(plane);
+
+	return plane;
+};
+
+MySceneGraph.prototype.parsePatch = function (patchElement){
+
+	var orderU = this.reader.getFloat(patchElement, 'orderU');
+	var orderV = this.reader.getFloat(patchElement, 'orderV');
+	var partsU = this.reader.getFloat(patchElement, 'partsU');
+	var partsV = this.reader.getFloat(patchElement, 'partsV');
+
+	var controlpoints = new Array();
+
+	var numControlpoints = 0;
+	var x, y, z;
+
+	var controlpointsSearch = this.searchChildren(patchElement, 'controlpoint');
+
+	for (var i=0; i<=orderU; i++){
+
+		var controlpointsU = new Array();
+
+		for (var j=0; j<=orderV; j++){
+
+			x = this.reader.getFloat(controlpointsSearch[numControlpoints], 'x');
+			y = this.reader.getFloat(controlpointsSearch[numControlpoints], 'y');
+			z = this.reader.getFloat(controlpointsSearch[numControlpoints], 'z');
+
+			var controlpointsV = new Array(x, y, z, 1);
+			controlpointsU.push(controlpointsV);
+
+			console.log(numControlpoints);
+			numControlpoints++;
+		}
+
+		controlpoints.push(controlpointsU);
+
+	}
+
+	var patch = new MyPatch(this.scene, orderU, orderV, partsU, partsV, controlpoints);
+
+	console.log(patch);
+
+	return patch;
+};
+
 
 
 
