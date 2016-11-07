@@ -34,11 +34,11 @@ function MyPlane(scene, dimX, dimY, partsX, partsY){
         this.controlPoints = [
             [
                 [-dimX/2, -dimY/2, 0, 1], //controlPoint = [x, y, z, w], w = weight of controlPoint, w = 1;
-                [dimX/2, -dimY/2, 0, 1]
+                [-dimX/2, dimY/2, 0, 1]
             ],
 
             [
-                [-dimX/2, dimY/2, 0, 1],
+                [dimX/2, -dimY/2, 0, 1],
                 [dimX/2, dimY/2, 0, 1]
             ]
 
