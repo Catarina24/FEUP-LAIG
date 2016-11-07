@@ -131,10 +131,10 @@ MySceneGraph.prototype.getRotateFromDSX = function (attributeName){
  MySceneGraph.prototype.verifyOrder = function(rootElement){
 	var search = rootElement.children;
 	
-	if (search.length < 9)
+	if (search.length < 10)
 		return this.onXMLError("There's one or more elements missing");
 	
-	else if (search.length > 9)
+	else if (search.length > 10)
 		return this.onXMLError("There are too many <dsx> elements");
 			
 	else if (search[0].tagName != 'scene' ||
@@ -144,8 +144,9 @@ MySceneGraph.prototype.getRotateFromDSX = function (attributeName){
 		search[4].tagName != 'textures' ||
 		search[5].tagName != 'materials' ||
 		search[6].tagName != 'transformations' ||
-		search[7].tagName != 'primitives' ||
-		search[8].tagName != 'components')
+		search[7].tagName != 'animations' ||
+		search[8].tagName != 'primitives' ||
+		search[9].tagName != 'components')
 		console.warn("The blocks are not in the right order");
 	
  }
