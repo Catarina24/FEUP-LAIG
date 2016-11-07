@@ -40,12 +40,11 @@ XMLscene.prototype.init = function (application) {
 
 	this.materialCounter = 0;
 	this.viewCounter = 0;
-	
-	
-	// Complete with following lights
 
-	this.plane = new MyPlane(this, 2, 4, 1, 1);
-	console.log(this);
+	// Animation timings
+
+	this.startTime = 0;
+	this.elapsedTime = 0;
 
 };
 
@@ -88,8 +87,18 @@ XMLscene.prototype.onGraphLoaded = function ()
 	this.loadTextures();
 	this.loadLights();
 
+	this.setUpdatePeriod(1000/60); // 60 Hz = 1000 ms / 60
+
 	console.log(this.graph);
 };
+
+XMLscene.prototype.update = function (currTime){
+
+	if (this.startTime == 0)
+   		this.startTime = currTime;
+
+  	this.elapsedTime = (currTime - this.startTime) / 1000;
+}
 
 XMLscene.prototype.init_variables = function(){
 	this.cameras = this.graph.cameras;
