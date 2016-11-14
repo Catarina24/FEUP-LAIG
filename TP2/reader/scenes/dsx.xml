@@ -248,13 +248,16 @@
             <!-- o valor "linear" ou "circular"; na animacao circular -->
             <!-- os angulos sao expressos em graus  -->
 
-            <animation id="ss" span="ff" type="linear">
-                <controlpoint xx="ff" yy="ff" zz="ff" /> 
+            <animation id="teste" span="5" type="linear">
+                <controlpoint x="0" y="0" z="0" /> 
+                 <controlpoint x="0" y="0" z="5" /> 
 
             </animation>
 
-            <animation id="ss" span="ff" type="circular" center="ff ff ff"
-                       radius="ff" startang="ff" rotang="ff" />
+
+            <animation id="teste2" span="6" type="circular" 
+                       centerx="0" centery="0" centerz="0"
+                       radius="5" startang="1" rotang="20" />
 
     </animations>
     
