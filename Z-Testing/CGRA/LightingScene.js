@@ -60,7 +60,7 @@ LightingScene.prototype.init = function(application) {
 	this.elapsedTime = 0;
 	this.startTime = 0;
 
-	this.animation = new MyLinearAnimation(this, 'lol', 6, [[0,0,0], [0,0,5]]);
+	this.animation = new MyLinearAnimation(this, 'lol', 7, [[0,0,0], [0,0,5], [0, -2, 5]]);
 	
 };
 

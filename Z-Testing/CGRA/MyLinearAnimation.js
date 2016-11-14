@@ -34,7 +34,6 @@ MyLinearAnimation.prototype.constructor = MyLinearAnimation;
 
 MyLinearAnimation.prototype.calculateDistance = function (){
 
-    this.segmentsCumulativeDistance.push(0);
     
     for(var i = 0; i < this.controlPoints.length - 1; i++)
     {
@@ -78,16 +77,16 @@ MyLinearAnimation.prototype.applyChanges = function(sceneTime){
     // increase currentSegment index until we find the current segment
     for( ; currentSegment < this.segmentsCumulativeDistance.length; currentSegment++)
     {
-        if(this.currentDistance > this.segmentsCumulativeDistance[currentSegment])
+        console.log("Distance " + this.currentDistance);
+        console.log(this.segmentsCumulativeDistance[currentSegment]);
+        
+        if(this.currentDistance < this.segmentsCumulativeDistance[currentSegment])
             break;
     }
 
-    var point1 = this.controlPoints[currentSegment];
+    console.log("c " + currentSegment);
+    var point1 = this.controlPoints[0];
     var point2 = this.controlPoints[currentSegment+1];
-
-    console.log("Pontos: ");
-    console.log(point1);
-    console.log(point2);
 
     if(point1 != null && point2 != null)
     {
