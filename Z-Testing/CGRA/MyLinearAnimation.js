@@ -7,26 +7,20 @@ function MyLinearAnimation(scene, id, span, controlPoints){ // span == totalTime
 
     MyAnimation.call(this, scene, id, span);
 
+    this.controlPoints = controlPoints;
+
     this.currentDistance = 0.0;
     this.currentTime = 0.0;
 
-    this.controlPoints = controlPoints;
-
-    
-
+   
     this.distancesBetweenPoints = [];
-    this.totalDistance = 0.0;
-    
-    console.log(this);
-
     this.segmentsCumulativeDistance = [];   // distance of the segment i + total distance traveled before the segment i 
+    
+    this.totalDistance = 0.0;
 
     this.calculateDistance();
 
     this.velocity = this.totalDistance / this.totalTime;
-
-    console.log("Initialization of animation: ");
-    console.log(this);
 }
 
 MyLinearAnimation.prototype = Object.create(MyAnimation.prototype);
@@ -34,7 +28,6 @@ MyLinearAnimation.prototype.constructor = MyLinearAnimation;
 
 MyLinearAnimation.prototype.calculateDistance = function (){
 
-    
     for(var i = 0; i < this.controlPoints.length - 1; i++)
     {
         var point1 = vec3.fromValues(this.controlPoints[i][0], this.controlPoints[i][1], this.controlPoints[i][2]); // x,y,z
@@ -51,50 +44,48 @@ MyLinearAnimation.prototype.calculateDistance = function (){
 }
 
 /** Function to determine what should the animation do according to the time that has passed **/
-MyLinearAnimation.prototype.applyChanges = function(sceneTime){
+MyLinearAnimation.prototype.apply = function(sceneTime){
 
-    if(sceneTime > this.totalTime)
+    if(sceneTime >= this.totalTime)
     {
         sceneTime = this.totalTime;  // stay in final position after animation is complete
     }   
 
-    console.log("Scene time: ");
-    console.log(sceneTime);
+    else{
 
-    this.currentDistance = this.velocity * sceneTime;
+        this.currentDistance = this.velocity * sceneTime;
 
-    console.log("Current distance: ");
-    console.log(this.currentDistance);
+        var currentSegment = 0;
 
-    console.log("Animation: ");
-    console.log(this);
-
-    var currentSegment = 0;
-
-    console.log("Segments: ");
-    console.log(this.segmentsCumulativeDistance);
-
-    // increase currentSegment index until we find the current segment
-    for( ; currentSegment < this.segmentsCumulativeDistance.length; currentSegment++)
-    {
-        console.log("Distance " + this.currentDistance);
-        console.log(this.segmentsCumulativeDistance[currentSegment]);
+        // increase currentSegment index until we find the current segment
+        for( ; currentSegment < this.segmentsCumulativeDistance.length; currentSegment++)
+        {  
+            if(this.currentDistance < this.segmentsCumulativeDistance[currentSegment])
+                break;
+        }
         
-        if(this.currentDistance < this.segmentsCumulativeDistance[currentSegment])
-            break;
-    }
 
-    console.log("c " + currentSegment);
-    var point1 = this.controlPoints[0];
-    var point2 = this.controlPoints[currentSegment+1];
+        var point1 = this.controlPoints[currentSegment];
+        var point2 = this.controlPoints[currentSegment+1];
 
-    if(point1 != null && point2 != null)
-    {
-        var vector = vec3.create(); // displacement vector
+        if(point1 != null && point2 != null)
+        {
+            var vector = vec3.create(); // displacement vector
 
-        vec3.subtract(vector, point2, point1);
+            vec3.subtract(vector, point2, point1);
 
-        this.scene.translate(vector[0]*this.velocity, vector[1]*this.velocity, vector[2]*this.velocity);
+            console.log(point2 + " " + point1);
+            console.log(vector);
+
+            var lastSegmentDist = 0;
+            if (this.currentSegment > 0)
+                lastSegmentDist = this.segmentsCumulativeDistance[currentSegment - 1];
+                
+            console.log(this.distancesBetweenPoints[currentSegment]);
+            var dist = (this.currentDistance - lastSegmentDist) / this.distancesBetweenPoints[currentSegment];
+
+            this.scene.translate(vector[0]*dist, vector[1]*dist, vector[2]*dist);
+        }
     }
 
 }
