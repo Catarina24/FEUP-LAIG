@@ -3,25 +3,27 @@
  * @constructor
  */
 
-function MyLinearAnimation(scene, id, span, controlPoints){ // span == time
+function MyLinearAnimation(scene, id, span, controlPoints){ // span == totalTime
 
     MyAnimation.call(this, scene, id, span);
 
+    this.currentDistance = 0.0;
+    this.currentTime = 0.0;
+
     this.controlPoints = controlPoints;
 
+    
+
     this.distancesBetweenPoints = [];
-    this.totalDistance = 0;
-
-    this.currentDistance = 0;
-    this.myCurrentTime = 0;
-
+    this.totalDistance = 0.0;
+    
     console.log(this);
 
     this.segmentsCumulativeDistance = [];   // distance of the segment i + total distance traveled before the segment i 
 
     this.calculateDistance();
 
-    this.velocity = this.totalDistance / this.time;
+    this.velocity = this.totalDistance / this.totalTime;
 
     console.log("Initialization of animation: ");
     console.log(this);
@@ -31,6 +33,8 @@ MyLinearAnimation.prototype = Object.create(MyAnimation.prototype);
 MyLinearAnimation.prototype.constructor = MyLinearAnimation;
 
 MyLinearAnimation.prototype.calculateDistance = function (){
+
+    this.segmentsCumulativeDistance.push(0);
     
     for(var i = 0; i < this.controlPoints.length - 1; i++)
     {
@@ -48,30 +52,28 @@ MyLinearAnimation.prototype.calculateDistance = function (){
 }
 
 /** Function to determine what should the animation do according to the time that has passed **/
-MyLinearAnimation.prototype.apply = function(time){
+MyLinearAnimation.prototype.applyChanges = function(sceneTime){
 
-    if(time >= this.time)
+    if(sceneTime > this.totalTime)
     {
-        this.myCurrentTime = this.time;   // stay in final position after animation is complete
-    }
-    
-    else
-    {
-        console.log("Time is smaller than current time!");
-        this.myCurrentTime = time;
-        console.log("Current time after changes: ");
-        console.log(this.myCurrentTime);
-        console.log("Time: ");
-        console.log(time);
+        sceneTime = this.totalTime;  // stay in final position after animation is complete
+    }   
 
-        console.log("Animation after changes: ");
-        console.log(this);
-        
-    }
+    console.log("Scene time: ");
+    console.log(sceneTime);
 
-    //this.currentDistance = this.velocity * this.myCurrentTime;
+    this.currentDistance = this.velocity * sceneTime;
+
+    console.log("Current distance: ");
+    console.log(this.currentDistance);
+
+    console.log("Animation: ");
+    console.log(this);
 
     var currentSegment = 0;
+
+    console.log("Segments: ");
+    console.log(this.segmentsCumulativeDistance);
 
     // increase currentSegment index until we find the current segment
     for( ; currentSegment < this.segmentsCumulativeDistance.length; currentSegment++)
@@ -83,15 +85,17 @@ MyLinearAnimation.prototype.apply = function(time){
     var point1 = this.controlPoints[currentSegment];
     var point2 = this.controlPoints[currentSegment+1];
 
+    console.log("Pontos: ");
+    console.log(point1);
+    console.log(point2);
+
     if(point1 != null && point2 != null)
     {
-        console.log(time);
-
         var vector = vec3.create(); // displacement vector
 
         vec3.subtract(vector, point2, point1);
 
-        this.scene.translate(vector[0]*velocity, vector[1]*velocity, vector[2]*velocity);
+        this.scene.translate(vector[0]*this.velocity, vector[1]*this.velocity, vector[2]*this.velocity);
     }
 
 }

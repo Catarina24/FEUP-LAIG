@@ -6,7 +6,7 @@
 function MyAnimation(scene, id, span){
     this.scene = scene;
     this.id = id;
-    this.time = span;
+    this.totalTime = span;
 }
 
 MyAnimation.prototype.constructor = MyAnimation;

@@ -55,12 +55,12 @@ LightingScene.prototype.init = function(application) {
 	this.materialC.setSpecular(139/255, 69/255, 19/255,1);	
 	this.materialC.setShininess(80);
 
-	this.animation = new MyLinearAnimation(this, 'lol', 6, [[0,0,0], [0,0,5]]);
-	
-	this.setUpdatePeriod(1000/60);
+	this.setUpdatePeriod(1000/10);
 
 	this.elapsedTime = 0;
 	this.startTime = 0;
+
+	this.animation = new MyLinearAnimation(this, 'lol', 6, [[0,0,0], [0,0,5]]);
 	
 };
 

@@ -41,9 +41,7 @@ MyTable.prototype.display = function () {
     this.cubequad.display();
     this.scene.popMatrix();
 
-	this.scene.animation.apply(this.scene.elapsedTime);
-	console.log(this.scene.animation);
-	console.log(this.scene.elapsedTime);
+	this.scene.animation.applyChanges(this.scene.elapsedTime);
 
 	this.scene.pushMatrix();
 	this.scene.translate(2.35, 3.5, 1.35);
