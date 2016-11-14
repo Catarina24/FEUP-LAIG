@@ -45,6 +45,9 @@ function MySceneGraph(filename, scene) {
 	//Transformations
 	this.transformations=[];
 
+	//animations
+	this.animations=[];
+
 	//Scene Nodes
 	this.nodes = new Map();
 
@@ -261,11 +264,8 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 		}
 		else{
 			return this.onXMLError("Perspectives: Repeated ids");
-		}
-		
-		
+		}	
 	}
-
 };
 
 /* ILLUMINATION PARSER 
@@ -640,9 +640,10 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 };
 
 
-/* TRANSFORMATIONS PARSER 
- *
- */
+/** 
+ * TRANSFORMATIONS PARSER 
+ * */ 
+
 MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 	
 	var search = this.searchChildren(rootElement, 'transformations');
@@ -672,6 +673,87 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 		{
 			return this.onXMLError("There are two or more transformations with the same id: " + id);
 		}
+	}
+};
+
+/**
+ * ANIMATIONS PARSER 
+ * */
+
+MySceneGraph.prototype.parseDSXAnimation = function (rootElement){
+	
+	var search = this.searchChildren(rootElement, 'animations');
+
+	if(search.length != 1)
+	{
+		return this.onXMLError("There must be one and only one 'animations' element block.")
+	}
+
+	var animations = search[0];
+	var searchAnimation = this.searchChildren(animations, 'animation');
+	
+	for (var i=0; i<searchAnimation.length; i++){
+		
+		search = searchAnimation[i];
+		
+		var exists = false;
+		var id = this.reader.getString(search, 'id');
+
+		//Verifica se ja existe uma animação com id igual a variavel "id"
+		for (var j=0; j < this.animations.length; j++){
+			if (this.animations[j].id == id){
+				exists = true;
+				break;
+			}
+		}
+
+		//se já existir retorna erro
+		if (exists){
+			return this.onXMLError("There are two or more transformations with the same id: " + id);
+		}
+		
+
+		var span = this.reader.getFloat(search, 'span');
+		var type = this.reader.getString(search, 'type');
+
+		//caso a animacao seja linear
+		if (type == 'linear'){
+
+			var controlPoints = [];
+			searchControlPoints = this.searchChildren(search, 'controlpoint');
+
+			for (var j=0; j < searchControlPoints.length; j++){
+
+				var controlP = searchControlPoints[j];
+
+				controlPoints.push(this.getCoordFromDSX(controlP));
+
+			}
+
+			console.log("span: " + span + " type: " + type + " controlPoints: " + controlPoints);
+			//var animation = new MyLinearAnimation(this.scene, id, span, controlPoints);
+			
+		}
+
+		if (type == 'circular'){
+
+			var x = this.reader.getFloat(search, 'centerx');
+			var y = this.reader.getFloat(search, 'centery');
+			var z = this.reader.getFloat(search, 'centerz');
+
+			var center = [x, y, z];
+
+			var radius = this.reader.getFloat(search, 'radius');
+			var startang = this.reader.getFloat(search, 'startang');
+			var rotang = this.reader.getFloat(search, 'rotang');
+			
+			console.log("center: " + center + " type: " + type + " radius: " + radius + " startang: " + startang + " rotang: " + rotang);
+			//var animation = new MyCircularAnimation(this.scene, id, span, center, radius, startang, rotang);
+		}
+
+		/*else return this.onXMLError("Animation type must be linear or circular");*/
+
+		//this.animations.push(animation);
 	}
 	
 	
@@ -1150,6 +1232,7 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 	this.parseDSXTextures(rootElement);
 	this.parseDSXMaterials(rootElement);
 	this.parseDSXTransformations(rootElement);
+	this.parseDSXAnimation(rootElement);
 	this.parseDSXPrimitives(rootElement);
 	this.parseDSXComponents(rootElement);
 
