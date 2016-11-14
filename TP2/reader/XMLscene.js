@@ -41,13 +41,14 @@ XMLscene.prototype.init = function (application) {
 	this.materialCounter = 0;
 	this.viewCounter = 0;
 	
-	
+
 	// Complete with following lights
 
 
 
 	//this.plane = new MyPlane(this, 2, 4, 1, 1);
 	//this.patch = new MyPatch(this, 2, 3, 7, 8, this.controlPoints);
+	this.vehicle = new MyVehicle(this);
 	console.log(this);
 
 };
@@ -324,6 +325,7 @@ XMLscene.prototype.display = function () {
 
 	//this.plane.display();
 	//this.patch.display();
+	this.vehicle.display();
 
 };
 
