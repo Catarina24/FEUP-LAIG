@@ -46,7 +46,7 @@ MyLinearAnimation.prototype.calculateDistance = function (){
 /** Function to determine what should the animation do according to the time that has passed **/
 MyLinearAnimation.prototype.apply = function(sceneTime){
 
-    if(sceneTime >= this.totalTime)
+    if(sceneTime > this.totalTime)
     {
         sceneTime = this.totalTime;  // stay in final position after animation is complete
     }   
@@ -60,7 +60,7 @@ MyLinearAnimation.prototype.apply = function(sceneTime){
         // increase currentSegment index until we find the current segment
         for( ; currentSegment < this.segmentsCumulativeDistance.length; currentSegment++)
         {  
-            if(this.currentDistance < this.segmentsCumulativeDistance[currentSegment])
+            if(this.currentDistance <= this.segmentsCumulativeDistance[currentSegment])
                 break;
         }
         
@@ -74,17 +74,14 @@ MyLinearAnimation.prototype.apply = function(sceneTime){
 
             vec3.subtract(vector, point2, point1);
 
-            console.log(point2 + " " + point1);
-            console.log(vector);
-
             var lastSegmentDist = 0;
             if (this.currentSegment > 0)
                 lastSegmentDist = this.segmentsCumulativeDistance[currentSegment - 1];
-                
-            console.log(this.distancesBetweenPoints[currentSegment]);
-            var dist = (this.currentDistance - lastSegmentDist) / this.distancesBetweenPoints[currentSegment];
-
-            this.scene.translate(vector[0]*dist, vector[1]*dist, vector[2]*dist);
+            
+            var aux = this.segmentsCumulativeDistance[currentSegment] - lastSegmentDist;
+            var dist = (this.currentDistance - lastSegmentDist) / aux;
+           
+            this.scene.translate(vector[0]*dist + point1[0], vector[1]*dist + point1[1], vector[2]*dist + point1[2]);
         }
     }
 
