@@ -9,6 +9,9 @@ function MyLinearAnimation(scene, id, span, controlPoints){ // span == totalTime
 
     this.controlPoints = controlPoints;
 
+    this.firstPoint = this.controlPoints[0];
+    this.lastPoint = this.controlPoints[this.controlPoints.length - 1];
+
     this.currentDistance = 0.0;
     this.currentTime = 0.0;
 
@@ -46,14 +49,27 @@ MyLinearAnimation.prototype.calculateDistance = function (){
 /** Function to determine what should the animation do according to the time that has passed **/
 MyLinearAnimation.prototype.apply = function(sceneTime){
 
-    if(sceneTime > this.totalTime)
+    // If there is only 1 control point, the object should be moved to that point for the duration of the animation
+    if (this.controlPoints.length == 1) 
     {
-        sceneTime = this.totalTime;  // stay in final position after animation is complete
-    }   
+         this.scene.translate(this.firstPoint[0], this.firstPoint[1], this.firstPoint[2]);
+    }
+    
+    // If there is more than one control point, but the scene time has already passed this.totalTime, put object in final position
+    else if(sceneTime > this.totalTime)  // if the animation time has ended
+    {
+        var finalPositionVector = vec3.create();
 
+        vec3.add(finalPositionVector, this.firstPoint, this.lastPoint);
+
+        // translate to final position
+        this.scene.translate(finalPositionVector[0], finalPositionVector[1], finalPositionVector[2]); // put in final position (last point of the controlPoints array)
+    }   
+    
+    // If the object has to follow a certain path
     else{
 
-        this.currentDistance = this.velocity * sceneTime;
+        this.currentDistance = this.velocity * sceneTime;   // distance traveled since the begginning of the animation
 
         var currentSegment = 0;
 
@@ -73,16 +89,19 @@ MyLinearAnimation.prototype.apply = function(sceneTime){
             var vector = vec3.create(); // displacement vector
 
             vec3.subtract(vector, point2, point1);
-
+            
             var lastSegmentDist = 0;
-            if (this.currentSegment > 0)
+            if (currentSegment > 0) // was THIS.currentSegment, so it was giving errors making the animation jump
                 lastSegmentDist = this.segmentsCumulativeDistance[currentSegment - 1];
             
             var aux = this.segmentsCumulativeDistance[currentSegment] - lastSegmentDist;
-            var dist = (this.currentDistance - lastSegmentDist) / aux;
-           
-            this.scene.translate(vector[0]*dist + point1[0], vector[1]*dist + point1[1], vector[2]*dist + point1[2]);
-        }
+        
+            var percentageTraveled = (this.currentDistance - lastSegmentDist) / aux;
+
+            this.scene.translate(vector[0]*percentageTraveled + point1[0], vector[1]*percentageTraveled + point1[1], vector[2]*percentageTraveled + point1[2]); // make object travel current segment
+            this.scene.translate(this.firstPoint[0], this.firstPoint[1], this.firstPoint[2]); // make translations according to the FIRST control point
+        }    
+
     }
 
 }
