@@ -46,20 +46,21 @@ MyLinearAnimation.prototype.calculateDistance = function (){
 /** Function to determine what should the animation do according to the time that has passed **/
 MyLinearAnimation.prototype.apply = function(sceneTime){
 
-    if(sceneTime > this.totalTime)
+    if(sceneTime > this.totalTime)  // if the animation time has ended
     {
-        sceneTime = this.totalTime;  // stay in final position after animation is complete
-        console.log("Scene time: ");
-        console.log(sceneTime);
-
         // translate to final position
         this.scene.translate(   this.controlPoints[this.controlPoints.length-1][0], 
                                 this.controlPoints[this.controlPoints.length-1][1], 
-                                this.controlPoints[this.controlPoints.length-1][2]); // put in final position
+                                this.controlPoints[this.controlPoints.length-1][2]); // put in final position (last point of the controlPoints array)
 
         console.log("Animation ended.");
     }   
 
+    else if (this.controlPoints.length == 1) // If there is only 1 control point, the object should be moved to that point for the duration of the animation
+    {
+         this.scene.translate(this.controlPoints[0][0], this.controlPoints[0][1], this.controlPoints[0][2]);
+    }
+    
     else{
 
         this.currentDistance = this.velocity * sceneTime;
@@ -83,16 +84,31 @@ MyLinearAnimation.prototype.apply = function(sceneTime){
             var vector = vec3.create(); // displacement vector
 
             vec3.subtract(vector, point2, point1);
+            console.log("Vector:");
+            console.log(vector);
 
             var lastSegmentDist = 0;
             if (this.currentSegment > 0)
                 lastSegmentDist = this.segmentsCumulativeDistance[currentSegment - 1];
             
             var aux = this.segmentsCumulativeDistance[currentSegment] - lastSegmentDist;
-            var dist = (this.currentDistance - lastSegmentDist) / aux;
+            console.log("Current segment cumulative distance: ");
+            console.log(this.segmentsCumulativeDistance[currentSegment]);
+
+            console.log("lastSegmentDist: ");
+            console.log(lastSegmentDist);
+
+            var percentageTraveled = (this.currentDistance - lastSegmentDist) / aux;
+
+            console.log("Current distance: ");
+            console.log(this.currentDistance);
+
+            console.log("Percentage traveled: ");
+            console.log(percentageTraveled);
            
-            this.scene.translate(vector[0]*dist + point1[0], vector[1]*dist + point1[1], vector[2]*dist + point1[2]);
-        }
+            this.scene.translate(vector[0]*percentageTraveled + point1[0], vector[1]*percentageTraveled + point1[1], vector[2]*percentageTraveled + point1[2]);
+            //this.scene.translate(this.controlPoints[0][0], this.controlPoints[0][1], this.controlPoints[0][2]); // make translations according to the FIRST control point
+        }    
 
     }
 
