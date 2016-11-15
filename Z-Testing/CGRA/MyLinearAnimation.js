@@ -49,11 +49,21 @@ MyLinearAnimation.prototype.apply = function(sceneTime){
     if(sceneTime > this.totalTime)
     {
         sceneTime = this.totalTime;  // stay in final position after animation is complete
+        console.log("Scene time: ");
+        console.log(sceneTime);
+
+        // translate to final position
+        this.scene.translate(   this.controlPoints[this.controlPoints.length-1][0], 
+                                this.controlPoints[this.controlPoints.length-1][1], 
+                                this.controlPoints[this.controlPoints.length-1][2]); // put in final position
+
+        console.log("Animation ended.");
     }   
 
     else{
 
         this.currentDistance = this.velocity * sceneTime;
+        console.log()
 
         var currentSegment = 0;
 
@@ -83,6 +93,7 @@ MyLinearAnimation.prototype.apply = function(sceneTime){
            
             this.scene.translate(vector[0]*dist + point1[0], vector[1]*dist + point1[1], vector[2]*dist + point1[2]);
         }
+
     }
 
 }
