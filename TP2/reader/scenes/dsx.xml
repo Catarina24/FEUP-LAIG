@@ -916,6 +916,11 @@
                  <translate x="2.55" y="2.5" z="8.7" />
             </transformation>
 
+            <!--TESTE-->
+            <animation>
+                <animationref id="teste" />
+            </animation>
+
             <materials>
                 <material id="globe"/>
             </materials>
