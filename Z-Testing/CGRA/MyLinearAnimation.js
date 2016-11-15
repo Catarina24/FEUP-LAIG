@@ -9,6 +9,9 @@ function MyLinearAnimation(scene, id, span, controlPoints){ // span == totalTime
 
     this.controlPoints = controlPoints;
 
+    this.firstPoint = this.controlPoints[0];
+    this.lastPoint = this.controlPoints[this.controlPoints.length - 1];
+
     this.currentDistance = 0.0;
     this.currentTime = 0.0;
 
@@ -46,25 +49,30 @@ MyLinearAnimation.prototype.calculateDistance = function (){
 /** Function to determine what should the animation do according to the time that has passed **/
 MyLinearAnimation.prototype.apply = function(sceneTime){
 
-    if(sceneTime > this.totalTime)  // if the animation time has ended
+    // If there is only 1 control point, the object should be moved to that point for the duration of the animation
+    if (this.controlPoints.length == 1) 
     {
-        // translate to final position
-        this.scene.translate(   this.controlPoints[this.controlPoints.length-1][0], 
-                                this.controlPoints[this.controlPoints.length-1][1], 
-                                this.controlPoints[this.controlPoints.length-1][2]); // put in final position (last point of the controlPoints array)
-
-        console.log("Animation ended.");
-    }   
-
-    else if (this.controlPoints.length == 1) // If there is only 1 control point, the object should be moved to that point for the duration of the animation
-    {
-         this.scene.translate(this.controlPoints[0][0], this.controlPoints[0][1], this.controlPoints[0][2]);
+         this.scene.translate(this.firstPoint[0], this.firstPoint[1], this.firstPoint[2]);
     }
+    
+    // If there is more than one control point, but the scene time has already passed this.totalTime, put object in final position
+    else if(sceneTime > this.totalTime)  // if the animation time has ended
+    {
+        var finalPositionVector = vec3.create();
+
+        vec3.add(finalPositionVector, this.firstPoint, this.lastPoint);
+
+        console.log("Last Point:" + this.lastPoint);
+        console.log("First Point:" + this.firstPoint);
+        console.log("finalPositionVector:" + finalPositionVector);
+
+        // translate to final position
+        this.scene.translate(finalPositionVector[0], finalPositionVector[1], finalPositionVector[2]); // put in final position (last point of the controlPoints array)
+    }   
     
     else{
 
         this.currentDistance = this.velocity * sceneTime;
-        console.log()
 
         var currentSegment = 0;
 
@@ -77,6 +85,7 @@ MyLinearAnimation.prototype.apply = function(sceneTime){
         
 
         var point1 = this.controlPoints[currentSegment];
+        
         var point2 = this.controlPoints[currentSegment+1];
 
         if(point1 != null && point2 != null)
@@ -84,6 +93,12 @@ MyLinearAnimation.prototype.apply = function(sceneTime){
             var vector = vec3.create(); // displacement vector
 
             vec3.subtract(vector, point2, point1);
+            console.log("Point1: ");
+            console.log(point1);
+
+            console.log("Point2: ");
+            console.log(point2);
+
             console.log("Vector:");
             console.log(vector);
 
@@ -107,7 +122,7 @@ MyLinearAnimation.prototype.apply = function(sceneTime){
             console.log(percentageTraveled);
            
             this.scene.translate(vector[0]*percentageTraveled + point1[0], vector[1]*percentageTraveled + point1[1], vector[2]*percentageTraveled + point1[2]);
-            //this.scene.translate(this.controlPoints[0][0], this.controlPoints[0][1], this.controlPoints[0][2]); // make translations according to the FIRST control point
+            this.scene.translate(this.firstPoint[0], this.firstPoint[1], this.firstPoint[2]); // make translations according to the FIRST control point
         }    
 
     }
