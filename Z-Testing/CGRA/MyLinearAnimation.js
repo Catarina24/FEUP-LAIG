@@ -103,7 +103,7 @@ MyLinearAnimation.prototype.apply = function(sceneTime){
             console.log(vector);
 
             var lastSegmentDist = 0;
-            if (this.currentSegment > 0)
+            if (currentSegment > 0)
                 lastSegmentDist = this.segmentsCumulativeDistance[currentSegment - 1];
             
             var aux = this.segmentsCumulativeDistance[currentSegment] - lastSegmentDist;
