@@ -30,6 +30,7 @@ XMLscene.prototype.init = function (application) {
 	this.textures = [];
 	this.materials = [];
 	this.primitives = [];
+	this.animations = [];
 
 	//Interface variables declaration
 	this.application = application;
@@ -97,14 +98,16 @@ XMLscene.prototype.update = function (currTime){
 
 	if (this.startTime == 0)
    		this.startTime = currTime;
-
-  	this.elapsedTime = (currTime - this.startTime) / 1000;
+	else
+  		this.elapsedTime = (currTime - this.startTime) / 1000;
 }
 
 XMLscene.prototype.init_variables = function(){
 	this.cameras = this.graph.cameras;
 
 	this.primitives = this.graph.primitives;
+
+	this.animations = this.graph.animations;
 };
 
 
@@ -260,8 +263,6 @@ XMLscene.prototype.loadLights = function()
 		this.numOfLights++;
 	}
 
-	console.log(this.graph.lights);
-
 	this.application.interface.addLightsMenu(this.graph.lights, this.numOfLights);
 	
 
@@ -358,6 +359,7 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 
 	var node = this.graph.nodes.get(nodeName);
 
+	
 	//if is primitive
 	if (node.isPrimitive){
 
@@ -419,15 +421,17 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 	}
 	
 	//TESTE Animation	
-	/*for (var k=0; k < node.animations.length; k++){
-		node.animations[k].apply(this.elapsedTime);
-	}
-
-	*/
 	
 	this.materials[material].apply();
 
 	this.multMatrix(node.mat);
+
+if (node.animations.length != 0){
+		
+		
+		this.animations[node.animations[0]].apply(this.elapsedTime);		
+		console.log(this.animations[node.animations[0]]);
+	}
 
 		
 	for(var i = 0; i < node.children.length; i++){

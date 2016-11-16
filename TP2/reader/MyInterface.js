@@ -48,8 +48,6 @@ MyInterface.prototype.init = function(application) {
 
 MyInterface.prototype.addLightsMenu = function(lights, numOfLights){
 	var lightGroup=this.gui.addFolder('Lights');
-
-	console.log(lights);
 		
 	lightGroup.open();
 	

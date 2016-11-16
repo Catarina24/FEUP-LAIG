@@ -91,7 +91,6 @@ MySceneGraph.prototype.onXMLError=function (message) {
 };
 
 
-
 /*
  *	Convert degrees to radians
  */
@@ -152,9 +151,6 @@ MySceneGraph.prototype.getRotateFromDSX = function (attributeName){
 		search[9].tagName != 'components')
 		console.warn("The blocks are not in the right order");
 	
-
-	for (var i=0; i<10; i++)
-		console.log(search[i].tagName);
  }
 
 /* SCENE PARSER
@@ -696,19 +692,10 @@ MySceneGraph.prototype.parseDSXAnimation = function (rootElement){
 		
 		search = searchAnimation[i];
 		
-		var exists = false;
 		var id = this.reader.getString(search, 'id');
 
 		//Verifica se ja existe uma animação com id igual a variavel "id"
-		for (var j=0; j < this.animations.length; j++){
-			if (this.animations[j].id == id){
-				exists = true;
-				break;
-			}
-		}
-
-		//se já existir retorna erro
-		if (exists){
+		if (this.animations[id] != null){
 			return this.onXMLError("There are two or more transformations with the same id: " + id);
 		}
 		
@@ -731,11 +718,10 @@ MySceneGraph.prototype.parseDSXAnimation = function (rootElement){
 			}
 
 			var animation = new MyLinearAnimation(this.scene, id, span, controlPoints);
-			this.animations.push(animation);
-			
+			this.animations[id] = animation;
 		}
 
-		if (type == 'circular'){
+		else if (type == 'circular'){
 
 			var x = this.reader.getFloat(search, 'centerx');
 			var y = this.reader.getFloat(search, 'centery');
@@ -747,11 +733,12 @@ MySceneGraph.prototype.parseDSXAnimation = function (rootElement){
 			var startang = this.reader.getFloat(search, 'startang');
 			var rotang = this.reader.getFloat(search, 'rotang');
 			
-			//var animation = new MyCircularAnimation(this.scene, id, span, center, radius, startang, rotang);
+			var animation = new MyCircularAnimation(this.scene, id, span, center, radius, startang, rotang);
 			//this.animations.push(animation);
+			this.animations[id] = animation;
 		}
 
-		/*else return this.onXMLError("Animation type must be linear or circular");*/
+		else return this.onXMLError("Animation type must be linear or circular");
 
 		
 	}
@@ -1045,8 +1032,6 @@ MySceneGraph.prototype.parsePatch = function (patchElement){
 
 	var patch = new MyPatch(this.scene, orderU, orderV, partsU, partsV, controlpoints);
 
-	console.log(patch);
-
 	return patch;
 };
 
@@ -1137,6 +1122,7 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 
 				node.animations.push(animationId);
 			}
+
 		}
 
 		// MATERIALS
