@@ -24,6 +24,8 @@ function MyLinearAnimation(scene, id, span, controlPoints){ // span == totalTime
     this.calculateDistance();
 
     this.velocity = this.totalDistance / this.totalTime;
+
+    this.angleOfRotation = 0;
 }
 
 MyLinearAnimation.prototype = Object.create(MyAnimation.prototype);
@@ -58,12 +60,15 @@ MyLinearAnimation.prototype.apply = function(sceneTime){
     // If there is more than one control point, but the scene time has already passed this.totalTime, put object in final position
     else if(sceneTime > this.totalTime)  // if the animation time has ended
     {
+        sceneTime = this.totalTime;
+        
         var finalPositionVector = vec3.create();
 
         vec3.add(finalPositionVector, this.firstPoint, this.lastPoint);
 
-        // translate to final position
+        // translate and rotate to final position
         this.scene.translate(finalPositionVector[0], finalPositionVector[1], finalPositionVector[2]); // put in final position (last point of the controlPoints array)
+        this.scene.rotate(-this.angleOfRotation, 0, 1, 0);
     }   
     
     // If the object has to follow a certain path
@@ -100,6 +105,10 @@ MyLinearAnimation.prototype.apply = function(sceneTime){
 
             this.scene.translate(vector[0]*percentageTraveled + point1[0], vector[1]*percentageTraveled + point1[1], vector[2]*percentageTraveled + point1[2]); // make object travel current segment
             this.scene.translate(this.firstPoint[0], this.firstPoint[1], this.firstPoint[2]); // make translations according to the FIRST control point
+
+            this.angleOfRotation = Math.atan2(vector[2], vector[0]);
+
+            this.scene.rotate(-this.angleOfRotation, 0, 1, 0);
         }    
 
     }
