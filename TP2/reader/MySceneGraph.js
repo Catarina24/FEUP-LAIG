@@ -730,8 +730,8 @@ MySceneGraph.prototype.parseDSXAnimation = function (rootElement){
 
 			}
 
-			console.log("span: " + span + " type: " + type + " controlPoints: " + controlPoints);
-			//var animation = new MyLinearAnimation(this.scene, id, span, controlPoints);
+			var animation = new MyLinearAnimation(this.scene, id, span, controlPoints);
+			this.animations.push(animation);
 			
 		}
 
@@ -747,15 +747,14 @@ MySceneGraph.prototype.parseDSXAnimation = function (rootElement){
 			var startang = this.reader.getFloat(search, 'startang');
 			var rotang = this.reader.getFloat(search, 'rotang');
 			
-			console.log("center: " + center + " type: " + type + " radius: " + radius + " startang: " + startang + " rotang: " + rotang);
 			//var animation = new MyCircularAnimation(this.scene, id, span, center, radius, startang, rotang);
+			//this.animations.push(animation);
 		}
 
 		/*else return this.onXMLError("Animation type must be linear or circular");*/
 
-		//this.animations.push(animation);
+		
 	}
-	
 	
 };
 
@@ -1007,8 +1006,6 @@ MySceneGraph.prototype.parsePlane = function (planeElement){
 
 	var plane = new MyPlane(this.scene, dimX, dimY, partsX, partsY);
 
-	console.log(plane);
-
 	return plane;
 };
 
@@ -1039,7 +1036,6 @@ MySceneGraph.prototype.parsePatch = function (patchElement){
 			var controlpointsV = new Array(x, y, z, 1);
 			controlpointsU.push(controlpointsV);
 
-			console.log(numControlpoints);
 			numControlpoints++;
 		}
 
@@ -1120,9 +1116,32 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 			node.mat = this.calculateTransformMatrix(transformations[0]);
 		}
 
+		//ANIMATIONS
+		var searchAnimations = this.searchChildren(component[i], 'animation');
+		
+		// animation block can be empty
+		if (searchAnimations.length != 0){
+			var animations = searchAnimations[0].children;
+
+			if(animations.length == 0){
+				return this.onXMLError("At least one animation id should be defined for a component.");
+			}
+
+			for (var j=0; j<animations.length; j++){
+				var animationref = animations[j];
+
+				if (animationref.tagName != 'animationref')
+					return this.onXMLError("Bad tag name inside animations block");
+
+				var animationId = this.reader.getString(animationref, 'id');
+
+				node.animations.push(animationId);
+			}
+		}
+
 		// MATERIALS
 		var searchMaterials = this.searchChildren(component[i],'materials');
-
+		
 		if(searchMaterials.length == 0 || searchMaterials.length > 1)
 		{
 			return this.onXMLError("There needs to be one and only one materials block for each component.")
