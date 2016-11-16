@@ -248,13 +248,16 @@
             <!-- o valor "linear" ou "circular"; na animacao circular -->
             <!-- os angulos sao expressos em graus  -->
 
-            <animation id="ss" span="ff" type="linear">
-                <controlpoint xx="ff" yy="ff" zz="ff" /> 
+            <animation id="teste" span="5" type="linear">
+                <controlpoint x="0" y="0" z="0" /> 
+                 <controlpoint x="0" y="0" z="5" /> 
 
             </animation>
 
-            <animation id="ss" span="ff" type="circular" center="ff ff ff"
-                       radius="ff" startang="ff" rotang="ff" />
+
+            <animation id="teste2" span="6" type="circular" 
+                       centerx="0" centery="0" centerz="0"
+                       radius="5" startang="1" rotang="20" />
 
     </animations>
     
@@ -289,7 +292,21 @@
             <torus inner="0.5" outer="1" slices="20" loops="20" />
         </primitive>
 
-
+        <primitive id="plane">
+            <plane dimX="1" dimY="1" partsX="20" partsY="20" />
+        </primitive>
+        
+        <primitive id="patch">
+            <patch orderU="2" orderV="1" partsU="20" partsV="20" >
+               <controlpoint x="-1.5" y="-1.5" z="0.0"/>
+               <controlpoint x="-1.5" y="1.5" z="0.0"/>
+               <controlpoint x="0.0" y="-1.5" z="3.0"/>
+               <controlpoint x="0.0" y="1.5" z="3.0"/>
+               <controlpoint x="1.5" y="-1.5" z="0.0"/>
+               <controlpoint x="1.5" y="1.5" z="0.0"/>
+            </patch>
+        </primitive>
+        
       
     </primitives>
     
@@ -898,6 +915,11 @@
             <transformation>
                  <translate x="2.55" y="2.5" z="8.7" />
             </transformation>
+
+            <!--TESTE-->
+            <animation>
+                <animationref id="teste" />
+            </animation>
 
             <materials>
                 <material id="globe"/>

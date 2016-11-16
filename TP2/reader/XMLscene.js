@@ -46,6 +46,7 @@ XMLscene.prototype.init = function (application) {
 	this.startTime = 0;
 	this.elapsedTime = 0;
 
+	this.vehicle = new MyVehicle(this);
 };
 
 XMLscene.prototype.initLights = function () {
@@ -327,8 +328,11 @@ XMLscene.prototype.display = function () {
 	}
 
 	this.processGraph(this.graph.sceneRoot, null, null);
-
-	this.plane.display();
+	
+	/*this.pushMatrix();
+		//this.translate(5, 1, 1);
+		this.vehicle.display();
+	this.popMatrix();*/
 
 };
 
@@ -414,7 +418,12 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 		this.materials[material].setTexture(this.textures[texture]);
 	}
 	
-	
+	//TESTE Animation	
+	/*for (var k=0; k < node.animations.length; k++){
+		node.animations[k].apply(this.elapsedTime);
+	}
+
+	*/
 	
 	this.materials[material].apply();
 

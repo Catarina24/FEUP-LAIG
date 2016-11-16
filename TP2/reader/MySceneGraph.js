@@ -45,6 +45,9 @@ function MySceneGraph(filename, scene) {
 	//Transformations
 	this.transformations=[];
 
+	//animations
+	this.animations=[];
+
 	//Scene Nodes
 	this.nodes = new Map();
 
@@ -149,6 +152,9 @@ MySceneGraph.prototype.getRotateFromDSX = function (attributeName){
 		search[9].tagName != 'components')
 		console.warn("The blocks are not in the right order");
 	
+
+	for (var i=0; i<10; i++)
+		console.log(search[i].tagName);
  }
 
 /* SCENE PARSER
@@ -258,11 +264,8 @@ MySceneGraph.prototype.parseDSXViews = function (rootElement){
 		}
 		else{
 			return this.onXMLError("Perspectives: Repeated ids");
-		}
-		
-		
+		}	
 	}
-
 };
 
 /* ILLUMINATION PARSER 
@@ -637,9 +640,10 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 };
 
 
-/* TRANSFORMATIONS PARSER 
- *
- */
+/** 
+ * TRANSFORMATIONS PARSER 
+ * */ 
+
 MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 	
 	var search = this.searchChildren(rootElement, 'transformations');
@@ -670,7 +674,87 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 			return this.onXMLError("There are two or more transformations with the same id: " + id);
 		}
 	}
+};
+
+/**
+ * ANIMATIONS PARSER 
+ * */
+
+MySceneGraph.prototype.parseDSXAnimation = function (rootElement){
 	
+	var search = this.searchChildren(rootElement, 'animations');
+
+	if(search.length != 1)
+	{
+		return this.onXMLError("There must be one and only one 'animations' element block.")
+	}
+
+	var animations = search[0];
+	var searchAnimation = this.searchChildren(animations, 'animation');
+	
+	for (var i=0; i<searchAnimation.length; i++){
+		
+		search = searchAnimation[i];
+		
+		var exists = false;
+		var id = this.reader.getString(search, 'id');
+
+		//Verifica se ja existe uma animação com id igual a variavel "id"
+		for (var j=0; j < this.animations.length; j++){
+			if (this.animations[j].id == id){
+				exists = true;
+				break;
+			}
+		}
+
+		//se já existir retorna erro
+		if (exists){
+			return this.onXMLError("There are two or more transformations with the same id: " + id);
+		}
+		
+
+		var span = this.reader.getFloat(search, 'span');
+		var type = this.reader.getString(search, 'type');
+
+		//caso a animacao seja linear
+		if (type == 'linear'){
+
+			var controlPoints = [];
+			searchControlPoints = this.searchChildren(search, 'controlpoint');
+
+			for (var j=0; j < searchControlPoints.length; j++){
+
+				var controlP = searchControlPoints[j];
+
+				controlPoints.push(this.getCoordFromDSX(controlP));
+
+			}
+
+			var animation = new MyLinearAnimation(this.scene, id, span, controlPoints);
+			this.animations.push(animation);
+			
+		}
+
+		if (type == 'circular'){
+
+			var x = this.reader.getFloat(search, 'centerx');
+			var y = this.reader.getFloat(search, 'centery');
+			var z = this.reader.getFloat(search, 'centerz');
+
+			var center = [x, y, z];
+
+			var radius = this.reader.getFloat(search, 'radius');
+			var startang = this.reader.getFloat(search, 'startang');
+			var rotang = this.reader.getFloat(search, 'rotang');
+			
+			//var animation = new MyCircularAnimation(this.scene, id, span, center, radius, startang, rotang);
+			//this.animations.push(animation);
+		}
+
+		/*else return this.onXMLError("Animation type must be linear or circular");*/
+
+		
+	}
 	
 };
 
@@ -704,99 +788,140 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 
 
 			if(this.primitives[id] == null){
-			/** 
-			 * Rectangles
-			 */
-			if (primitiveShapesList[0].tagName == "rectangle"){
-					var rectangle = this.parseRectangles(primitiveShapesList[0]);
+				/** 
+				 * Rectangles
+				 */
+				if (primitiveShapesList[0].tagName == "rectangle"){
+						var rectangle = this.parseRectangles(primitiveShapesList[0]);
+						rectangle.id = id;
+
+						var node = new MyNode();
+
+						node.id = id;
+						node.isPrimitive = true;
+						node.primitive = rectangle;
+
+						this.nodes.set("#"+node.id, node);
+
+						this.primitives["#"+id] = rectangle;
+				}
+
+				/** 
+				 * Triangles
+				 */
+				if (primitiveShapesList[0].tagName == "triangle"){
+
+						var triangle = this.parseTriangles(primitiveShapesList[0]);
+						triangle.id = id;
+
+						var node = new MyNode();
+
+						node.id = id;
+						node.isPrimitive = true;
+						node.primitive = triangle;
+
+						this.nodes.set("#"+node.id, node);
+
+						this.primitives["#"+id] = triangle;
+				}
+
+				/** 
+				 * Sphere
+				 */
+				if (primitiveShapesList[0].tagName == "sphere"){
+
+						var sphere = this.parseSpheres(primitiveShapesList[0]);
+						sphere.id = id;
+
+						var node = new MyNode();
+
+						node.id = id;
+						node.isPrimitive = true;
+						node.primitive = sphere;
+
+						this.nodes.set("#"+node.id, node);
+
+						this.primitives["#"+id] = sphere;
+				}
+
+
+				/** 
+				 * Cylinder
+				 */
+				if (primitiveShapesList[0].tagName == "cylinder"){
+
+						var cylinder = this.parseCylinders(primitiveShapesList[0]);
+						cylinder.id = id;
+
+						var node = new MyNode();
+
+						node.id = id;
+						node.isPrimitive = true;
+						node.primitive = cylinder;
+
+						this.nodes.set("#"+node.id, node);
+
+						this.primitives["#"+id] = cylinder;
+				}
+
+				/** 
+				 * Torus
+				 */
+				if (primitiveShapesList[0].tagName == "torus"){
+					
+					var torus = this.parseTorus(primitiveShapesList[0]);
+					torus.id = id;
 
 					var node = new MyNode();
 
 					node.id = id;
 					node.isPrimitive = true;
-					node.primitive = rectangle;
+					node.primitive = torus;
 
 					this.nodes.set("#"+node.id, node);
+					
+					this.primitives["#"+id] = torus;
+				}
 
-					this.primitives["#"+id] = rectangle;
-			}
+				/**
+				 *  Plane
+				 */
 
-			/** 
-			 * Triangles
-			 */
-			if (primitiveShapesList[0].tagName == "triangle"){
-
-					var triangle = this.parseTriangles(primitiveShapesList[0]);
-					triangle.id = id;
+				if (primitiveShapesList[0].tagName == "plane"){
+					
+					var plane = this.parsePlane(primitiveShapesList[0]);
+					plane.id = id;
 
 					var node = new MyNode();
 
 					node.id = id;
 					node.isPrimitive = true;
-					node.primitive = triangle;
+					node.primitive = plane;
 
 					this.nodes.set("#"+node.id, node);
+					
+					this.primitives["#"+id] = plane;
+				}
 
-					this.primitives["#"+id] = triangle;
-			}
+				/**
+				 *  Patch
+				 */
 
-			/** 
-			 * Sphere
-			 */
-			if (primitiveShapesList[0].tagName == "sphere"){
-
-					var sphere = this.parseSpheres(primitiveShapesList[0]);
-					sphere.id = id;
+				if (primitiveShapesList[0].tagName == "patch"){
+					
+					var patch = this.parsePatch(primitiveShapesList[0]);
+					patch.id = id;
 
 					var node = new MyNode();
 
 					node.id = id;
 					node.isPrimitive = true;
-					node.primitive = sphere;
+					node.primitive = patch;
 
 					this.nodes.set("#"+node.id, node);
-
-					this.primitives["#"+id] = sphere;
-			}
-
-
-			/** 
-			 * Cylinder
-			 */
-			if (primitiveShapesList[0].tagName == "cylinder"){
-
-					var cylinder = this.parseCylinders(primitiveShapesList[0]);
-					cylinder.id = id;
-
-					var node = new MyNode();
-
-					node.id = id;
-					node.isPrimitive = true;
-					node.primitive = cylinder;
-
-					this.nodes.set("#"+node.id, node);
-
-					this.primitives["#"+id] = cylinder;
-			}
-
-			/** 
-		 	* Torus
-		 	*/
-			if (primitiveShapesList[0].tagName == "torus"){
-				
-				var torus = this.parseTorus(primitiveShapesList[0]);
-				torus.id = id;
-
-				var node = new MyNode();
-
-				node.id = id;
-				node.isPrimitive = true;
-				node.primitive = torus;
-
-				this.nodes.set("#"+node.id, node);
-				
-				this.primitives["#"+id] = torus;
-			}
+					
+					this.primitives["#"+id] = patch;
+				}
 		}
 	}
 };
@@ -872,6 +997,60 @@ MySceneGraph.prototype.parseTorus = function (torusElement){
 	return torus;
 };
 
+MySceneGraph.prototype.parsePlane = function (planeElement){
+
+	var dimX = this.reader.getFloat(planeElement, 'dimX');
+	var dimY = this.reader.getFloat(planeElement, 'dimY');
+	var partsX = this.reader.getFloat(planeElement, 'partsX');
+	var partsY = this.reader.getFloat(planeElement, 'partsY');
+
+	var plane = new MyPlane(this.scene, dimX, dimY, partsX, partsY);
+
+	return plane;
+};
+
+MySceneGraph.prototype.parsePatch = function (patchElement){
+
+	var orderU = this.reader.getFloat(patchElement, 'orderU');
+	var orderV = this.reader.getFloat(patchElement, 'orderV');
+	var partsU = this.reader.getFloat(patchElement, 'partsU');
+	var partsV = this.reader.getFloat(patchElement, 'partsV');
+
+	var controlpoints = new Array();
+
+	var numControlpoints = 0;
+	var x, y, z;
+
+	var controlpointsSearch = this.searchChildren(patchElement, 'controlpoint');
+
+	for (var i=0; i<=orderU; i++){
+
+		var controlpointsU = new Array();
+
+		for (var j=0; j<=orderV; j++){
+
+			x = this.reader.getFloat(controlpointsSearch[numControlpoints], 'x');
+			y = this.reader.getFloat(controlpointsSearch[numControlpoints], 'y');
+			z = this.reader.getFloat(controlpointsSearch[numControlpoints], 'z');
+
+			var controlpointsV = new Array(x, y, z, 1);
+			controlpointsU.push(controlpointsV);
+
+			numControlpoints++;
+		}
+
+		controlpoints.push(controlpointsU);
+
+	}
+
+	var patch = new MyPatch(this.scene, orderU, orderV, partsU, partsV, controlpoints);
+
+	console.log(patch);
+
+	return patch;
+};
+
+
 
 
 /** COMPONENTS PARSER
@@ -937,9 +1116,32 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 			node.mat = this.calculateTransformMatrix(transformations[0]);
 		}
 
+		//ANIMATIONS
+		var searchAnimations = this.searchChildren(component[i], 'animation');
+		
+		// animation block can be empty
+		if (searchAnimations.length != 0){
+			var animations = searchAnimations[0].children;
+
+			if(animations.length == 0){
+				return this.onXMLError("At least one animation id should be defined for a component.");
+			}
+
+			for (var j=0; j<animations.length; j++){
+				var animationref = animations[j];
+
+				if (animationref.tagName != 'animationref')
+					return this.onXMLError("Bad tag name inside animations block");
+
+				var animationId = this.reader.getString(animationref, 'id');
+
+				node.animations.push(animationId);
+			}
+		}
+
 		// MATERIALS
 		var searchMaterials = this.searchChildren(component[i],'materials');
-
+		
 		if(searchMaterials.length == 0 || searchMaterials.length > 1)
 		{
 			return this.onXMLError("There needs to be one and only one materials block for each component.")
@@ -1049,6 +1251,7 @@ MySceneGraph.prototype.parseDSXFile = function (rootElement) {
 	this.parseDSXTextures(rootElement);
 	this.parseDSXMaterials(rootElement);
 	this.parseDSXTransformations(rootElement);
+	this.parseDSXAnimation(rootElement);
 	this.parseDSXPrimitives(rootElement);
 	this.parseDSXComponents(rootElement);
 

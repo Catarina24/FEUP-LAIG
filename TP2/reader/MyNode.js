@@ -21,6 +21,7 @@ function MyNode(){
     this.id = null;
     this.children = [];
     this.materials = [];
+    this.animations = [];
     this.texture = null;
     
     this.mat = mat4.create();
