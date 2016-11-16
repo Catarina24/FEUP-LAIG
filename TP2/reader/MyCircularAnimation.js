@@ -24,7 +24,7 @@ MyCircularAnimation.prototype.apply = function(sceneTime){
 
         sceneTime = this.totalTime;
         this.scene.translate(this.lastPoint[0], this.lastPoint[1], this.lastPoint[2]);
-        
+        //this.scene.rotate(-angle, 0, 1, 0);
     }
 
     else{
@@ -45,5 +45,5 @@ MyCircularAnimation.prototype.apply = function(sceneTime){
 }
 
 MyCircularAnimation.prototype.convertDegreesToRadians = function(angle){
-        return (angle * Math.PI / 90);
+        return (angle * Math.PI / 180);
 }
