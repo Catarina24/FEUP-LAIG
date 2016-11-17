@@ -11,6 +11,8 @@ serialInclude([
 	'Plane.js', 
 	'MyAnimation.js',
 	'MyLinearAnimation.js',
+	'MyChessboard.js',
+	'MyPlane.js',
 	
 
 	main=function() {

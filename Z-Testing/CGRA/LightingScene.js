@@ -60,8 +60,15 @@ LightingScene.prototype.init = function(application) {
 	this.elapsedTime = 0;
 	this.startTime = 0;
 
-	this.animation = new MyLinearAnimation(this, 'lol', 8, [[0,0,0], [0,0,1], [2, 0, 2]]);
+	//TESTE
+	var texture = "textures/FEUP.jpg";
+	var color1 = [0, 0, 0, 1];
+	var color2 = [0, 1, 0,1];
+	var colorselected = [0, 0, 1, 1];
 	
+	this.animation = new MyLinearAnimation(this, 'lol', 8, [[0,0,0], [0,0,1], [2, 0, 2]]);
+	this.chessboard = new MyChessboard(this, 8, 8, 0, 0, texture, color1, color2, colorselected, this.materialC);
+
 };
 
 LightingScene.prototype.update = function(currTime) {
@@ -146,6 +153,7 @@ LightingScene.prototype.display = function() {
 
 	// ---- BEGIN Primitive drawing section
 
+	this.chessboard.display();
 	// Floor
 	this.pushMatrix();
 		this.translate(7.5, 0, 7.5);
