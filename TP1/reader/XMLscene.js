@@ -90,6 +90,7 @@ XMLscene.prototype.onGraphLoaded = function ()
 	console.log(this.graph);
 };
 
+// Carrega as cameras e as primitivas vindas do graph
 XMLscene.prototype.init_variables = function(){
 	this.cameras = this.graph.cameras;
 
@@ -256,6 +257,7 @@ XMLscene.prototype.loadLights = function()
 
 }
 
+// Consoante o valor TRUE ou FALSE das variáveis que correspondem a cada luz, ou as acende ou as apaga
 XMLscene.prototype.updateLights = function(){
 
     for (var i=0; i<this.graph.lights.length; i++){
@@ -272,7 +274,11 @@ XMLscene.prototype.updateLights = function(){
 XMLscene.prototype.changeCamera = function(i){
 
 	// Object.keys(obj) returns an array with the keys of the array 'obj'
-	var orderedLights = Object.keys(this.cameras);	// orderedLights[0] = <camera 0 id>, orderedLights[1] = <camera 1 id>, ...
+
+	var orderedLights = Object.keys(this.cameras);	
+	// orderedLights é um array cujos índices apontam para o id das luzes
+	// orderedLights[0] = <camera 0 id>, orderedLights[1] = <camera 1 id>, ...
+	
 	i = i % orderedLights.length;	// so it cycles (ex: number of lights = 4, key was pressed 5 times -> view displayed is 1 (5 % 4 = 1))
 
 	if (i >= orderedLights.length)	// if i is out of bounds
@@ -361,7 +367,10 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 		return;
 	}
 	
+
 	var matPosition = this.materialCounter % node.materials.length;
+	/* Uso o módulo poeque o material counter está sempre a aumentar. Assim, vai sempre buscar o material seguinte e dá a volta quando
+	fica maior que a length. */
 
 	var mat = node.materials[matPosition];
 	var tex = node.texture;

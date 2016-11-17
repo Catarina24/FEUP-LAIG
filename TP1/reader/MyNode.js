@@ -9,11 +9,13 @@
 * Constructor
 *
 * @attribute id             -- The id of the node in the DSX file
-* @attribute children       -- An ARRAY with all the child nodes id
-* @attribute material       -- The nodes material (use fathers if it is null)
+* @attribute children       -- The ARRAY with all the child nodes id
+* @attribute material       -- The ARRAY of the nodes material (use fathers if it is null)
 * @attribute texture        -- The nodes texture (use fathers if it is null)
-* @attribute transformations-- An ARRAY of tranformations to be multiplied by the fathers.
-* @attribute matrix         -- A matrix with transformations.
+* @attribute transformations-- The ARRAY of tranformations to be multiplied by the fathers.
+* @attribute mat            -- The matrix with transformations.
+* @attribute isPrimitive    -- True if this node represents a primitive. False otherwise.
+* @attribute primitive      -- If the current node is a primitive it is the primitive object. Null otherwise.
 */
 
 function MyNode(){
@@ -24,9 +26,6 @@ function MyNode(){
     this.texture = null;
     
     this.mat = mat4.create();
-
-    this.localMatrix = mat4.create();
-    this.worldMatrix = mat4.create();
 
     this.isPrimitive = false;
     this.primitive = null;
@@ -52,24 +51,6 @@ MyNode.prototype.push = function (childNode){
 
 MyNode.prototype.numOfChildren = function(){
     return this.children.length;
-}
-
-MyNode.prototype.updateWorldMatrix = function (parentWorldMatrix){
-    if(parentWorldMatrix)   // if there is a matrix to be applied
-    {
-        mat4.multiply(this.worldMatrix, this.localMatrix, parentWorldMatrix);
-    }
-    else    // apply node matrix
-    {
-        this.worldMatrix = mat4.clone(this.localMatrix);
-    }
-
-    // process childrens matrix
-    var worldMatrix = this.worldMatrix;
-    this.children.forEach(function(child){
-        child.updateWorldMatrix(worldMatrix);
-    });
-
 }
 
 MyNode.prototype.isPrimitive = function(){
