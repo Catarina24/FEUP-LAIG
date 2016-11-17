@@ -2,7 +2,7 @@
 function MySceneGraph(filename, scene) {
 	this.loadedOk = null;
 
-	// Establish bidirectional references between scene and graph
+	//Establish bidirectional references between scene and graph
 	this.scene = scene;
 	scene.graph=this;
 
@@ -107,7 +107,7 @@ MySceneGraph.prototype.getRotateFromDSX = function (attributeName){
 	var angle_degrees = this.reader.getString(attributeName, 'angle');
 	
 	var angle = this.convertDegreesToRadians(angle_degrees);
-	
+
 	var coord = [];
 	
 	if (axis == 'x')
@@ -157,8 +157,7 @@ MySceneGraph.prototype.getRotateFromDSX = function (attributeName){
 
 MySceneGraph.prototype.parseDSXScene = function (rootElement){
 
-	// getElementsByTagName(<tag>) returns a NodeList with all the elements named
-	// with the argument tag
+	// getElementsByTagName(<tag>) returns a NodeList with all the elements named with the argument tag
 	var search = this.searchChildren(rootElement, 'scene');
 
 	if(search.length != 1)
@@ -176,98 +175,101 @@ MySceneGraph.prototype.parseDSXScene = function (rootElement){
 
 };
 
-/* VIEWS PARSER 
--Camera perspectives
-*/
+
+/**
+ * VIEWS PARSER
+ * 
+ * Camera perspectives
+ * */
 
 MySceneGraph.prototype.parseDSXViews = function (rootElement){
 
 	var search = this.searchChildren(rootElement, 'views');
-	
+
 	var views = search[0];
-	
-	//cada vez que v/V é carregado, vista muda para a próxima da lista	
-	
-	if(search.length != 1)
-	{
+		
+	/*Verifica se existe um só bloco 'views' */
+	if(search.length != 1){
 		return this.onXMLError("There must be one and only one 'views' element block.")
 	}
 		
 	var vdefault = this.reader.getString(views, 'default');
-	//console.log("view: " + vdefault);
 
 	var perspectives = views.getElementsByTagName('perspective');
 
 	if (perspectives.length == 0)
 		return this.onXMLError("Perspective element is missing");
 	
-		
+	
+	/* Procura todas as vistas declaradas no DSX */
 	for (var i=0; i< perspectives.length; i++){
 		
-		//se várias vistas declaradas, o default é a primeira
-		//var default_view = search[0];
-		
 		var perspective = perspectives[i];
-
 		
 		var id = this.reader.getString(perspective, 'id');
-		
-		if (this.cameras[id] == null){
-			var view = new MyView(this.scene);
-			
-			view.near = this.reader.getFloat(perspective, 'near');
-			view.far = this.reader.getFloat(perspective, 'far');
-			var angle = this.reader.getFloat(perspective, 'angle');
 
-			view.angle = this.convertDegreesToRadians(angle);
-
-			//get from - x y z
-			search = perspective.getElementsByTagName('from');
-			
-			var fromp = search[0];
-			if (fromp == null)
-				return "no perspective (from failed)";
-
-				
-			var pos = this.getCoordFromDSX(fromp);
-			view.position = vec3.fromValues(pos[0], pos[1], pos[2]);
-
-			//get to - x y z
-			search = perspective.getElementsByTagName('to');
-
-			var to = search[0];
-
-			if (to == null)
-				return "no perspective (to failed)";
-
-			var targ = this.getCoordFromDSX(to);
-			view.target = vec3.fromValues(targ[0], targ[1], targ[2]);
-			
-			this.cameras[id] = view;
-			
-			if(i==0)	// first camera default
-			{
-				this.default_view = i;
-			}
-
-			if(vdefault == id)	// specified camera default
-			{
-				this.default_view = i;
-			}
-		}
-		else{
+		/* Se a camera ja existir */
+		if (this.cameras[id] != null){
 			return this.onXMLError("Perspectives: Repeated ids");
 		}
 		
+		/***************	Se a vista ainda nao existir, cria uma		*************/
+
+		var view = new MyView(this.scene);
+			
+		view.near = this.reader.getFloat(perspective, 'near');
+		view.far = this.reader.getFloat(perspective, 'far');
+
+		var angle = this.reader.getFloat(perspective, 'angle');
+		view.angle = this.convertDegreesToRadians(angle);
+
+
+		/* Get FROM perspective */
+		search = perspective.getElementsByTagName('from');
+			
+		var fromp = search[0];
+		if (fromp == null)
+			return this.onXMLError("No perspective (from failed)");
+
+		var pos = this.getCoordFromDSX(fromp);
+		view.position = vec3.fromValues(pos[0], pos[1], pos[2]);
+
+
+		/* Get TO perspective */
+		search = perspective.getElementsByTagName('to');
+
+		var to = search[0];
+		if (to == null)
+			return this.onXMLError("No perspective (to failed)");
+
+		var targ = this.getCoordFromDSX(to);
+		view.target = vec3.fromValues(targ[0], targ[1], targ[2]);
+		
+
+		/* Adiciona vista ao array de vistas lidas */
+		this.cameras[id] = view;
+			
+
+		/* Define vista DEFAULT; se nenhuma vista declarada, a default é a primeira, caso contrario, é a definida */
+		if(i==0){
+			this.default_view = i;
+		}
+
+		if(vdefault == id){
+			this.default_view = i;
+		}
 		
 	}
 
 };
 
-/* ILLUMINATION PARSER 
--Global illumination 
--Background
-*/
+
+/**
+ * ILLUMINATION PARSER 
+ * 
+ * Global illumination 
+ * background
+ * */
 
 MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 
@@ -275,14 +277,14 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 
 	var illumination = search[0];
 
-	this.local = this.reader.getFloat(illumination, 'local');
-
-	if(search.length != 1)
-	{
+	/* Verifica se existe um só bloco 'illumination' */
+	if(search.length != 1){
 		return this.onXMLError("There must be one and only one 'illumination' element block.")
 	}
 
-	//Get ambient illumination
+	this.local = this.reader.getFloat(illumination, 'local');
+
+	/***** Início da iluminação ambiente *****/
 	search = illumination.getElementsByTagName('ambient');
 
 	var ambient = search[0];
@@ -299,7 +301,9 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 
 	this.ambient = ambientRGBA;
 
-	//Get background color
+	/***** Fim da iluminação ambiente *****/
+
+	/***** Início da iluminação de fundo *****/
 
 	search = illumination.getElementsByTagName('background');
 
@@ -310,7 +314,6 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 		return this.onXMLError("more than one background");
 
 	var background = search[0];
-
 	var bgRGBA = [];
 
 	bgRGBA.push(this.reader.getFloat(background, 'r'));
@@ -319,42 +322,45 @@ MySceneGraph.prototype.parseDSXIllumination = function (rootElement){
 	bgRGBA.push(this.reader.getFloat(background, 'a'));
 
 	this.background = bgRGBA;
+
+	/***** Fim da iluminação ambiente *****/
 	
 };
 
-/* LIGHTS PARSER
--Gives location and color of omnilights
--Gives location, target and color of omnilights
-*/
 
+/**
+ * LIGHTS PARSER
+ * 
+ * Gives location and color of omnilights
+ * Gives location, target and color of omnilights
+ * */
 MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 	var search = this.searchChildren(rootElement, 'lights');
 
 	var lights = search[0];
 
-	if(search.length != 1)
-	{
+	/* Verifica se existe um só bloco 'lights' */
+	if(search.length != 1){
 		return this.onXMLError("There must be one and only one 'lights' element block.")
 	}
 
-	// Searches both kind of lights: omni and spot
+	/* Searches both kind of lights: omni and spot */
 	var searchOmni = lights.getElementsByTagName('omni');
 	var searchSpot = lights.getElementsByTagName('spot');
 
-	if (searchOmni.length == 0 && searchSpot == 0)
-	{
+	if (searchOmni.length == 0 && searchSpot == 0){
 		return this.onXMLError("no lights are defined. Please defined either an omni light or a spotlight.");
 	}
 
-	if(this.lights.children > 8)
-	{
+	if(this.lights.children > 8){
 		return this.onXMLError("There can not be more than 7 lights.");
 	}
 
-	// Extrapolate omni lights
-	for (var i = 0; i < searchOmni.length; i++)
-	{
+	
+	/***** Início das luzes OMNI *****/
+	for (var i = 0; i < searchOmni.length; i++){
+
 		var light = new MyLight(this.scene);
 
 		light.omni = true;
@@ -363,17 +369,15 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		light.id = this.reader.getString(omni, 'id');
 
-		//Verify if ID is UNIQUE
-		for(var j = 0; j < this.lights.length; j++)
-		{
+		/* Verify if ID is UNIQUE */
+		for(var j = 0; j < this.lights.length; j++){
 			if(this.lights[j].id == light.id)
 				return this.onXMLError("light in position " + (i+1) + " has a duplicated id");
 		}
 
 		light.enabled = this.reader.getBoolean(omni, 'enabled');
 
-
-		// Light location
+		/***** Início da posicao da luz *****/
 		var searchLocation = omni.getElementsByTagName('location');
 		var location = searchLocation[0];
 
@@ -382,9 +386,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 		var locationZ = this.reader.getFloat(location, 'z');
 		var locationW = this.reader.getFloat(location, 'w');
 
-		if(locationX == null || locationY == null || 
-		locationZ == null || locationW == null)
-		{
+		if(locationX == null || locationY == null || locationZ == null || locationW == null){
 			return this.onXMLError("there's a component missing in " + light.id + " light.")
 		}
 
@@ -393,45 +395,51 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 		light.location.push(locationZ);
 		light.location.push(locationW);
 
-		// Light ambient
+		/***** Fim da posicao da luz *****/
+
+		/***** Início da iluminação ambiente *****/
 
 		var searchAmbient = omni.getElementsByTagName('ambient');
 		var ambient = searchAmbient[0];
 		light.ambientRGBA = this.getRGBAFromDSX(ambient);
 
-		if(light.ambientRGBA == null)
-		{
+		if(light.ambientRGBA == null){
 			return this.onXMLError("bad RGBA on 'ambient' component of omnilight " + light.id);
 		}
 
-		// Light diffuse
+		/***** Fim da iluminação ambiente *****/
+
+		/***** Início da iluminação difusa *****/
 
 		var searchDiffuse = omni.getElementsByTagName('diffuse');
 		var diffuse = searchDiffuse[0];
 		light.diffuseRGBA = this.getRGBAFromDSX(diffuse);
 
-		if(light.diffuseRGBA == null)
-		{
+		if(light.diffuseRGBA == null){
 			return this.onXMLError("bad RGBA on 'diffuse' component of omnilight " + light.id);
 		}
 
-		// Light specular
+		/***** Fim da iluminação difusa *****/
+
+		/***** Início da iluminação especular *****/
 
 		var searchSpecular = omni.getElementsByTagName('specular');
 		var specular = searchSpecular[0];
 		light.specularRGBA = this.getRGBAFromDSX(specular);
 
-		if(light.specularRGBA == null)
-		{
+		if(light.specularRGBA == null){
 			return this.onXMLError("bad RGBA on 'specular' component of omnilight " + light.id);
 		}
+
+		/***** Fim da iluminação especular *****/
 
 		this.lights.push(light);
 	}
 
-	// Extrapolate spot lights
-	for (var i = 0; i < searchSpot.length; i++)
-	{
+	/***** Fim das luzes OMNI *****/
+
+	/***** Início das luzes SPOT *****/
+	for (var i = 0; i < searchSpot.length; i++){
 		var light = new MyLight(this.scene);
 
 		light.omni = false;
@@ -440,31 +448,32 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 
 		light.id = this.reader.getString(spot, 'id');
 
-		//Verify if ID is UNIQUE
-		for(var j = 0; j < this.lights.length; j++)
-		{
-			if(this.lights[j].id == light.id)
+		/* Verify if ID is UNIQUE */
+		for(var j = 0; j < this.lights.length; j++){
+			if(this.lights[j].id == light.id){
 				return this.onXMLError("light in position " + (i+1) + " has a duplicated id");
+			}
 		}
 	
-
-		//VERIFICAÇOES DE ERROS - FAZER
 		light.enabled = this.reader.getBoolean(spot, 'enabled');
 
 		if (light.enabled != 0 && light.enabled != 1){
 			return this.onXMLError("Light: values for enabled must be between 0 and 1");
 		}
 
+
 		var angle = this.reader.getFloat(spot, 'angle');
 		light.angle = this.convertDegreesToRadians(angle);
+
 
 		light.exponent = this.reader.getFloat(spot, 'exponent');
 
 		if (light.exponent < 0 || light.exponent > 128){
 			return this.onXMLError("Light: values for exponent must be between 0 and 128");
 		}
+		
 
-		//Light Target
+		/***** Início do target *****/
 		var searchTarget = spot.getElementsByTagName('target');
 		var target = searchTarget[0];
 
@@ -480,7 +489,9 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 		light.target.push(targetY);
 		light.target.push(targetZ);
 
-		// Light location
+		/***** Fim do target *****/
+
+		/***** Início da posição da luz *****/
 		var searchLocation = spot.getElementsByTagName('location');
 		var location = searchLocation[0];
 
@@ -488,9 +499,7 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 		var locationY = this.reader.getFloat(location, 'y');
 		var locationZ = this.reader.getFloat(location, 'z');
 
-		if(locationX == null || locationY == null || 
-		locationZ == null)
-		{
+		if(locationX == null || locationY == null || locationZ == null){
 			return this.onXMLError("there's a component missing in " + light.id + " light.")
 		}
 
@@ -498,54 +507,58 @@ MySceneGraph.prototype.parseDSXLights = function (rootElement){
 		light.location.push(locationY);
 		light.location.push(locationZ);
 
-		// Light ambient
+		/***** Fim da posição da luz *****/
+		
+		/***** Início da iluminação ambiente *****/
 
 		var searchAmbient = spot.getElementsByTagName('ambient');
 		var ambient = searchAmbient[0];
 		light.ambientRGBA = this.getRGBAFromDSX(ambient);
 
-		if(light.ambientRGBA == null)
-		{
+		if(light.ambientRGBA == null){
 			return this.onXMLError("bad RGBA on 'ambient' component of omnilight " + light.id);
 		}
 
-		// Light diffuse
+		/***** Fim da iluminação ambiente *****/
+
+		/***** Início da iluminação difusa *****/
 
 		var searchDiffuse = spot.getElementsByTagName('diffuse');
 		var diffuse = searchDiffuse[0];
 		light.diffuseRGBA = this.getRGBAFromDSX(diffuse);
 
-		if(light.diffuseRGBA == null)
-		{
+		if(light.diffuseRGBA == null){
 			return this.onXMLError("bad RGBA on 'diffuse' component of omnilight " + light.id);
 		}
 
-		// Light specular
+		/***** Fim da iluminação difusa *****/
+
+		/***** Início da iluminação especular *****/
 
 		var searchSpecular = spot.getElementsByTagName('specular');
 		var specular = searchSpecular[0];
 		light.specularRGBA = this.getRGBAFromDSX(specular);
 
-		if(light.specularRGBA == null)
-		{
+		if(light.specularRGBA == null){
 			return this.onXMLError("bad RGBA on 'specular' component of omnilight " + light.id);
 		}
 
+		/***** Fim da iluminação especular *****/
+
 		this.lights.push(light);
 	}
+	/***** Fim das luzes SPOT *****/
 };
 
 
-/* TEXTURES PARSER 
-*
-*/
-
+/** 
+ * TEXTURES PARSER
+ * */
 MySceneGraph.prototype.parseDSXTextures = function (rootElement){
 	
 	var search = this.searchChildren(rootElement, 'textures');
 	
-	if(search.length != 1)
-	{
+	if(search.length != 1){
 		return this.onXMLError("There must be one and only one 'textures' element block.")
 	}
 
@@ -553,12 +566,11 @@ MySceneGraph.prototype.parseDSXTextures = function (rootElement){
 	
 	var texture = textures.getElementsByTagName('texture');
 	
-	//se "textures" não tem filhos
+	/* Se "textures" não tem filhos */
 	if (texture.length == 0)
 		return this.onXMLError("Texture element is missing");
 	
-	var tex;
-	var id;
+	var tex, id;
 	
 	for (var i=0; i<texture.length; i++){
 		
@@ -567,33 +579,35 @@ MySceneGraph.prototype.parseDSXTextures = function (rootElement){
 		tex = new MyTexture(this.scene);
 		tex.id = this.reader.getString(search, 'id');
 
+		/* Verifica se a textura é unica ou se já existe */
 		for (var j=0; j<this.textures.length; j++){
-			if (id == this.textures[j].id)
+			if (id == this.textures[j].id){
 				return this.onXMLError("Textures: there can only be one texture per id.");
+			}
 		}
 		
 		tex.file = this.reader.getString(search, 'file');
 		tex.length_s = this.reader.getFloat(search, 'length_s');
 		tex.length_t = this.reader.getFloat(search, 'length_t');
+
 		this.textures.push(tex);
 	}
 };
 
-/* MATERIALS PARSER 
- *
- */
+/**
+ * MATERIALS PARSER
+ * */
 MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 	
 	var search = this.searchChildren(rootElement, 'materials');
 	
-	if(search.length != 1)
-	{
+	if(search.length != 1){
 		return this.onXMLError("There must be one and only one 'materials' element block.")
 	}
 	
 	var material = search[0].getElementsByTagName('material');
 	
-	//se "materials" não tem filhos
+	/*se "materials" não tem filhos */
 	if (material.length == 0)
 		return this.onXMLError("Material element is missing");
 	
@@ -605,14 +619,16 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 		
 		id=this.reader.getString(search, 'id');
 
+		/* Verifica se o material é único ou se já existe */
 		for (var j=0; j<this.materials.length; j++){
-			if (this.materials[j].id == id)
+			if (this.materials[j].id == id){
 				return this.onXMLError("There can only be one material per id.");
+			}
 		}
 		
+		/* Cria novo material */
 		mat = new MyMaterial(this.scene);
 
-		
 		mat.id=id;
 			
 		var emission = search.getElementsByTagName('emission');
@@ -636,15 +652,14 @@ MySceneGraph.prototype.parseDSXMaterials = function (rootElement){
 };
 
 
-/* TRANSFORMATIONS PARSER 
- *
- */
+/** 
+ * TRANSFORMATIONS PARSER
+ * */
 MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 	
 	var search = this.searchChildren(rootElement, 'transformations');
 
-	if(search.length != 1)
-	{
+	if(search.length != 1){
 		return this.onXMLError("There must be one and only one 'transformations' element block.")
 	}
 
@@ -660,24 +675,21 @@ MySceneGraph.prototype.parseDSXTransformations = function (rootElement){
 
 		if (this.transformations[id] ==null){
 
+			/* Cria matriz de transformações */
 			var matrix = mat4.clone(this.calculateTransformMatrix(search));
 			this.transformations[id]=matrix;
-			//console.log(this.transformations);
 		}
-		else
-		{
+		else{
 			return this.onXMLError("There are two or more transformations with the same id: " + id);
 		}
 	}
-	
-	
 };
 
-/*
-* PRIMITVES PARSER
--Available primitives for scene drawing
-*/
-
+/**
+ * PRIMITIVES PARSER
+ * 
+ * Available primitives for scene drawing
+ * */
 MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 
 	var searchPrimitives = this.searchChildren(rootElement, 'primitives');
