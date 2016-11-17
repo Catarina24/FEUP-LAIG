@@ -25,9 +25,11 @@ void main() {
 	vVertexPosition = aVertexPosition;
 
 	if((cell.x >= su) && (cell.x < (su+1.0)) && (cell.y >= sv) && (cell.y < (sv+1.0))){
-		vVertexPosition.y+=0.3;
+		vVertexPosition.z+=0.1;
 	}
 
-	gl_Position = uPMatrix * uMVMatrix * vec4(vVertexPosition, 1.0);
+	gl_Position = uPMatrix * uMVMatrix * vec4(vVertexPosition.x, vVertexPosition.y, vVertexPosition.z, 1.0);
+
+	vTextureCoord = aTextureCoord;
 }
 

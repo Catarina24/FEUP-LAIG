@@ -29,7 +29,12 @@ function MyChessboard(scene, du, dv, su, sv, texture, color1, color2, colorselec
 
     //SHADER
     this.shader = new CGFshader(this.scene.gl, "shaders/shader.vert", "shaders/shader.frag");
-    this.shader.setUniformsValues({uSampler:1, du:du, dv:dv, su:su, sv:sv, c1:color1, c2:color2, cs: colorselected});
+    this.shader.setUniformsValues({ uSampler: 0, 
+                                    du: parseInt(this.du)*1.0, 
+                                    dv: parseInt(this.dv)*1.0, 
+                                    su: parseInt(this.su)*1.0, 
+                                    sv: parseInt(this.sv)*1.0, 
+                                    c1:color1, c2:color2, cs: colorselected});
 
     this.initBuffers();
 }
@@ -41,8 +46,10 @@ MyChessboard.prototype.display = function(){
 
         this.appearance.apply();
         this.scene.setActiveShader(this.shader);
-        this.texture.bind(1);
+        this.texture.bind(0);
         this.chessboard.display();
 
+        //this.texture.unbind(0);
         this.scene.setActiveShader(this.scene.defaultShader);
+        this.scene.materialDefault.apply();
 };

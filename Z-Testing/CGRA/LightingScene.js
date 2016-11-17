@@ -62,9 +62,9 @@ LightingScene.prototype.init = function(application) {
 
 	//TESTE
 	var texture = "textures/FEUP.jpg";
-	var color1 = [0, 0, 0, 1];
-	var color2 = [0, 1, 0,1];
-	var colorselected = [0, 0, 1, 1];
+	var color1 = [1, 0, 0, 1];
+	var color2 = [0, 1, 0, 1];
+	var colorselected = [1, 1, 1, 1];
 	
 	this.animation = new MyLinearAnimation(this, 'lol', 8, [[0,0,0], [0,0,1], [2, 0, 2]]);
 	this.chessboard = new MyChessboard(this, 8, 8, 0, 0, texture, color1, color2, colorselected, this.materialC);
