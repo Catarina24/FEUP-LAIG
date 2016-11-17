@@ -30,7 +30,6 @@ function MyPlane(scene, dimX, dimY, partsX, partsY){
 
         var knots = [0, 0, 1, 1];
 
-        //http://pastebin.com/WyKHmm1P
         this.controlPoints = [
             [
                 [-dimX/2, -dimY/2, 0, 1], //controlPoint = [x, y, z, w], w = weight of controlPoint, w = 1;

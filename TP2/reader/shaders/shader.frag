@@ -23,7 +23,7 @@ vec4 selectColor() {
         cell.x = vTextureCoord.x * du;
         cell.y = vTextureCoord.y * dv;
 
-        if(cell.x >= su && (cell.x < (su+1)) && cell.y >= sv && cell.y < (sv+1))
+        if((cell.x >= su) && (cell.x < (su+1)) && (cell.y >= sv) && (cell.y < (sv+1)))
             return cs;
         
         else if (mod(cell.x, 2) < 1.0 && mod(cell.y, 2) < 1.0)
