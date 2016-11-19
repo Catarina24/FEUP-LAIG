@@ -909,6 +909,26 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 					
 					this.primitives["#"+id] = patch;
 				}
+
+				 /**
+				 *  Vehicle
+				 */
+
+				if (primitiveShapesList[0].tagName == "vehicle"){
+					
+					var vehicle = this.parseVehicle(primitiveShapesList[0]);
+					vehicle.id = id;
+
+					var node = new MyNode();
+
+					node.id = id;
+					node.isPrimitive = true;
+					node.primitive = vehicle;
+
+					this.nodes.set("#"+node.id, node);
+					
+					this.primitives["#"+id] = vehicle;
+				}
 		}
 	}
 };
@@ -1034,6 +1054,16 @@ MySceneGraph.prototype.parsePatch = function (patchElement){
 
 	return patch;
 };
+
+
+/** Parses Vehicle information */
+MySceneGraph.prototype.parseVehicle = function(vehicleElement){
+	var dimension = this.reader.getFloat(vehicleElement, 'dimension');
+
+	var vehicle = new MyVehicle(this.scene, dimension);
+
+	return vehicle;
+}
 
 
 

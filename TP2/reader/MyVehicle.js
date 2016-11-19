@@ -2,12 +2,12 @@
  * MyVehicle
  * @constructor
  */
- function MyVehicle(scene) {
- 	CGFobject.call(this,scene);
+ function MyVehicle(scene, dimension) {
+ 	  CGFobject.call(this,scene);
     
-    this.dimension = 1;
+    this.dimension = dimension;
     this.cylinder = new MyCylinder(scene, 30, 20, this.dimension, this.dimension/2, this.dimension/2);
-    this.cube = new MyCube(scene, 1, 20, 20);
+    this.cube = new MyCube(scene, this.dimension, 20, 20);
 
     var controlpoints = [	// U = 0
                             [ // V = 0..1;
@@ -37,6 +37,7 @@
  	
  	 //carruagem
      this.scene.pushMatrix();
+        //this.scene.materials["red"].apply();
         this.cube.display();
      this.scene.popMatrix();
 
@@ -44,6 +45,7 @@
      this.scene.pushMatrix();
         this.scene.translate(0, 0.5, 0);
         this.scene.rotate(-Math.PI/2, 1, 0, 0);
+        //this.scene.materials["normal"].apply();
         this.patch.display();
      this.scene.popMatrix();
       
@@ -51,6 +53,7 @@
      this.scene.pushMatrix();
         this.scene.translate(0, -0.35, 1);
         this.scene.scale(1, 0.3, 1);
+        //this.scene.materials["red"].apply();
         this.cube.display();
      this.scene.popMatrix();
 
@@ -58,6 +61,7 @@
      this.scene.pushMatrix();
         this.scene.translate(0, 0.05, 0.5);
         this.scene.scale(0.6, 0.6, 1);
+        //this.scene.materials["blue"].apply();
         this.cylinder.display();
      this.scene.popMatrix();
 
@@ -67,12 +71,13 @@
        this.scene.translate(0.5, -0.5, 0);
        this.scene.scale(0.1, 1, 1);
        this.scene.rotate(Math.PI/2, 0, 1, 0);
+       this.scene.materials["black"].apply();
        this.cylinder.display();
      this.scene.popMatrix();
 
      //roda maior esquerda
      this.scene.pushMatrix();
-       this.scene.translate(-0.5, -0.5, 0);
+       this.scene.translate(-0.55, -0.5, 0);
        this.scene.scale(0.1, 1, 1);
        this.scene.rotate(Math.PI/2, 0, 1, 0);
        this.cylinder.display();

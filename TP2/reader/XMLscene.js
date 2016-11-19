@@ -47,7 +47,6 @@ XMLscene.prototype.init = function (application) {
 	this.startTime = 0;
 	this.elapsedTime = 0;
 
-	this.vehicle = new MyVehicle(this);
 };
 
 XMLscene.prototype.initLights = function () {
@@ -329,12 +328,6 @@ XMLscene.prototype.display = function () {
 	}
 
 	this.processGraph(this.graph.sceneRoot, null, null);
-	
-	/*this.pushMatrix();
-		//this.translate(5, 1, 1);
-		this.vehicle.display();
-	this.popMatrix();*/
-
 };
 
 
