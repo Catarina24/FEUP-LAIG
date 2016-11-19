@@ -420,17 +420,27 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 		this.materials[material].setTexture(this.textures[texture]);
 	}
 	
-	//TESTE Animation	
-	
 	this.materials[material].apply();
 
 	this.multMatrix(node.mat);
+	var time = 0;
 
-if (node.animations.length != 0){
+	//TESTE
+	if (node.numAnimations < node.animations.length){
 		
+		this.animations[node.animations[node.numAnimations]].apply(this.elapsedTime - node.time);
+		//time = node.time;
 		
-		this.animations[node.animations[0]].apply(this.elapsedTime);		
-		console.log(this.animations[node.animations[0]]);
+		if(node.time == 0){
+		 	node.time = this.animations[node.animations[node.numAnimations]].totalTime;
+		 }
+			 
+		 if (this.elapsedTime >= node.time){	
+			 node.numAnimations++;
+			 if (node.numAnimations < node.animations.length)
+			 	node.time += this.animations[node.animations[node.numAnimations]].totalTime;
+		 }
+			 
 	}
 
 		

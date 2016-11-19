@@ -919,6 +919,7 @@
             <!--TESTE-->
             <animation>
                 <animationref id="teste" />
+                <animationref id="teste2" />
             </animation>
 
             <materials>
