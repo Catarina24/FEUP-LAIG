@@ -24,8 +24,8 @@ function MyChessboard(scene, du, dv, su, sv, texture, color1, color2, colorselec
 
     //MATERIAL
     this.appearance = material;
-    this.appearance.loadTexture(texture);
-    //this.appearance.setTextureWrap('REPEAT', 'REPEAT');
+    this.appearance.setTexture(this.texture);
+    this.appearance.setTextureWrap('REPEAT', 'REPEAT');
 
     //SHADER
     this.shader = new CGFshader(this.scene.gl, "shaders/shader.vert", "shaders/shader.frag");

@@ -19,17 +19,15 @@ void main() {
 
 	vertexPosition = aVertexPosition;
 
-	/*vec2 cell;	
+	vec2 cell;	
     cell.x = aTextureCoord.x * du;
-    cell.y = aTextureCoord.y * dv;*/
+    cell.y = aTextureCoord.y * dv;
 
 	
 
-	/*if((cell.x >= su) && (cell.x < (su+1.0)) && (cell.y >= sv) && (cell.y < (sv+1.0))){
-		vVertexPosition.z+=0.1;
-	}*/
-
-	vertexPosition.z = aTextureCoord.y;
+	if((cell.x >= su) && (cell.x <= (su+1.0)) && (cell.y >= sv) && (cell.y <= (sv+1.0))){
+		vertexPosition.z+=0.1;
+	}
 
 	gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition.x, vertexPosition.y, vertexPosition.z, 1.0);
 
