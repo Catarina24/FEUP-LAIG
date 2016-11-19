@@ -11,18 +11,26 @@ uniform float dv;
 uniform float su; /*quadricula da posicao selecionada*/
 uniform float sv;
 
-uniform vec4 cs;
+varying vec2 vTextureCoord;
 
 void main() {
 
-	vec2 cell;
+	vec3 vertexPosition;
+
+	vertexPosition = aVertexPosition;
+
+	vec2 cell;	
     cell.x = aTextureCoord.x * du;
     cell.y = aTextureCoord.y * dv;
 
-	if((cell.x >= su) && (cell.x < (su+1)) && (cell.y >= sv) && (cell.y < (sv+1))){
-		aVertexPosition.y+=0.3;
+	
+
+	if((cell.x >= su) && (cell.x <= (su+1.0)) && (cell.y >= sv) && (cell.y <= (sv+1.0))){
+		vertexPosition.z+=0.05;
 	}
 
-	gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+	gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition.x, vertexPosition.y, vertexPosition.z, 1.0);
+
+	vTextureCoord = aTextureCoord;
 }
 

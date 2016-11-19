@@ -17,7 +17,7 @@ function MyChessboard(scene, du, dv, su, sv, texture, color1, color2, colorselec
     this.color2 = color2;
     this.colorselected = colorselected;
 
-    this.chessboard = new MyPlane(scene, 1, 1, du, dv);
+    this.chessboard = new MyPlane(scene, 1, 1, 100, 100);
 
     //TEXTURE
     this.texture = new CGFtexture(scene, texture);

@@ -70,11 +70,11 @@ LightingScene.prototype.init = function(application) {
 
 	this.initAppearances();
 
-	var color1 = [1, 0, 0, 1];
-	var color2 = [0, 1, 0, 1];
-	var colorselected = [1, 1, 1, 1];
+	var color1 = [1, 1, 1, 1];
+	var color2 = [0, 0.5, 0.5, 1];
+	var colorselected = [1, 0, 0, 1];
 
-	this.chessboard = new MyChessboard(this, 10, 10, 5, 5, "../resources/images/floor.png", color1, color2, colorselected, this.materialDefault);
+	this.chessboard = new MyChessboard(this, 8, 8, 5, 5, "../resources/images/floor.png", color1, color2, colorselected, this.materialDefault);
 
 	//Set update function
 	this.updatePeriod = 1/60 * 1000;	// update period in ms (1/60 * 1000 ms = 60 Hz)

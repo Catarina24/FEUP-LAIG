@@ -26,7 +26,7 @@ void main() {
 	
 
 	if((cell.x >= su) && (cell.x <= (su+1.0)) && (cell.y >= sv) && (cell.y <= (sv+1.0))){
-		vertexPosition.z+=0.1;
+		vertexPosition.z+=0.05;
 	}
 
 	gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition.x, vertexPosition.y, vertexPosition.z, 1.0);
