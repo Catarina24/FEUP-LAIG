@@ -46,6 +46,7 @@ XMLscene.prototype.init = function (application) {
 
 	this.startTime = 0;
 	this.elapsedTime = 0;
+	
 
 };
 

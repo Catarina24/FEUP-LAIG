@@ -746,7 +746,7 @@ MySceneGraph.prototype.parseDSXAnimation = function (rootElement){
 };
 
 /*
-* PRIMITVES PARSER
+* PRIMITIVES PARSER
 -Available primitives for scene drawing
 */
 
@@ -929,6 +929,26 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 					
 					this.primitives["#"+id] = vehicle;
 				}
+
+				/**
+				 * Chessboard
+				 */
+
+				if(primitiveShapesList[0].tagName == "chessboard"){
+					
+					var chessboard = this.parseChessboard(primitiveShapesList[0]);
+					chessboard.id = id;
+
+					var node = new MyNode();
+
+					node.id = id;
+					node.isPrimitive = true;
+					node.primitive = chessboard;
+
+					this.nodes.set("#"+node.id, node);
+					
+					this.primitives["#"+id] = chessboard;
+				}
 		}
 	}
 };
@@ -1063,6 +1083,36 @@ MySceneGraph.prototype.parseVehicle = function(vehicleElement){
 	var vehicle = new MyVehicle(this.scene, dimension);
 
 	return vehicle;
+}
+
+/** Parses chessboard info **/
+MySceneGraph.prototype.parseChessboard = function(chessboardElement){
+
+	var du = this.reader.getFloat(chessboardElement, 'du');
+	var dv = this.reader.getFloat(chessboardElement, 'dv');
+
+	var textureRef = this.reader.getString(chessboardElement, 'textureref');
+
+	var su = this.reader.getFloat(chessboardElement, 'su');
+	var sv = this.reader.getFloat(chessboardElement, 'sv');
+
+	var c1, c2, cs;
+
+	var chessboardSearchC1 = this.searchChildren(chessboardElement, 'c1');
+
+	c1 = this.getRGBAFromDSX(chessboardSearchC1[0]);
+	
+	var chessboardSearchC2 = this.searchChildren(chessboardElement, 'c2');
+
+	c2 = this.getRGBAFromDSX(chessboardSearchC2[0]);
+	
+	var chessboardSearchCS = this.searchChildren(chessboardElement, 'cs');
+
+	cs = this.getRGBAFromDSX(chessboardSearchCS[0]);
+
+	var chessboard = new MyChessboard(this.scene, du, dv, su, sv, textureRef, c1, c2, cs);
+
+	return chessboard;	
 }
 
 

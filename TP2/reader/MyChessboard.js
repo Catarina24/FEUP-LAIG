@@ -3,8 +3,8 @@
  * @constructor
  */
 
-function MyChessboard(scene, du, dv, su, sv, texture, color1, color2, colorselected, material){
-
+function MyChessboard(scene, du, dv, su, sv, texture, color1, color2, colorselected) 
+{
     CGFobject.call(this,scene);
 
     this.scene = scene;
@@ -20,15 +20,24 @@ function MyChessboard(scene, du, dv, su, sv, texture, color1, color2, colorselec
     this.chessboard = new MyPlane(scene, 1, 1, 100, 100);
 
     //TEXTURE
-    this.texture = new CGFtexture(scene, texture);
+    for(var i = 0; i < this.scene.graph.textures.length; i++)
+    {
+        if(texture == this.scene.graph.textures[i].id)
+        {
+            this.texture = new CGFtexture(this.scene, this.scene.graph.textures[i].file);
+            break;
+        }
+    }
+
+    console.log(this.texture);
 
     //MATERIAL
-    this.appearance = material;
+    this.appearance = new CGFappearance(this.scene);
     this.appearance.setTexture(this.texture);
     this.appearance.setTextureWrap('REPEAT', 'REPEAT');
 
     //SHADER
-    this.shader = new CGFshader(this.scene.gl, "shaders/shader.vert", "shaders/shader.frag");
+    this.shader = new CGFshader(this.scene.gl, "./shaders/shader.vert", "./shaders/shader.frag");
     this.shader.setUniformsValues({ uSampler: 1, 
                                     du: parseInt(this.du)*1.0, 
                                     dv: parseInt(this.dv)*1.0, 
@@ -46,14 +55,11 @@ MyChessboard.prototype.display = function(){
 
         this.appearance.apply();
 
-      
         this.scene.setActiveShader(this.shader);
-
-
-        
+       
         this.chessboard.display();
 
-        //this.texture.unbind(0);
         this.scene.setActiveShader(this.scene.defaultShader);
-        this.scene.materialDefault.apply();
+
+        this.scene.setDefaultAppearance();;
 };

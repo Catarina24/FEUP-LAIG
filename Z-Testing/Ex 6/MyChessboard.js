@@ -44,7 +44,7 @@ MyChessboard.prototype.constructor = MyChessboard;
 
 MyChessboard.prototype.display = function(){    
 
-        this.appearance.apply();
+        //this.appearance.apply();
 
       
         this.scene.setActiveShader(this.shader);
@@ -55,5 +55,5 @@ MyChessboard.prototype.display = function(){
 
         //this.texture.unbind(0);
         this.scene.setActiveShader(this.scene.defaultShader);
-        this.scene.materialDefault.apply();
+        //this.scene.materialDefault.apply();
 };
