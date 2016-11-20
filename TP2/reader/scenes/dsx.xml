@@ -330,7 +330,7 @@
         </primitive>
 
         <primitive id="chessboard">
-            <chessboard du="8" dv="8" textureref="dark_wood" su="0" sv="0" >
+            <chessboard du="8" dv="8" textureref="beige_wall" su="0" sv="0" >
                    <c1 r="1" g="1" b="1" a="1" />
                    <c2 r="0.5" g="0.5" b="0.5" a="1" />
                    <cs r="0.7" g="0" b="0" a="1" />
@@ -409,7 +409,8 @@
 
             <component id="chessboard">
                  <transformation>
-                    <translate x="2" y="3" z="5.5"/>
+                    <translate x="2" y="1.6" z="3.5"/>
+                    <rotate axis="x" angle="-90"/>
                 </transformation>
 
                 <materials>
