@@ -7,18 +7,32 @@ serialInclude([
 	'LightingScene.js',
 	'MyQuad.js',
 	'MyUnitCubeQuad.js',
+	'MyUnitCube.js',
 	'MyTable.js',
 	'Plane.js', 
-	'MyAnimation.js',
-	'MyLinearAnimation.js',
+	'MyPrism.js',
+	'MyCylinder.js',
+	'MySemiSphere.js',
+	'MyClock.js', 
+	'MyCircle.js',
+	'MyClockHand.js',
+	'MyInterface.js',
+	'MyDrone.js',
+	'MyDroneHandler.js',
+	'MyDroneBody.js',
+	'MyDroneLeg.js',
+	'MyDroneHelice.js',
+	'MyArch.js',
+	'MyDroneHook.js',
+	'MyCargo.js',
+	'MyLoadingZone.js',
 	'MyChessboard.js',
 	'MyPlane.js',
-	
 
 	main=function() {
 		var app = new CGFapplication(document.body);
 		var myScene = new LightingScene();
-		var myInterface = new CGFinterface();
+		var myInterface = new MyInterface();
 
 		app.init();
 

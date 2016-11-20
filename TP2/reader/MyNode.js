@@ -22,6 +22,8 @@ function MyNode(){
     this.children = [];
     this.materials = [];
     this.animations = [];
+    this.numAnimations = 0;
+    this.time = 0;
     this.texture = null;
     
     this.mat = mat4.create();
@@ -79,4 +81,9 @@ MyNode.prototype.isPrimitive = function(){
 
 MyNode.prototype.setMatrix = function(mat){
     this.mat = mat4.clone(mat);
+}
+
+MyNode.prototype.applyAnimation = function(elapsedTime){
+
+    
 }
