@@ -428,11 +428,14 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 		 	node.time = this.animations[node.animations[node.numAnimations]].totalTime;
 		 }
 			 
-		 if (this.elapsedTime >= node.time){	
-			 node.numAnimations++;
-			 if (node.numAnimations < node.animations.length)
-			 	node.time += this.animations[node.animations[node.numAnimations]].totalTime;
-		 }
+		 if (this.elapsedTime >= node.time){
+			if(node.numAnimations != node.animations.length-1)
+			{	
+				node.numAnimations++;
+				if (node.numAnimations < node.animations.length)
+				node.time += this.animations[node.animations[node.numAnimations]].totalTime;
+		 	}
+		}
 			 
 	}
 
