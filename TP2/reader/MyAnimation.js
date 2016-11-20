@@ -15,3 +15,7 @@ MyAnimation.prototype.constructor = MyAnimation;
 MyAnimation.prototype.apply = function(time){
     
 }
+
+MyAnimation.prototype.endAnimation = function(node){
+
+}

@@ -51,25 +51,16 @@ MyLinearAnimation.prototype.calculateDistance = function (){
 /** Function to determine what should the animation do according to the time that has passed **/
 MyLinearAnimation.prototype.apply = function(sceneTime){
 
+    if(this.end)
+    {
+        return;
+    }
+
     // If there is only 1 control point, the object should be moved to that point for the duration of the animation
     if (this.controlPoints.length == 1) 
     {
          this.scene.translate(this.firstPoint[0], this.firstPoint[1], this.firstPoint[2]);
     }
-    
-    // If there is more than one control point, but the scene time has already passed this.totalTime, put object in final position
-    else if(sceneTime > this.totalTime)  // if the animation time has ended
-    {
-        sceneTime = this.totalTime;
-        
-        var finalPositionVector = vec3.create();
-
-        vec3.add(finalPositionVector, this.firstPoint, this.lastPoint);
-
-        // translate and rotate to final position
-        this.scene.translate(finalPositionVector[0], finalPositionVector[1], finalPositionVector[2]); // put in final position (last point of the controlPoints array)
-        this.scene.rotate(-this.angleOfRotation, 0, 1, 0);
-    }   
     
     // If the object has to follow a certain path
     else{
@@ -114,4 +105,20 @@ MyLinearAnimation.prototype.apply = function(sceneTime){
     }
 
 }
+
+MyLinearAnimation.prototype.endAnimation = function(node)
+{
+    if(!this.end)
+    {    
+        var finalTranslate = vec3.create();
+
+        vec3.add(finalTranslate, this.firstPoint, this.lastPoint);
+        mat4.translate(node.mat, node.mat, finalTranslate);
+
+        mat4.rotate(node.mat, node.mat, -this.angleOfRotation, [0, 1, 0]);
+    }
+
+    this.end = true;
+}
+
 
