@@ -422,8 +422,9 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 	//TESTE
 	if (node.numAnimations < node.animations.length){
 		
-		this.animations[node.animations[node.numAnimations]].apply(this.elapsedTime - node.time);
-		//time = node.time;
+		this.animations[node.animations[node.numAnimations]].apply(this.elapsedTime - time, node);
+		
+		time = node.time;
 		
 		if(node.time == 0){
 		 	node.time = this.animations[node.animations[node.numAnimations]].totalTime;
