@@ -146,6 +146,8 @@
 
         <texture id="ceiling" file="./scenes/resources/ceiling.jpg" length_s="0.2" length_t="0.2"/>
 
+        <texture id="alcatifa" file="./scenes/resources/alcatifa.jpg" length_s="0.2" length_t="0.2"/>
+
 
         
         
@@ -184,6 +186,22 @@
          <material id="globe" >
             <emission r="0.8" g="0.8" b="0.2" a="0.2" />
             <ambient r="0.6" g="0.6" b="0.6" a="0.3" />
+            <diffuse r="0" g="0" b="0" a="0" />
+            <specular r="0" g="0" b="0" a="0" />
+            <shininess value="0.1" />
+        </material>
+
+        <material id="red" >
+            <emission r="0.8" g="0" b="0" a="0.2" />
+            <ambient r="0.8" g="0" b="0" a="0.2" />
+            <diffuse r="1" g="0" b="0" a="0" />
+            <specular r="1" g="0" b="0" a="0" />
+            <shininess value="0.1" />
+        </material>
+
+         <material id="blue" >
+            <emission r="0" g="0" b="0.8" a="0.2" />
+            <ambient r="0" g="0" b="0.8" a="0.2" />
             <diffuse r="0" g="0" b="0" a="0" />
             <specular r="0" g="0" b="0" a="0" />
             <shininess value="0.1" />
@@ -306,8 +324,19 @@
                <controlpoint x="1.5" y="1.5" z="0.0"/>
             </patch>
         </primitive>
-        
-      
+
+        <primitive id="vehicle">
+            <vehicle dimension="1" />
+        </primitive>
+
+        <primitive id="chessboard">
+            <chessboard du="8" dv="8" textureref="beige_wall" su="0" sv="0" >
+                   <c1 r="1" g="1" b="1" a="1" />
+                   <c2 r="0.5" g="0.5" b="0.5" a="1" />
+                   <cs r="0.7" g="0" b="0" a="1" />
+            </chessboard>
+        </primitive> 
+
     </primitives>
     
     
@@ -368,10 +397,55 @@
 
                 <componentref id="door"/>
                 <componentref id="paint"/>
+                <componentref id="train"/>
+
+                <componentref id="chessboard"/>
                 
             </children>
             
         </component>
+
+        <!-- *** BEGIN OF CHESSBOARD *** -->
+
+            <component id="chessboard">
+                 <transformation>
+                    <translate x="2" y="1.6" z="3.5"/>
+                    <rotate axis="x" angle="-90"/>
+                </transformation>
+
+                <materials>
+                    <material id="inherit"/>
+                </materials>
+
+                <texture id="none"/>
+
+                <children>
+                    <primitiveref id="chessboard"/>
+                </children>
+            </component>
+
+        <!-- *** END OF CHESSBOARD *** -->
+
+        <!-- *** BEGIN OF TRAIN *** -->
+
+            <component id="train">
+                 <transformation>
+                    <translate x="2" y="1" z="5"/>
+                </transformation>
+
+                <materials>
+                    <material id="inherit"/>
+                </materials>
+
+                <texture id="none"/>
+
+                <children>
+                    <primitiveref id="vehicle"/>
+                </children>
+            </component>
+
+        <!-- *** END OF TRAIN *** -->
+
 
         <!-- *** BEGIN OF TV *** -->
 
@@ -919,6 +993,7 @@
             <!--TESTE-->
             <animation>
                 <animationref id="teste" />
+                <animationref id="teste2" />
             </animation>
 
             <materials>
@@ -1281,7 +1356,7 @@
                 <material id="normal"/>
             </materials>
 
-            <texture id="floor"/>
+            <texture id="alcatifa"/>
 
             <children>
                 <primitiveref id="rectangle"/>

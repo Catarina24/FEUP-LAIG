@@ -26,7 +26,7 @@ MyCircularAnimation.prototype.apply = function(sceneTime){
         sceneTime = this.totalTime;
         this.scene.translate(this.lastPoint[0], this.lastPoint[1], this.lastPoint[2]);
         this.scene.rotate(-this.angle, 0, 1, 0);
-        
+    
     }
 
     else{
@@ -41,6 +41,7 @@ MyCircularAnimation.prototype.apply = function(sceneTime){
         this.lastPoint = [x, this.center[1], z];
 
         this.scene.rotate(-this.angle, 0, 1, 0);
+        //return matrix * matrix2;
         
     }
 }
