@@ -267,15 +267,13 @@
             <!-- os angulos sao expressos em graus  -->
 
             <animation id="teste2" span="5" type="linear">
-                <controlpoint x="0" y="0" z="0" /> 
                 <controlpoint x="1" y="0" z="0" /> 
-                <controlpoint x="1" y="-1" z="-2" /> 
             </animation>
 
 
             <animation id="teste" span="6" type="circular" 
                        centerx="0" centery="0" centerz="0"
-                       radius="1" startang="0" rotang="180" />
+                       radius="1" startang="0" rotang="90" />
 
     </animations>
     
@@ -330,7 +328,7 @@
         </primitive>
 
         <primitive id="chessboard">
-            <chessboard du="8" dv="8" textureref="beige_wall" su="0" sv="0" >
+            <chessboard du="8" dv="8" textureref="beige_wall" su="1" sv="1" >
                    <c1 r="1" g="1" b="1" a="1" />
                    <c2 r="0.5" g="0.5" b="0.5" a="1" />
                    <cs r="0.7" g="0" b="0" a="1" />
