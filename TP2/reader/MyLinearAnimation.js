@@ -101,7 +101,7 @@ MyLinearAnimation.prototype.apply = function(sceneTime){
 
             if(this.angleOfRotation < 0)
             {
-                this.angleOfRotation = Math.PI/2 - this.angleOfRotation;
+                this.angleOfRotation = this.angleOfRotation;
             }
 
             this.scene.rotate(this.angleOfRotation, 0, 1, 0);    

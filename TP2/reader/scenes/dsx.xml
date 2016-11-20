@@ -266,21 +266,23 @@
             <!-- o valor "linear" ou "circular"; na animacao circular -->
             <!-- os angulos sao expressos em graus  -->
 
-            <animation id="line1" span="5" type="linear">
-                <controlpoint x="0" y="0" z="0" /> 
-                <controlpoint x="10" y="0" z="0" />
-            </animation>
-
-             <animation id="line2" span="5" type="linear">
+            <animation id="train_line1" span="5" type="linear">
                 <controlpoint x="0" y="0" z="0" /> 
                 <controlpoint x="10" y="0" z="0" />
             </animation>
 
 
+            <animation id="train_bend1" span="5" type="circular" 
+                       centerx="-3" centery="0" centerz="0"
+                       radius="3" startang="0" rotang="90" />
 
-            <animation id="bend1" span="5" type="circular" 
-                       centerx="-5" centery="0" centerz="0"
-                       radius="5" startang="0" rotang="90" />
+            <animation id="train_line2" span="5" type="linear">
+                <controlpoint x="0" y="0" z="0" /> 
+                <controlpoint x="0" y="0" z="2" />
+                <controlpoint x="-1" y="0" z="3" />
+                <controlpoint x="-2" y="0" z="3" />
+                <controlpoint x="-3" y="0" z="2" /> 
+            </animation>
 
     </animations>
     
@@ -441,8 +443,9 @@
 
                 
                 <animation>
-                    <animationref id="line1" />
-                    <animationref id="bend1" />
+                    <animationref id="train_line1" />
+                    <animationref id="train_bend1" />
+                    <animationref id="train_line2" />
                 </animation>
 
                 <materials>
