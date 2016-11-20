@@ -97,9 +97,15 @@ MyLinearAnimation.prototype.apply = function(sceneTime){
             this.scene.translate(vector[0]*percentageTraveled + point1[0], vector[1]*percentageTraveled + point1[1], vector[2]*percentageTraveled + point1[2]); // make object travel current segment
             this.scene.translate(this.firstPoint[0], this.firstPoint[1], this.firstPoint[2]); // make translations according to the FIRST control point
 
-            this.angleOfRotation = Math.atan2(vector[2], vector[0]);
+            this.angleOfRotation = Math.atan2(vector[0], vector[2]);
 
-            this.scene.rotate(-this.angleOfRotation, 0, 1, 0);
+            if(this.angleOfRotation < 0)
+            {
+                this.angleOfRotation = Math.PI/2 - this.angleOfRotation;
+            }
+
+            this.scene.rotate(this.angleOfRotation, 0, 1, 0);    
+            
         }    
 
     }
@@ -113,17 +119,17 @@ MyLinearAnimation.prototype.endAnimation = function(node)
         var finalPositionVector = vec3.create();
 
         vec3.add(finalPositionVector, this.firstPoint, this.lastPoint);
-        
+
         // translate and rotate to final position
         this.scene.translate(finalPositionVector[0], finalPositionVector[1], finalPositionVector[2]); // put in final position (last point of the controlPoints array)
-        this.scene.rotate(-this.angleOfRotation, 0, 1, 0);
+        this.scene.rotate(this.angleOfRotation, 0, 1, 0);
 
         var finalTranslate = vec3.create();
 
         vec3.add(finalTranslate, this.firstPoint, this.lastPoint);
         mat4.translate(node.mat, node.mat, finalTranslate);
 
-        mat4.rotate(node.mat, node.mat, -this.angleOfRotation, [0, 1, 0]);
+        mat4.rotate(node.mat, node.mat, this.angleOfRotation, [0, 1, 0]);
     }
 
     this.end = true;
