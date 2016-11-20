@@ -110,6 +110,10 @@ MyLinearAnimation.prototype.endAnimation = function(node)
 {
     if(!this.end)
     {    
+        // translate and rotate to final position
+        this.scene.translate(finalPositionVector[0], finalPositionVector[1], finalPositionVector[2]); // put in final position (last point of the controlPoints array)
+        this.scene.rotate(-this.angleOfRotation, 0, 1, 0);
+        
         var finalTranslate = vec3.create();
 
         vec3.add(finalTranslate, this.firstPoint, this.lastPoint);

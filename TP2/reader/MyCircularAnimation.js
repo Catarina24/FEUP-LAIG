@@ -33,6 +33,7 @@ MyCircularAnimation.prototype.apply = function(sceneTime, node){
     x = this.radius * Math.sin(this.angle);
     /** Switched z with x, because from the positive YY perspective, x is the sin axis and z the cos axis */
     
+    this.scene.translate(0, 0, -this.radius);
     this.scene.translate(this.center[0] + x, this.center[1], this.center[2] + z);
     this.lastPoint = [x, this.center[1], z];
 
@@ -48,8 +49,13 @@ MyCircularAnimation.prototype.endAnimation = function(node){
 
     if(!this.end)
     {
+        this.scene.translate(0, 0, -this.radius);
+        this.scene.translate(this.lastPoint[0], this.lastPoint[1], this.lastPoint[2]);
+        this.scene.rotate(this.angle, 0, 1, 0);
+
         var finalTranslate = vec3.fromValues(this.lastPoint[0], this.lastPoint[1], this.lastPoint[2]);
             
+        mat4.translate(node.mat, node.mat, [0, 0, -this.radius]);
         mat4.translate(node.mat, node.mat, finalTranslate);
         mat4.rotate(node.mat, node.mat, this.angle, [0, 1, 0]);
     }
