@@ -910,6 +910,7 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 					this.primitives["#"+id] = patch;
 				}
 
+
 				 /**
 				 *  Vehicle
 				 */
@@ -1067,6 +1068,7 @@ MySceneGraph.prototype.parsePatch = function (patchElement){
 		}
 
 		controlpoints.push(controlpointsU);
+
 
 	}
 
