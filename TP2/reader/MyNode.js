@@ -96,7 +96,6 @@ MyNode.prototype.calculateCumulativeAnimationTimes = function(scene)
     {
         this.allAnimationsTime += scene.animations[this.animations[i]].totalTime;
         this.cumulativeAnimationTimes.push(this.allAnimationsTime);
-        console.log(this);
     } 
 }
 
@@ -127,6 +126,4 @@ MyNode.prototype.applyAnimation = function(scene, elapsedTime){
     {
         scene.animations[this.animations[currentAnimationIndex]].apply(currentAnimationTime, this);
     }
-
-    //console.log(this);
 }

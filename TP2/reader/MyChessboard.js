@@ -29,8 +29,6 @@ function MyChessboard(scene, du, dv, su, sv, texture, color1, color2, colorselec
         }
     }
 
-    console.log(this.texture);
-
     //MATERIAL
     this.appearance = new CGFappearance(this.scene);
     this.appearance.setTexture(this.texture);
