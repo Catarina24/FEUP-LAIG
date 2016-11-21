@@ -21,9 +21,16 @@ function MyNode(){
     this.id = null;
     this.children = [];
     this.materials = [];
+
+    // Animations
     this.animations = [];
+
+    this.cumulativeAnimationTimes = [];
+    this.allAnimationsTime = 0;
+
     this.numAnimations = 0;
     this.time = 0;
+
     this.texture = null;
     
     this.mat = mat4.create();
@@ -83,7 +90,43 @@ MyNode.prototype.setMatrix = function(mat){
     this.mat = mat4.clone(mat);
 }
 
-MyNode.prototype.applyAnimation = function(elapsedTime){
+MyNode.prototype.calculateCumulativeAnimationTimes = function(scene)
+{
+    for(var i = 0; i < this.animations.length; i++)
+    {
+        this.allAnimationsTime += scene.animations[this.animations[i]].totalTime;
+        this.cumulativeAnimationTimes.push(this.allAnimationsTime);
+        console.log(this);
+    } 
+}
 
-    
+MyNode.prototype.applyAnimation = function(scene, elapsedTime){
+
+    var currentAnimationTime = elapsedTime;
+
+    var currentAnimationIndex = 0;
+
+    while(1)
+    {
+        if(elapsedTime > this.cumulativeAnimationTimes[currentAnimationIndex])
+        {
+            scene.animations[this.animations[currentAnimationIndex]].endAnimation(this);
+            currentAnimationIndex++;
+        }
+        else
+        {
+            if(currentAnimationIndex > 0)
+            {
+                currentAnimationTime = elapsedTime - this.cumulativeAnimationTimes[currentAnimationIndex-1];
+            }
+            break;
+        }
+    }
+
+    if(currentAnimationIndex < this.animations.length)
+    {
+        scene.animations[this.animations[currentAnimationIndex]].apply(currentAnimationTime, this);
+    }
+
+    //console.log(this);
 }

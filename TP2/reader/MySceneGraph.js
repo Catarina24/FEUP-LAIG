@@ -49,7 +49,7 @@ function MySceneGraph(filename, scene) {
 	this.animations=[];
 
 	//Scene Nodes
-	this.nodes = new Map();
+	this.nodes = [];
 
 	//Primitives
 	this.primitives =[];
@@ -788,7 +788,7 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 						node.isPrimitive = true;
 						node.primitive = rectangle;
 
-						this.nodes.set("#"+node.id, node);
+						this.nodes["#"+node.id] = node;
 
 						this.primitives["#"+id] = rectangle;
 				}
@@ -807,7 +807,7 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 						node.isPrimitive = true;
 						node.primitive = triangle;
 
-						this.nodes.set("#"+node.id, node);
+						this.nodes["#"+node.id] = node;
 
 						this.primitives["#"+id] = triangle;
 				}
@@ -826,7 +826,7 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 						node.isPrimitive = true;
 						node.primitive = sphere;
 
-						this.nodes.set("#"+node.id, node);
+						this.nodes["#"+node.id] = node;
 
 						this.primitives["#"+id] = sphere;
 				}
@@ -846,7 +846,7 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 						node.isPrimitive = true;
 						node.primitive = cylinder;
 
-						this.nodes.set("#"+node.id, node);
+						this.nodes["#"+node.id] = node;
 
 						this.primitives["#"+id] = cylinder;
 				}
@@ -865,7 +865,7 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 					node.isPrimitive = true;
 					node.primitive = torus;
 
-					this.nodes.set("#"+node.id, node);
+					this.nodes["#"+node.id] = node;
 					
 					this.primitives["#"+id] = torus;
 				}
@@ -885,7 +885,7 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 					node.isPrimitive = true;
 					node.primitive = plane;
 
-					this.nodes.set("#"+node.id, node);
+					this.nodes["#"+node.id] = node;
 					
 					this.primitives["#"+id] = plane;
 				}
@@ -905,10 +905,11 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 					node.isPrimitive = true;
 					node.primitive = patch;
 
-					this.nodes.set("#"+node.id, node);
+					this.nodes["#"+node.id] = node;
 					
 					this.primitives["#"+id] = patch;
 				}
+
 
 				 /**
 				 *  Vehicle
@@ -925,7 +926,7 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 					node.isPrimitive = true;
 					node.primitive = vehicle;
 
-					this.nodes.set("#"+node.id, node);
+					this.nodes["#"+node.id] = node;
 					
 					this.primitives["#"+id] = vehicle;
 				}
@@ -945,7 +946,7 @@ MySceneGraph.prototype.parseDSXPrimitives = function (rootElement){
 					node.isPrimitive = true;
 					node.primitive = chessboard;
 
-					this.nodes.set("#"+node.id, node);
+					this.nodes["#"+node.id] = node;
 					
 					this.primitives["#"+id] = chessboard;
 				}
@@ -1067,6 +1068,7 @@ MySceneGraph.prototype.parsePatch = function (patchElement){
 		}
 
 		controlpoints.push(controlpointsU);
+
 
 	}
 
@@ -1294,7 +1296,7 @@ MySceneGraph.prototype.parseDSXComponents = function (rootElement){
 		*/
 
 		// Add node to scene graph
-		this.nodes.set(node.id, node);
+		this.nodes[node.id] = node;
 	}
 
 	//console.log(this.nodes);

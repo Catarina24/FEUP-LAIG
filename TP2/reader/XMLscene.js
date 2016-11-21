@@ -108,6 +108,11 @@ XMLscene.prototype.init_variables = function(){
 	this.primitives = this.graph.primitives;
 
 	this.animations = this.graph.animations;
+
+	for(var node in this.graph.nodes)
+	{
+		this.graph.nodes[node].calculateCumulativeAnimationTimes(this);
+	}
 };
 
 
@@ -351,7 +356,7 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 		return "Process Graph: null node name.";
 	}
 
-	var node = this.graph.nodes.get(nodeName);
+	var node = this.graph.nodes[nodeName];
 
 	
 	//if is primitive
@@ -417,34 +422,16 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 	this.materials[material].apply();
 
 	this.multMatrix(node.mat);
-	var time = 0;
-
-	//TESTE
-	if (node.numAnimations < node.animations.length){
-		
-		this.animations[node.animations[node.numAnimations]].apply(this.elapsedTime - node.time);
-		//time = node.time;
-		
-		if(node.time == 0){
-		 	node.time = this.animations[node.animations[node.numAnimations]].totalTime;
-		 }
-			 
-		 if (this.elapsedTime >= node.time){
-			if(node.numAnimations != node.animations.length-1)
-			{	
-				node.numAnimations++;
-				if (node.numAnimations < node.animations.length)
-				node.time += this.animations[node.animations[node.numAnimations]].totalTime;
-		 	}
-		}
-			 
+	
+	if(node.animations.length > 0)
+	{
+		node.applyAnimation(this, this.elapsedTime);
 	}
 
-		
 	for(var i = 0; i < node.children.length; i++){
 		this.pushMatrix();
 
-		if(this.graph.nodes.get(node.children[i]) == null)	// if there is no node with given id
+		if(this.graph.nodes[node.children[i]] == null)	// if there is no node with given id
 		{
 			this.graph.onXMLError("There is no child node named " + node.children[i] + " from parent " + node.id);
 			node.children.splice(i,1); // removes 1 (one) element from index i, so the error isn't repeated every cycle

@@ -148,7 +148,7 @@
 
         <texture id="alcatifa" file="./scenes/resources/alcatifa.jpg" length_s="0.2" length_t="0.2"/>
 
-
+        <texture id="train" file="./scenes/resources/white_wood.jpg" length_s="1" length_t="1"/>
         
         
     </textures>
@@ -266,16 +266,33 @@
             <!-- o valor "linear" ou "circular"; na animacao circular -->
             <!-- os angulos sao expressos em graus  -->
 
-            <animation id="teste2" span="5" type="linear">
+            <animation id="train_line1" span="5" type="linear">
                 <controlpoint x="0" y="0" z="0" /> 
-                <controlpoint x="1" y="0" z="0" /> 
-                <controlpoint x="1" y="-1" z="-2" /> 
+                <controlpoint x="10" y="0" z="0" />
             </animation>
 
 
-            <animation id="teste" span="6" type="circular" 
-                       centerx="0" centery="0" centerz="0"
-                       radius="1" startang="0" rotang="180" />
+            <animation id="train_bend1" span="5" type="circular" 
+                       centerx="-3" centery="0" centerz="0"
+                       radius="3" startang="0" rotang="90" />
+
+            <animation id="train_line2" span="5" type="linear">
+                <controlpoint x="0" y="0" z="0" /> 
+                <controlpoint x="0" y="0" z="2" />
+                <controlpoint x="-1" y="0" z="3" />
+                <controlpoint x="-2" y="0" z="3" />
+                <controlpoint x="-3" y="0" z="2" /> 
+            </animation>
+
+            <animation id="train_bend2" span="4" type="circular" 
+                       centerx="2" centery="0" centerz="0"
+                       radius="2" startang="180" rotang="-70" />
+            
+            <animation id="train_bend3" span="4" type="circular" 
+                       centerx="-2" centery="0" centerz="0"
+                       radius="2" startang="0" rotang="210" />
+            
+
 
     </animations>
     
@@ -314,7 +331,7 @@
             <plane dimX="1" dimY="1" partsX="20" partsY="20" />
         </primitive>
         
-        <primitive id="patch">
+        <primitive id="patch1">
             <patch orderU="2" orderV="1" partsU="20" partsV="20" >
                <controlpoint x="-1.5" y="-1.5" z="0.0"/>
                <controlpoint x="-1.5" y="1.5" z="0.0"/>
@@ -325,12 +342,46 @@
             </patch>
         </primitive>
 
+        <primitive id="patch">
+            <patch orderU="1" orderV="3" partsU="20" partsV="20" >
+                <controlpoint x="-1.904" y="-1.801" z="-1.041" />
+                <controlpoint x="-1.858" y="0.698" z="-1.151" />
+                <controlpoint x="-1.873" y="-1.376" z="0.579" />
+                <controlpoint x="-1.896" y="1.564" z="0.053" />
+                <controlpoint x="-0.761" y="-1.804" z="-1.039" />
+                <controlpoint x="-0.780" y="0.685" z="-1.150" />
+                <controlpoint x="-0.797" y="-1.383" z="0.578" />
+                <controlpoint x="-0.820" y="1.574" z="0.055" />
+            </patch>
+        </primitive>
+
+        <primitive id="lamp">
+            <patch orderU="3" orderV="3" partsU="20" partsV="20" >
+                <controlpoint x="0.003" y="0.003" z="-1.000" />
+                <controlpoint x="-1.500" y="0.001" z="0.000" />
+                <controlpoint x="-1.500" y="-0.001" z="0.000" />
+                <controlpoint x="-0.004" y="-0.003" z="-1.000" />
+                <controlpoint x="0.001" y="-1.500" z="0.000" />
+                <controlpoint x="-0.500" y="-0.500" z="1.000" />
+                <controlpoint x="-0.500" y="0.500" z="1.000" />
+                <controlpoint x="0.001" y="1.500" z="0.000" />
+                <controlpoint x="-0.001" y="-1.500" z="0.000" />
+                <controlpoint x="0.500" y="-0.500" z="1.000" />
+                <controlpoint x="0.500" y="0.500" z="1.000" />
+                <controlpoint x="-0.001" y="1.500" z="0.000" />
+                <controlpoint x="0.004" y="-0.004" z="-1.000" />
+                <controlpoint x="1.507" y="0.001" z="0.000" />
+                <controlpoint x="1.500" y="-0.001" z="0.000" />
+                <controlpoint x="0.004" y="-0.003" z="-1.000" />
+            </patch>
+        </primitive>
+
         <primitive id="vehicle">
             <vehicle dimension="1" />
         </primitive>
 
         <primitive id="chessboard">
-            <chessboard du="8" dv="8" textureref="beige_wall" su="0" sv="0" >
+            <chessboard du="8" dv="8" textureref="beige_wall" su="1" sv="1" >
                    <c1 r="1" g="1" b="1" a="1" />
                    <c2 r="0.5" g="0.5" b="0.5" a="1" />
                    <cs r="0.7" g="0" b="0" a="1" />
@@ -393,17 +444,67 @@
 
                 <componentref id="tv" />
                 <componentref id="sofa" />
-                <componentref id="sofa2" />
+                <!-- <componentref id="sofa2" /> -->
 
                 <componentref id="door"/>
                 <componentref id="paint"/>
                 <componentref id="train"/>
 
                 <componentref id="chessboard"/>
+                <componentref id="shelf"/>
+                <componentref id="lamp"/>
                 
             </children>
             
         </component>
+
+         <!-- *** BEGIN OF LAMP *** -->
+
+            <component id="lamp">
+                 <transformation>
+                    
+                    <translate x="5" y="6.5" z="5"/>
+                    <rotate axis="x" angle="90" />
+                    <scale x="0.5" y="0.5" z="0.5" />
+        
+                </transformation>
+
+                <materials>
+                    <material id="inherit"/>
+                </materials>
+
+                <texture id="white_frame"/>
+
+                <children>
+                    <primitiveref id="lamp"/>
+                </children>
+            </component>
+
+        <!-- *** END OF LAMP *** -->
+
+        <!-- *** BEGIN OF SHELF *** -->
+
+            <component id="shelf">
+                 <transformation>
+                    
+                    <translate x="2" y="4" z="-0.75"/>
+                    <rotate axis="z" angle="22"/>
+                    <rotate axis="y" angle="90"/>
+                    <rotate axis="x" angle="-90"/>
+                </transformation>
+
+                <materials>
+                    <material id="inherit"/>
+                </materials>
+
+                <texture id="floor"/>
+
+                <children>
+                    <primitiveref id="patch"/>
+                </children>
+            </component>
+
+        <!-- *** END OF SHELF *** -->
 
         <!-- *** BEGIN OF CHESSBOARD *** -->
 
@@ -430,14 +531,24 @@
 
             <component id="train">
                  <transformation>
-                    <translate x="2" y="1" z="5"/>
+                    <scale x="0.5" y="0.5" z="0.5" />
+                    <translate x="2" y="1" z="2"/>
                 </transformation>
+
+                
+                <animation>
+                    <animationref id="train_line1" />
+                    <animationref id="train_bend1" />
+                    <animationref id="train_line2" />
+                    <animationref id="train_bend2" />
+                    <animationref id="train_bend3" />
+                </animation>
 
                 <materials>
                     <material id="inherit"/>
                 </materials>
 
-                <texture id="none"/>
+                <texture id="train"/>
 
                 <children>
                     <primitiveref id="vehicle"/>
@@ -989,12 +1100,6 @@
             <transformation>
                  <translate x="2.55" y="2.5" z="8.7" />
             </transformation>
-
-            <!--TESTE-->
-            <animation>
-                <animationref id="teste" />
-                <animationref id="teste2" />
-            </animation>
 
             <materials>
                 <material id="globe"/>
