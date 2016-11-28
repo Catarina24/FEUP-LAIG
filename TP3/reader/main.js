@@ -38,7 +38,7 @@ main=function()
 	
 	
 	//open dsx file (dsxFile)
-	var filename=getUrlVars()['file'] || "LAIG2_T4_G07.dsx";
+	var filename=getUrlVars()['file'] || "Yavalath.xml";
 
 	// create and load graph, and associate it to scene. 
 	// Check console for loading errors
