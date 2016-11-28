@@ -250,6 +250,10 @@
             <cylinder base="0.5" top="0.5" height="1" slices="30" stacks="20" />
         </primitive>
 
+        <primitive id="hexagon">
+            <cylinder base="0.5" top="0.5" height="1" slices="6" stacks="20" />
+        </primitive>
+
         <primitive id="plane">
             <plane dimX="1" dimY="1" partsX="100" partsY="100" />
         </primitive>
@@ -314,6 +318,7 @@
                 <!-- componentes ou primitivas -->
                 <!-- <componentref id="ss" /> -->
                 <componentref id="board" />
+                <componentref id="cell" />
                 <componentref id="white_piece" />
                 <componentref id="black_piece" />
                 
@@ -343,6 +348,29 @@
 
         <!-- *** END OF BOARD *** -->
 
+        <!-- *** BEGIN OF CELL *** -->
+
+            <component id="cell">
+                 <transformation>
+                   <translate x="1" y="0" z="4.5"/>
+                   <scale x="1" y="0.2" z="1" />
+                   <rotate axis="y" angle="-90" />
+                   <rotate axis="x" angle="-90" />
+                </transformation>
+
+                <materials>
+                   <material id="white"/>
+                </materials>
+
+                <texture id="alcatifa"/>
+
+                <children>
+                    <primitiveref id="hexagon"/>
+                </children>
+            </component>
+
+        <!-- *** END OF CELL *** -->
+
         <!-- *** BEGIN OF WHITE PIECE *** -->
 
             <component id="white_piece">
@@ -364,7 +392,7 @@
             </component>
 
         <!-- *** END OF WHITE PIECE *** -->
-        
+
         <!-- *** BEGIN OF BLACK PIECE *** -->
 
             <component id="black_piece">
