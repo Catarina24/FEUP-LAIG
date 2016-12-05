@@ -78,3 +78,25 @@ MyInterface.prototype.processKeyDown = function(event) {
 			break;
 	};
 }
+
+MyInterface.prototype.processMouseDown = function (event) {
+
+	CGFinterface.prototype.processMouseDown.call(this, event);
+
+	var pressedButton = event.which - 1; // 0 is left button, 1 is wheel button and 2 is right button
+
+	switch(pressedButton)
+	{
+		case(0): 
+			console.log("Pressed left button!");
+			break;
+
+		case(1): 
+			console.log("Pressed wheel button!");
+			break;
+
+		case(2): 
+			console.log("Pressed right button!");
+			break;
+	}
+}
