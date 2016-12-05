@@ -1,0 +1,74 @@
+/**
+ * MyBoard.js
+ * @constructor
+ */
+
+function MyBoard(scene){
+    this.scene = scene;
+
+    this.minNumOfCols = 5;
+    this.numOfRows = 9;
+
+    this.cellRadius = 0.5;
+    this.cellHeight = 0.1;
+    this.cell = new MyCylinder(scene, 6, 10, this.cellHeight, this.cellRadius, this.cellRadius);
+
+    this.hexagonTriangleHeight = (this.cellRadius * Math.pow(3, 1/2)) / 2;
+    this.gapBetweenHexagons = this.cellRadius - this.hexagonTriangleHeight;
+}
+
+MyBoard.prototype.constructor = MyBoard;
+
+/**
+ * Displays board with center in the origin and face torwards positive Z.
+ */
+MyBoard.prototype.display = function(){
+
+    var currentRowNumOfCols = this.minNumOfCols;
+    var firstCellPosition = -1;
+
+    this.scene.pushMatrix();
+
+    //this.scene.rotate(-Math.PI/2, 1, 0, 0);
+    this.scene.translate(-this.minNumOfCols * this.cellRadius, this.minNumOfCols * this.cellRadius * 1.71, 0);
+
+    for(var i = 0; i < this.numOfRows; ++i)
+    {
+        this.scene.translate(this.hexagonTriangleHeight * firstCellPosition, -2 * this.hexagonTriangleHeight, 0);
+
+        this.scene.pushMatrix();
+
+        for(var j = 0; j < currentRowNumOfCols; ++j)
+        {
+            this.scene.translate(2*this.hexagonTriangleHeight + this.gapBetweenHexagons , 0, 0);
+            this.displayCell();
+        }
+
+        this.scene.popMatrix();
+
+        if(i < Math.floor(this.numOfRows / 2))
+        {
+            currentRowNumOfCols++;
+        }
+        else
+        {
+            currentRowNumOfCols--;
+            firstCellPosition = 1;
+        }
+    }
+
+    this.scene.popMatrix();
+}
+
+/**
+ * Necessary to rotate the hexagon.
+ */
+MyBoard.prototype.displayCell = function()
+{
+    this.scene.pushMatrix();
+
+    this.scene.rotate(Math.PI/2, 0, 0, 1);
+    this.cell.display();
+
+    this.scene.popMatrix();
+}
