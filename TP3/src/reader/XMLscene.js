@@ -50,6 +50,9 @@ XMLscene.prototype.init = function (application) {
 	// Testing board
 	this.board = new MyBoard(this);
 
+	// Picking
+	this.setPickEnabled(true);
+
 };
 
 XMLscene.prototype.initLights = function () {
@@ -304,6 +307,22 @@ XMLscene.prototype.changeCamera = function(i){
 	this.application.interface.setActiveCamera(this.camera); // so mouse controls work
 }
 
+XMLscene.prototype.logPicking = function ()
+{
+	if (this.pickMode == false) {
+		if (this.pickResults != null && this.pickResults.length > 0) {
+			for (var i=0; i< this.pickResults.length; i++) {
+				var obj = this.pickResults[i][0];
+				if (obj)
+				{
+					var customId = this.pickResults[i][1];				
+					console.log("Picked object: " + obj + ", with pick id " + customId);
+				}
+			}
+			this.pickResults.splice(0,this.pickResults.length);
+		}		
+	}
+}
 
 
 XMLscene.prototype.display = function () {
@@ -334,6 +353,10 @@ XMLscene.prototype.display = function () {
 	{
 		this.updateLights();	
 	}
+
+	// Picking
+	this.logPicking();
+	this.clearPickRegistration();
 
 	this.board.display();
 

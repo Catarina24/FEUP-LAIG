@@ -15,6 +15,8 @@ function MyBoard(scene){
 
     this.hexagonTriangleHeight = (this.cellRadius * Math.pow(3, 1/2)) / 2;
     this.gapBetweenHexagons = this.cellRadius - this.hexagonTriangleHeight;
+
+    this.cells = [];
 }
 
 MyBoard.prototype.constructor = MyBoard;
@@ -26,6 +28,8 @@ MyBoard.prototype.display = function(){
 
     var currentRowNumOfCols = this.minNumOfCols;
     var firstCellPosition = -1;
+
+    var currentCellIndex = 0;
 
     this.scene.pushMatrix();
 
@@ -40,8 +44,13 @@ MyBoard.prototype.display = function(){
 
         for(var j = 0; j < currentRowNumOfCols; ++j)
         {
+            this.cells.push(this.cell);
+            this.scene.registerForPick(currentCellIndex+1, this.cells[currentCellIndex]);
+
             this.scene.translate(2*this.hexagonTriangleHeight + this.gapBetweenHexagons , 0, 0);
             this.displayCell();
+
+            currentCellIndex++;
         }
 
         this.scene.popMatrix();
