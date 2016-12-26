@@ -16,10 +16,11 @@ function MyBoard(scene){
     this.hexagonTriangleHeight = (this.cellRadius * Math.pow(3, 1/2)) / 2;
     this.gapBetweenHexagons = this.cellRadius - this.hexagonTriangleHeight;
 
-    this.cells = [];
+    this.cellsLocation = [];
 }
 
 MyBoard.prototype.constructor = MyBoard;
+
 
 /**
  * Displays board with center in the origin and face torwards positive Z.
@@ -44,8 +45,7 @@ MyBoard.prototype.display = function(){
 
         for(var j = 0; j < currentRowNumOfCols; ++j)
         {
-            this.cells.push(this.cell);
-            this.scene.registerForPick(currentCellIndex+1, this.cells[currentCellIndex]);
+            this.scene.registerForPick(currentCellIndex+1, this.cell);
 
             this.scene.translate(2*this.hexagonTriangleHeight + this.gapBetweenHexagons , 0, 0);
             this.displayCell();
@@ -67,6 +67,55 @@ MyBoard.prototype.display = function(){
     }
 
     this.scene.popMatrix();
+}
+
+MyBoard.prototype.getIdOfPickedCell = function()
+{
+    if (this.scene.pickMode == false) {
+		if (this.scene.pickResults != null && this.scene.pickResults.length > 0) {
+			for (var i=0; i< this.scene.pickResults.length; i++) {
+				var obj = this.scene.pickResults[i][0];
+				if (obj)
+				{
+					var customId = this.scene.pickResults[i][1];				
+					
+				}
+			}
+			this.scene.pickResults.splice(0,this.scene.pickResults.length);
+		}		
+	}
+}
+
+MyBoard.prototype.getCoordFromIdofPickedCell = function(id)
+{
+    var currentRowNumOfCols = this.minNumOfCols;
+    var currentCellIndex = 0;
+
+    for(var i = 0; i < this.numOfRows; ++i)
+    {
+        
+        for(var j = 0; j < currentRowNumOfCols; ++j)
+        {
+            if(currentCellIndex + 1 == id)  // if it has matched the given ID
+            {
+                var coord = {line:i+1, column: j+1};
+                console.log(coord);
+                return coord;
+            }
+            currentCellIndex++;
+        }
+
+        if(i < Math.floor(this.numOfRows / 2))
+        {
+            currentRowNumOfCols++;
+        }
+        else
+        {
+            currentRowNumOfCols--;
+            firstCellPosition = 1;
+        }
+
+    }
 }
 
 /**
