@@ -9,6 +9,7 @@ function MyBoard(scene){
     // Board attributes
     this.minNumOfCols = 5;
     this.numOfRows = 9;
+    this.selectedCoords = {line: -1, column: -1};   // default value
 
     // Cell attributes
     this.cellRadius = 0.5;
@@ -31,10 +32,18 @@ function MyBoard(scene){
     this.selectedCellAppearance.setSpecular(0.8, 0, 0, 1);
     this.selectedCellAppearance.setShininess(1);
 
-    // Piece attributes
-    this.piece = new MyCylinder(scene, 20, 20, this.cellHeight*1.5, this.cellRadius*2/3, this.cellRadius*2/3);
-    this.selectedCoords = {line: -1, column: -1};
+    // Cells transformation matrices (key:id, value:matrix) (2D array)
+    this.cellsMatrix = new Array(10)
+    for (i=0; i < 10; i++)
+    {
+        this.cellsMatrix[i]=new Array(10)
+    }
 
+    // Pieces of the board
+    this.whitePiece = new MyPiece(this.scene, 1, this.cellHeight*1.5, this.cellRadius*3/4);
+    this.blackPiece = new MyPiece(this.scene, 0, this.cellHeight*1.5, this.cellRadius*3/4);
+
+    this.pieces = [this.whitePiece, this.blackPiece]; // initial pieces: one for each player
 }
 
 MyBoard.prototype.constructor = MyBoard;
@@ -45,7 +54,6 @@ MyBoard.prototype.constructor = MyBoard;
 MyBoard.prototype.pickHandler = function(Coords)
 {
     this.selectedCoords = Coords;
-    console.log(this.selectedCoords);
 }
 
 /**
@@ -123,14 +131,34 @@ MyBoard.prototype.displayCell = function(Coord)
     this.scene.popMatrix();
 }
 
+
 /**
  * Display piece
  */
-MyBoard.prototype.displayPieces = function(Coords)
+MyBoard.prototype.displayPieces = function()
 {
-    if(Coords.line == -1 && Coords.column == -1)
-    {
-       
+    for(var i = 0; i < this.pieces.length; i++) {
+
+        var piece = this.pieces[i];
+
+        this.scene.pushMatrix()
+
+        this.scene.translate(0, 0, this.cellHeight);
+        if(piece.boardCoord.x == -1 && piece.boardCoord.y == -1)
+        {
+            if(piece.color == 1)
+            {
+                this.scene.translate(0, 0, -2);
+            }
+        }
+        else
+        {
+            this.scene.setMatrix(this.cellsMatrix[piece.boardCoord.x][piece.boardCoord.y]);
+        }
+        piece.display();
+
+        this.scene.popMatrix();
+
     }
 }
 
@@ -163,7 +191,7 @@ MyBoard.prototype.display = function(){
             this.scene.registerForPick(currentCellIndex+1, this.cell);
 
             this.scene.translate(2*this.hexagonTriangleHeight + this.gapBetweenHexagons , 0, 0);
-            //this.cellsLocation[currentCellIndex] = this.scene.getMatrix();
+            this.cellsMatrix[j+1][i+1] = this.scene.getMatrix();
             this.displayCell({line:i+1, column: j+1});
 
             currentCellIndex++;
@@ -181,6 +209,8 @@ MyBoard.prototype.display = function(){
             firstCellPosition = 1;
         }
     }
+
+    this.displayPieces();
 
     this.scene.popMatrix();
 }
