@@ -327,7 +327,6 @@ XMLscene.prototype.logPicking = function ()
 XMLscene.prototype.display = function () {
 	// Picking
 	this.clearPickRegistration();
-	this.board.getCoordOfPickedCell();
 
 	// ---- BEGIN Background, camera and axis setup
 	

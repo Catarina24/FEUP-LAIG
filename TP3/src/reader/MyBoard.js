@@ -6,18 +6,47 @@
 function MyBoard(scene){
     this.scene = scene;
 
+    // Board attributes
     this.minNumOfCols = 5;
     this.numOfRows = 9;
 
+    // Cell attributes
     this.cellRadius = 0.5;
     this.cellHeight = 0.1;
     this.cell = new MyCylinder(scene, 6, 10, this.cellHeight, this.cellRadius, this.cellRadius);
 
     this.hexagonTriangleHeight = (this.cellRadius * Math.pow(3, 1/2)) / 2;
     this.gapBetweenHexagons = this.cellRadius - this.hexagonTriangleHeight;
+
+    // Piece attributes
+    this.piece = new MyCylinder(scene, 20, 20, this.cellHeight*2, this.cellRadius*2/3, this.cellRadius*2/3);
+    this.calculateNumberOfPieces(); 
 }
 
 MyBoard.prototype.constructor = MyBoard;
+
+MyBoard.prototype.calculateNumberOfPieces = function ()
+{
+    var currentRowNumOfCols = this.minNumOfCols;
+    this.numberOfCells = 0;
+
+    for(var i = 0; i < this.numOfRows; ++i)
+    {
+        for(var j = 0; j < currentRowNumOfCols; ++j)
+        {
+            this.numberOfCells++;
+        }
+
+        if(i < Math.floor(this.numOfRows / 2))
+        {
+            currentRowNumOfCols++;
+        }
+        else
+        {
+            currentRowNumOfCols--;
+        }
+    }
+}
 
 /**
  * Displays board with center in the origin and face torwards positive Z.
@@ -47,7 +76,11 @@ MyBoard.prototype.display = function(){
             this.scene.registerForPick(currentCellIndex+1, this.cell);
 
             this.scene.translate(2*this.hexagonTriangleHeight + this.gapBetweenHexagons , 0, 0);
+            //this.cellsLocation[currentCellIndex] = this.scene.getMatrix();
             this.displayCell();
+
+            this.scene.translate(0, 0, this.cellHeight);
+            this.piece.display();
 
             currentCellIndex++;
         }
@@ -125,7 +158,6 @@ MyBoard.prototype.getCoordFromIdofPickedCell = function(id)
         else
         {
             currentRowNumOfCols--;
-            firstCellPosition = 1;
         }
 
     }
