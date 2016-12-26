@@ -326,8 +326,8 @@
                 <!-- componentes ou primitivas -->
                 <!-- <componentref id="ss" /> -->
                 <componentref id="board" />
-                <componentref id="white_piece" />
-                <componentref id="black_piece" />
+                <!--<componentref id="white_piece" />
+                <componentref id="black_piece" />-->
                 <componentref id="cells"/>
                 
             </children>
