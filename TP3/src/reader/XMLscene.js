@@ -317,7 +317,6 @@ XMLscene.prototype.logPicking = function ()
 				{
 					var customId = this.pickResults[i][1];				
 					console.log("Picked object: " + obj + ", with pick id " + customId);
-					this.board.getCoordFromIdofPickedCell(customId);
 				}
 			}
 			this.pickResults.splice(0,this.pickResults.length);
@@ -325,8 +324,11 @@ XMLscene.prototype.logPicking = function ()
 	}
 }
 
-
 XMLscene.prototype.display = function () {
+	// Picking
+	this.clearPickRegistration();
+	this.board.getCoordOfPickedCell();
+
 	// ---- BEGIN Background, camera and axis setup
 	
 	// Clear image and depth buffer everytime we update the scene
@@ -354,11 +356,7 @@ XMLscene.prototype.display = function () {
 	{
 		this.updateLights();	
 	}
-
-	// Picking
-	this.logPicking();
-	this.clearPickRegistration();
-
+	
 	this.board.display();
 
 	this.processGraph(this.graph.sceneRoot, null, null);

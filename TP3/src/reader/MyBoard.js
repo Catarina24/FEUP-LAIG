@@ -15,17 +15,16 @@ function MyBoard(scene){
 
     this.hexagonTriangleHeight = (this.cellRadius * Math.pow(3, 1/2)) / 2;
     this.gapBetweenHexagons = this.cellRadius - this.hexagonTriangleHeight;
-
-    this.cellsLocation = [];
 }
 
 MyBoard.prototype.constructor = MyBoard;
-
 
 /**
  * Displays board with center in the origin and face torwards positive Z.
  */
 MyBoard.prototype.display = function(){
+
+    this.pickListener();
 
     var currentRowNumOfCols = this.minNumOfCols;
     var firstCellPosition = -1;
@@ -69,7 +68,19 @@ MyBoard.prototype.display = function(){
     this.scene.popMatrix();
 }
 
-MyBoard.prototype.getIdOfPickedCell = function()
+
+/**
+ * What to do when a cell with board coordinates 'Coords' is picked.
+ */
+MyBoard.prototype.pickHandler = function(Coords)
+{
+    console.log(Coords);
+}
+
+/**
+ * If a cell is picked it activates the pickHandler giving the cell coordinates to it.
+ */
+MyBoard.prototype.pickListener = function()
 {
     if (this.scene.pickMode == false) {
 		if (this.scene.pickResults != null && this.scene.pickResults.length > 0) {
@@ -77,8 +88,8 @@ MyBoard.prototype.getIdOfPickedCell = function()
 				var obj = this.scene.pickResults[i][0];
 				if (obj)
 				{
-					var customId = this.scene.pickResults[i][1];				
-					
+					var customId = this.scene.pickResults[i][1];
+                    this.pickHandler(this.getCoordFromIdofPickedCell(customId));		
 				}
 			}
 			this.scene.pickResults.splice(0,this.scene.pickResults.length);
@@ -86,6 +97,9 @@ MyBoard.prototype.getIdOfPickedCell = function()
 	}
 }
 
+/**
+ * Translates an ID of a picked cell into its board coordinates, assuming ID of board cells start at 1.
+ */
 MyBoard.prototype.getCoordFromIdofPickedCell = function(id)
 {
     var currentRowNumOfCols = this.minNumOfCols;
@@ -99,7 +113,6 @@ MyBoard.prototype.getCoordFromIdofPickedCell = function(id)
             if(currentCellIndex + 1 == id)  // if it has matched the given ID
             {
                 var coord = {line:i+1, column: j+1};
-                console.log(coord);
                 return coord;
             }
             currentCellIndex++;
