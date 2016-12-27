@@ -56,6 +56,7 @@ MyBoard.prototype.constructor = MyBoard;
 MyBoard.prototype.pickHandler = function(Coords)
 {
     this.selectedCoords = Coords;
+    this.startAnimationTime = this.scene.elapsedTime;
 }
 
 /**
@@ -119,6 +120,7 @@ MyBoard.prototype.displayCell = function(Coord)
     if(Coord.line == this.selectedCoords.line && Coord.column == this.selectedCoords.column)
     {
         this.selectedCellAppearance.apply();
+        this.generateAnimation().apply(this.scene.elapsedTime - this.startAnimationTime);
     }
     else
     {
@@ -244,4 +246,16 @@ MyBoard.prototype.display = function(){
     this.displayPieces();
 
     this.scene.popMatrix();
+}
+
+/**
+ * Animation creator for a selected position
+ */
+
+MyBoard.prototype.generateAnimation = function () {
+    var controlPoints = [[0,0,0], [0, 3, 0]]; // start on the pieces position and elevate
+
+    var animation = new MyLinearAnimation(this.scene, 1, 2, controlPoints);
+
+    return animation;
 }
