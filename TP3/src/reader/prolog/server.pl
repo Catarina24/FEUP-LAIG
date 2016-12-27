@@ -107,17 +107,6 @@ print_header_line(_).
 
 % Require your Prolog Files here
 
-parse_input(handshake, handshake).
-parse_input(test(C,N), Res) :- test(C,Res,N).
-parse_input(quit, goodbye).
-
-test(_,[],N) :- N =< 0.
-test(A,[A|Bs],N) :- N1 is N-1, test(A,Bs,N1).
-
-
-parse_input(init, Board):- board(Board).
-
-
 parse_input(init(Name1, Name2), Board):-
 	retract(board(_)),
 	boardDefault(Board),
@@ -131,7 +120,7 @@ parse_input(init(Name1, Name2), Board):-
 /*----- PLAYER -----*/
 
 %caso jogada seja valida
-parse_input(movePlayer(X, Y), [End, UpdateBoard]):-
+parse_input(movePlayer(X, Y), End):-
 	board(Board),
 	isFreeCell(X, Y, Board),
 	currentPlayer(Player),
@@ -147,14 +136,13 @@ parse_input(movePlayer(X, Y), [End, UpdateBoard]):-
 	changePlayer(Player).
 
 %caso jogada nao seja valida
-parse_input(movePlayer(_, _), [End, Board]):-
-        board(Board),
+parse_input(movePlayer(_, _), End):-
 	End is 0.
 
 /*----- BOT -----*/
 
 %caso jogada seja valida
-parse_input(moveBot(Level), [End, [X, Y], UpdateBoard]):-
+parse_input(moveBot(Level), [X, Y, End]):-
 	board(Board),
         currentPlayer(Player),
         piece(Player, Piece),
@@ -171,8 +159,7 @@ parse_input(moveBot(Level), [End, [X, Y], UpdateBoard]):-
 	changePlayer(Player).
 
 %caso jogada nao seja valida
-parse_input(moveBot(_), [End, Board]):-
-        board(Board),
+parse_input(moveBot(_), End):-
 	End is 0.
 
 
