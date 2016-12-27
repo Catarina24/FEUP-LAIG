@@ -15,6 +15,8 @@ function MyPiece(scene, color, height, radius) {
 
     this.object = new MyCylinder(this.scene, 20, 20, height, radius, radius);
 
+    this.animate = false;
+
     // Appearances for the piece
     this.whiteAppearance = new CGFappearance(this.scene);
     this.whiteAppearance.setAmbient(1, 1, 1, 1);
