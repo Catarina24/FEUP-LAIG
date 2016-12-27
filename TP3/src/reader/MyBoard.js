@@ -271,11 +271,11 @@ MyBoard.prototype.movePlayerPiece = function (player){
 
     if(player == 0)
     {
-        piece = this.blackPiece;
+        piece = new MyPiece(this.scene, 0, this.cellHeight*1.5, this.cellRadius*3/4);
     }
     else
     {
-        piece = this.whitePiece;
+        piece = new MyPiece(this.scene, 1, this.cellHeight*1.5, this.cellRadius*3/4);;
     }
 
     piece.boardCoord.set(this.selectedCoords.y, this.selectedCoords.x);
