@@ -21,9 +21,9 @@ function MyBoard(scene){
 
     // Cell materials
     this.defaultCellAppearance = new CGFappearance(this.scene);
-    this.defaultCellAppearance.setAmbient(1, 0.9, 0, 1);
-    this.defaultCellAppearance.setDiffuse(1, 0.9, 0, 1);
-    this.defaultCellAppearance.setSpecular(1, 0.9, 0, 1);
+    this.defaultCellAppearance.setAmbient(0.5, 0.5, 0.5, 1);
+    this.defaultCellAppearance.setDiffuse(0.5, 0.5, 0.5, 1);
+    this.defaultCellAppearance.setSpecular(0.5, 0.5, 0.5, 1);
     this.defaultCellAppearance.setShininess(1);
 
     this.selectedCellAppearance = new CGFappearance(this.scene);
@@ -33,7 +33,7 @@ function MyBoard(scene){
     this.selectedCellAppearance.setShininess(1);
 
     // Cells transformation matrices (key:id, value:matrix) (2D array)
-    this.cellsMatrix = new Array(11)
+    this.cellsMatrix = new Array(10)
     for (i=0; i < 10; i++)
     {
         this.cellsMatrix[i]=new Array(10)
@@ -42,8 +42,6 @@ function MyBoard(scene){
     // Pieces of the board
     this.whitePiece = new MyPiece(this.scene, 1, this.cellHeight*1.5, this.cellRadius*3/4);
     this.blackPiece = new MyPiece(this.scene, 0, this.cellHeight*1.5, this.cellRadius*3/4);
-
-    this.whitePiece.boardCoord.set(4, 9);
 
     this.pieces = [this.whitePiece, this.blackPiece]; // initial pieces: one for each player
 }
@@ -133,8 +131,45 @@ MyBoard.prototype.displayCell = function(Coord)
     this.scene.popMatrix();
 }
 
-MyBoard.prototype.displayBoardCells = function()
+
+/**
+ * Display piece
+ */
+MyBoard.prototype.displayPieces = function()
 {
+    for(var i = 0; i < this.pieces.length; i++) {
+
+        var piece = this.pieces[i];
+
+        this.scene.pushMatrix()
+
+        this.scene.translate(0, 0, this.cellHeight);
+        if(piece.boardCoord.x == -1 && piece.boardCoord.y == -1)
+        {
+            if(piece.color == 1)
+            {
+                this.scene.translate(0, 0, -2);
+            }
+        }
+        else
+        {
+            this.scene.setMatrix(this.cellsMatrix[piece.boardCoord.x][piece.boardCoord.y]);
+        }
+        piece.display();
+
+        this.scene.popMatrix();
+
+    }
+}
+
+
+/**
+ * Displays board with center in the origin and face torwards positive Z.
+ */
+MyBoard.prototype.display = function(){
+
+    this.pickListener();
+
     var currentRowNumOfCols = this.minNumOfCols;
     var firstCellPosition = -1;
 
@@ -174,72 +209,6 @@ MyBoard.prototype.displayBoardCells = function()
             firstCellPosition = 1;
         }
     }
-
-    this.scene.popMatrix();
-}
-
-/**
- * Display piece
- */
-MyBoard.prototype.displayPieces = function()
-{
-    for(var i = 0; i < this.pieces.length; i++) {
-
-        var piece = this.pieces[i];
-
-        if(piece.boardCoord.x == -1 && piece.boardCoord.y == -1)
-        {
-            if(piece.color == 0)
-            {
-                this.scene.pushMatrix();
-
-                this.scene.translate(6, 0, 0);
-
-                piece.display();
-
-                this.scene.popMatrix(); 
-            }
-
-            if(piece.color == 1)
-            {
-                this.scene.pushMatrix();
-
-                this.scene.translate(-6, 0, 0);
-
-                piece.display();
-
-                this.scene.popMatrix(); 
-            }
-        }
-        else
-        {
-            this.scene.pushMatrix();
-
-            this.scene.setMatrix(this.cellsMatrix[piece.boardCoord.x][piece.boardCoord.y]);
-            this.scene.translate(0, 0, this.cellHeight);
-
-            piece.display();
-
-            this.scene.popMatrix();
-        }
-    }
-}
-
-
-/**
- * Displays board with center in the origin and face torwards positive Z.
- */
-MyBoard.prototype.display = function(){
-
-    this.pickListener();
-
-   
-    this.scene.pushMatrix();
-
-    this.scene.translate(5, 0, 5);
-    this.scene.rotate(-Math.PI/2, 1, 0, 0);
-
-    this.displayBoardCells();
 
     this.displayPieces();
 
