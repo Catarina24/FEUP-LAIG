@@ -9,7 +9,7 @@ function MyBoard(scene){
     // Board attributes
     this.minNumOfCols = 5;
     this.numOfRows = 9;
-    this.selectedCoords = {line: -1, column: -1};   // default value
+    this.selectedCoords = new Coord2(-1, -1);   // default value
 
     // Cell attributes
     this.cellRadius = 0.5;
@@ -33,10 +33,10 @@ function MyBoard(scene){
     this.selectedCellAppearance.setShininess(1);
 
     // Cells transformation matrices (key:id, value:matrix) (2D array)
-    this.cellsMatrix = new Array(11)
-    for (i=0; i < 10; i++)
+    this.cellsMatrix = new Array(20)
+    for (var i=0; i < 20; i++)
     {
-        this.cellsMatrix[i]=new Array(10)
+        this.cellsMatrix[i]=new Array(20)
     }
 
     // Pieces of the board
@@ -57,6 +57,7 @@ MyBoard.prototype.pickHandler = function(Coords)
 {
     this.selectedCoords = Coords;
     this.startAnimationTime = this.scene.elapsedTime;
+    this.movePlayerPiece(0);
 }
 
 /**
@@ -94,7 +95,7 @@ MyBoard.prototype.getCoordFromIdofPickedCell = function(id)
         {
             if(currentCellIndex + 1 == id)  // if it has matched the given ID
             {
-                var coord = {line:i+1, column: j+1};
+                var coord = new Coord2(i+1, j+1);
                 return coord;
             }
             currentCellIndex++;
@@ -117,10 +118,10 @@ MyBoard.prototype.getCoordFromIdofPickedCell = function(id)
  */
 MyBoard.prototype.displayCell = function(Coord)
 {
-    if(Coord.line == this.selectedCoords.line && Coord.column == this.selectedCoords.column)
+    if(Coord.line == this.selectedCoords.x && Coord.column == this.selectedCoords.y)
     {
         this.selectedCellAppearance.apply();
-        this.generateAnimation().apply(this.scene.elapsedTime - this.startAnimationTime);
+        //this.generateAnimation().apply(this.scene.elapsedTime - this.startAnimationTime);
     }
     else
     {
@@ -159,6 +160,8 @@ MyBoard.prototype.displayBoardCells = function()
 
             this.scene.translate(2*this.hexagonTriangleHeight + this.gapBetweenHexagons , 0, 0);
             this.cellsMatrix[j+1][i+1] = this.scene.getMatrix();
+            var matrix = this.scene.getMatrix();
+
             this.displayCell({line:i+1, column: j+1});
 
             currentCellIndex++;
@@ -258,4 +261,24 @@ MyBoard.prototype.generateAnimation = function () {
     var animation = new MyLinearAnimation(this.scene, 1, 2, controlPoints);
 
     return animation;
+}
+
+/**
+ * 0 for player with black pieces. 1 for player with white.
+ */
+MyBoard.prototype.movePlayerPiece = function (player){
+    var piece;
+
+    if(player == 0)
+    {
+        piece = this.blackPiece;
+    }
+    else
+    {
+        piece = this.whitePiece;
+    }
+
+    piece.boardCoord.set(this.selectedCoords.y, this.selectedCoords.x);
+
+    this.pieces.push(piece);
 }
