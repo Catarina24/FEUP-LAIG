@@ -43,8 +43,6 @@ function MyBoard(scene){
     this.whitePiece = new MyPiece(this.scene, 1, this.cellHeight*1.5, this.cellRadius*3/4);
     this.blackPiece = new MyPiece(this.scene, 0, this.cellHeight*1.5, this.cellRadius*3/4);
 
-    this.whitePiece.boardCoord.set(4, 9);
-
     this.pieces = [this.whitePiece, this.blackPiece]; // initial pieces: one for each player
 }
 
@@ -200,6 +198,8 @@ MyBoard.prototype.displayPieces = function()
 
                 this.scene.translate(6, 0, 0);
 
+                piece.initialPositionMatrix = this.scene.getMatrix();
+
                 piece.display();
 
                 this.scene.popMatrix(); 
@@ -210,6 +210,8 @@ MyBoard.prototype.displayPieces = function()
                 this.scene.pushMatrix();
 
                 this.scene.translate(-6, 0, 0);
+
+                piece.initialPositionMatrix = this.scene.getMatrix();
 
                 piece.display();
 
@@ -222,6 +224,9 @@ MyBoard.prototype.displayPieces = function()
 
             this.scene.setMatrix(this.cellsMatrix[piece.boardCoord.x][piece.boardCoord.y]);
             this.scene.translate(0, 0, this.cellHeight);
+
+            piece.finalPositionMatrix = this.scene.getMatrix();
+            piece.extractTranslationVector();
 
             piece.display();
 
