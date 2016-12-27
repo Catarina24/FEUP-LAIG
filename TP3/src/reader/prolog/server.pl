@@ -117,6 +117,7 @@ test(A,[A|Bs],N) :- N1 is N-1, test(A,Bs,N1).
 
 parse_input(init, Board):- board(Board).
 
+
 parse_input(init(Name1, Name2), Board):-
 	retract(board(_)),
 	boardDefault(Board),
@@ -127,8 +128,10 @@ parse_input(init(Name1, Name2), Board):-
 	assert(piece(player2, w)),
 	assert(currentPlayer(player1)).
 
+/*----- PLAYER -----*/
+
 %caso jogada seja valida
-parse_input(move(X, Y), End):-
+parse_input(movePlayer(X, Y), [End, UpdateBoard]):-
 	board(Board),
 	isFreeCell(X, Y, Board),
 	currentPlayer(Player),
@@ -144,15 +147,38 @@ parse_input(move(X, Y), End):-
 	changePlayer(Player).
 
 %caso jogada nao seja valida
-parse_input(move(_, _), End):-
+parse_input(movePlayer(_, _), [End, Board]):-
+        board(Board),
+	End is 0.
+
+/*----- BOT -----*/
+
+%caso jogada seja valida
+parse_input(moveBot(Level), [End, [X, Y], UpdateBoard]):-
+	board(Board),
+        currentPlayer(Player),
+        piece(Player, Piece),
+        getPreviousPlayer(OppositePlayer),
+        bestOption(Level, Board, Player, OppositePlayer, X, Y),
+	replace(Board, X, Y, Piece, UpdateBoard),
+	retract(board(Board)),
+	assert(board(UpdateBoard)),
+	(
+		(endGame(X, Y, Board, Piece, End))
+		;
+		(End is 1)
+	),	
+	changePlayer(Player).
+
+%caso jogada nao seja valida
+parse_input(moveBot(_), [End, Board]):-
+        board(Board),
 	End is 0.
 
 
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%                                       	   Game                                                  %%%%
+%%%%                                       	  Game                                               %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 :-use_module(library(lists)).
@@ -204,6 +230,55 @@ getPreviousPlayer(PlayerBefore):-
 	currentPlayer(Player),
 	Player = 'player2',
 	PlayerBefore = 'player1'.
+
+
+/**----------------- BOT -------------------**/
+bestOption(Level, Board, Name1, Name2, X, Y):-
+        ((Level =:= 2, 
+                ((checkPossibleWinTest(0, 0, Board, Name1, X, Y)) %verifica se pode ganhar
+                ;
+                (checkPossibleWinTest(0, 0, Board, Name2, X, Y))) %verifica se o outro jogador pode ganhar
+        )
+        ;
+        (Level =:= 1, checkPossibleWinTest(0, 0, Board, Name2, X, Y)) %verifica se o outro jogador pode ganhar
+        ;
+        (generateRandomCoordinates(X, Y, Board, Level))).  %escolhe coordenadas aleatórias
+
+%checkPossibleWinTest(_, 9, _, _, _, _).
+
+checkPossibleWinTest(X, Y, Board, Name, Xfinal, Yfinal) :-
+        piece(Name, Piece),
+        Y < 9,
+        nth0(Y, Board, ListY), 
+        length(ListY, Size),
+        ((
+                (isFreeCell(X, Y, Board), checkWonGame(X, Y, Board, Piece), Xfinal is X, Yfinal is Y)
+                ;
+                (
+                        (
+                                (X>=Size, X1 is 0, Y1 is Y+1)
+                                ;
+                                (X<Size, X1 is X+1, Y1 is Y)
+                        ), !, 
+                        checkPossibleWinTest(X1, Y1, Board, Name, Xfinal, Yfinal)
+                )
+        )).
+
+generateRandomCoordinates(X, Y, Board, Level):-
+        repeat,
+        random(0, 9, Y),
+        nth0(Y, Board, ListY),
+        length(ListY, Size),
+        random(0, Size, X),
+        ((Level =:= 2, isFreeCell(X, Y, Board),
+                ((lastFreeCell(0, 0, Board, 0)) %verifica se só há uma casa disponível
+                ;
+                (\+checkLostGame(X, Y, Board, _)) %verifica se não perde a jogar
+                ))
+        ;
+        (Level =:= 1, isFreeCell(X, Y, Board))
+        ; 
+        fail), !.
 
 /**----------------- GAME -------------------**/
 
@@ -413,9 +488,9 @@ board(	[[s, s, s, s, s ],
 /**----------------- UTILS -------------------**/
 
 replace([L|Ls] , X , 0 , Z , [R|Ls] ) :-  % once we find the desired row,
-  replace_row(L,X,Z,R).                % - we replace specified column, and we're done.
+  replace_row(L,X,Z,R).                % - we replace specified column, and we are done.
                                    
-replace( [L|Ls] , X , Y , Z , [L|Rs] ) :- % if we haven't found the desired row yet
+replace( [L|Ls] , X , Y , Z , [L|Rs] ) :- %  if we have not found the desired row yet
   Y > 0 ,                                 % - and the row offset is positive,
   Y1 is Y-1 ,                             % - we decrement the row offset
   replace( Ls , X , Y1 , Z , Rs ).        % - and recurse down
