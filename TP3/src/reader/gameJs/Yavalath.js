@@ -19,11 +19,7 @@ var state={
     INIT: 2,
     PLAYING:3,
     END:4,
-};
-
-var player={
-    P1:1,
-    P2:2,
+    GAMEOVER_MENU:5,
 };
 
 function Yavalath(scene){
@@ -32,14 +28,16 @@ function Yavalath(scene){
     this.board = new MyBoard(scene);
     this.client = new Client();
 
-    this.state = state.INIT;
+    this.state = state.MENU;
     this.level = null;
 
     this.winner = null;
 
     //add player
+    this.player1 = null;
+    this.player2 = null;
 
-    this.currentPlayer = player.P1;
+    this.currentPlayer = null;
     
 }
 
@@ -47,23 +45,9 @@ function Yavalath(scene){
 Yavalath.prototype.constructor=Yavalath;
 
 
-Yavalath.prototype.init = function(name1, name2){
+Yavalath.prototype.init = function(){
     
-    //teste
-    name1="player1";
-    name2="player2";
-    //
-    var requestString = "init(" + name1 + "," + name2 + ")";
-    this.client.getPrologRequest(requestString, function(data){
-
-        var result = data.target.responseText;
-
-    });
-}
-
-Yavalath.prototype.finalize = function(){
-    
-    this.client.getPrologRequest("quit", function(data){
+    this.client.getPrologRequest("init", function(data){
 
         var result = data.target.responseText;
 
@@ -71,25 +55,25 @@ Yavalath.prototype.finalize = function(){
 }
 
 
-Yavalath.prototype.placePiecePlayer = function(x, y){
+Yavalath.prototype.placePiecePlayer = function(x, y, piece){
 
     var game = this;
-    var requestString = "movePlayer(" + x + "," + y + ")";
+    var requestString = "movePlayer(" + x + "," + y + "," + piece + ")";
 
     var end = this.client.getPrologRequest(requestString, function(data){
         
         var result = data.target.responseText;
-        
+        console.log(result);
         game.handleDataReceived(result);
 
     });
 
 };
 
-Yavalath.prototype.placePieceBot = function(x, y){
+Yavalath.prototype.placePieceBot = function(piece){
 
     var game = this;
-    var requestString = "moveBot(" + this.level + ")";
+    var requestString = "moveBot(" + this.level + "," + piece + ")";
 
     this.client.getPrologRequest(requestString, function(data){
 
@@ -124,19 +108,16 @@ Yavalath.prototype.handleDataReceived = function(result){
                 this.state = state.END;
                 console.log("Win");
                 break;
-            default:
-                console.log("lol");
-                break;
         }
 };
 
 
 Yavalath.prototype.changePlayer = function(){
     
-    if (this.currentPlayer == player.P1)
-        this.currentPlayer = player.P2;
-    else if (this.currentPlayer == player.P2)
-        this.currentPlayer = player.P1;
+    if (this.currentPlayer == this.player1)
+        this.currentPlayer = this.player2;
+    else if (this.currentPlayer == this.player2)
+        this.currentPlayer = this.player1;
 
 }
 
@@ -164,9 +145,12 @@ Yavalath.prototype.pickHandler = function(Coords)
     this.board.startAnimationTime = this.scene.elapsedTime;
 
     //teste
-    this.placePiecePlayer(this.board.selectedCoords.y-1, this.board.selectedCoords.x-1);
+    this.placePiecePlayer(this.board.selectedCoords.y-1, this.board.selectedCoords.x-1, this.currentPlayer.piece);
 
-    this.board.movePlayerPiece(0);
+    if (this.currentPlayer.piece == 'black')
+        this.board.movePlayerPiece(0);
+    else if(this.currentPlayer.piece == 'white')
+        this.board.movePlayerPiece(1);
 }
 
 
@@ -174,6 +158,10 @@ Yavalath.prototype.pickHandler = function(Coords)
 Yavalath.prototype.handleGameState = function(){
     switch(this.state){
         case state.MENU:
+            this.player1 = new Player('cat', 'black');
+            this.player2 = new Player('ze', 'white');
+            this.currentPlayer = this.player1;
+            this.state = state.INIT;
             break;
         case state.INIT:
             this.init();
@@ -184,7 +172,10 @@ Yavalath.prototype.handleGameState = function(){
             this.pickListenerGame();
             break;
         case state.END:
-            this.finalize();
+            //this.finalize();
+            this.state = state.GAMEOVER_MENU;
+            break;
+        case state.GAMEOVER_MENU:
             break;
     }
 }
