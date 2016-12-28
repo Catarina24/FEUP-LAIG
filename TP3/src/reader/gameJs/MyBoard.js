@@ -53,6 +53,7 @@ MyBoard.prototype.constructor = MyBoard;
  */
 MyBoard.prototype.pickHandler = function(Coords)
 {
+    console.log(Coords);
     this.selectedCoords = Coords;
     this.startAnimationTime = this.scene.elapsedTime;
     this.movePlayerPiece(0);
@@ -74,7 +75,7 @@ MyBoard.prototype.pickListener = function()
 				}
 			}
 			this.scene.pickResults.splice(0,this.scene.pickResults.length);
-		}		
+		}	
 	}
 }
 
@@ -241,7 +242,7 @@ MyBoard.prototype.displayPieces = function()
  */
 MyBoard.prototype.display = function(){
 
-    this.pickListener();
+    //this.pickListener();
 
    
     this.scene.pushMatrix();

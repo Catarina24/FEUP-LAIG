@@ -46,9 +46,9 @@ XMLscene.prototype.init = function (application) {
 
 	this.startTime = 0;
 	this.elapsedTime = 0;
-	
-	// Testing board
-	this.board = new MyBoard(this);
+
+	// Testing game
+	this.game = new Yavalath(this);
 
 	// Picking
 	this.setPickEnabled(true);
@@ -356,7 +356,7 @@ XMLscene.prototype.display = function () {
 		this.updateLights();	
 	}
 	
-	this.board.display();
+	this.game.handleGameState();
 
 	this.processGraph(this.graph.sceneRoot, null, null);
 };
