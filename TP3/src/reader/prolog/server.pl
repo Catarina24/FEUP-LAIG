@@ -124,7 +124,7 @@ parse_input(init(Name1, Name2), Board):-
 /*----- PLAYER -----*/
 
 %caso jogada seja valida
-parse_input(movePlayer(X, Y), End):-
+parse_input(movePlayer(X, Y), [End, UpdateBoard]):-
 	board(Board),
 	isFreeCell(X, Y, Board),
 	currentPlayer(Player),

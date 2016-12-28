@@ -61,48 +61,43 @@ Yavalath.prototype.init = function(name1, name2){
     });
 }
 
-Yavalath.prototype.handleDataReceived = function(result){
-        console.log(result);
-        switch(result){
-            case 0:
-                console.log("Invalid Move");
-                break;
-            case 1:
-                console.log("Valid Move");
-                changePlayer();
-                break;
-            case 2:
-                this.state = state.END;
-                changePlayer();
-                console.log("Draw");
-                break;
-            case 3:
-                this.state = state.END;
-                changePlayer();
-                console.log("Lost");
-                break;
-            case 4:
-                this.state = state.END;
-                changePlayer();
-                console.log("Win");
-                break;
-            default:
-                console.log("lol");
-                break;
-        }
-};
-
 Yavalath.prototype.placePiecePlayer = function(x, y){
 
     var requestString = "movePlayer(" + x + "," + y + ")";
     this.client.getPrologRequest(requestString, function(data){
 
         var result = data.target.responseText;
-        console.log("Result of move player: ");
         console.log(result);
-
-        //this.handleDataReceived(result);
-
+        
+/*
+        switch(result){
+            case '0':
+                console.log("Invalid Move");
+                break;
+            case '1':
+                console.log("Valid Move");
+                //this.changePlayer();
+                break;
+            case '2':
+                this.state = state.END;
+                //this.changePlayer();
+                console.log("Draw");
+                break;
+            case '3':
+                this.state = state.END;
+                //this.changePlayer();
+                console.log("Lost");
+                break;
+            case '4':
+                this.state = state.END;
+                //this.changePlayer();
+                console.log("Win");
+                break;
+            default:
+                console.log(result);
+                console.log("lol");
+                break;
+        }*/
     });
 
 };
@@ -122,6 +117,37 @@ Yavalath.prototype.placePieceBot = function(x, y){
         this.handleDataReceived(result);
        
     });
+};
+
+Yavalath.prototype.handleDataReceived = function(result){
+        console.log(result);
+        switch(result){
+            case 0:
+                console.log("Invalid Move");
+                break;
+            case 1:
+                console.log("Valid Move");
+                this.changePlayer();
+                break;
+            case 2:
+                this.state = state.END;
+                this.changePlayer();
+                console.log("Draw");
+                break;
+            case 3:
+                this.state = state.END;
+                this.changePlayer();
+                console.log("Lost");
+                break;
+            case 4:
+                this.state = state.END;
+                this.changePlayer();
+                console.log("Win");
+                break;
+            default:
+                console.log("lol");
+                break;
+        }
 };
 
 
