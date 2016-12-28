@@ -111,24 +111,23 @@ print_header_line(_).
 
 % Require your Prolog Files here
 
-parse_input(init(Name1, Name2), Board):-
+parse_input(init, Board):-
 	retract(board(_)),
 	boardDefault(Board),
-	assert(board(Board)),
-	assert(player1(Name1)),
-	assert(player2(Name2)),
-	assert(piece(player1, b)),
-	assert(piece(player2, w)),
-	assert(currentPlayer(player1)).
+	assert(board(Board)).
+
 
 /*----- PLAYER -----*/
 
 %caso jogada seja valida
-parse_input(movePlayer(X, Y), End):-
+parse_input(movePlayer(X, Y, PiecePlayer), End):-
 	board(Board),
 	isFreeCell(X, Y, Board),
-	currentPlayer(Player),
-	piece(Player, Piece),
+	(
+		(PiecePlayer = 'black', Piece = 'b')
+		;
+		(PiecePlayer =  'white', Piece = 'w')
+	),
 	replace(Board, X, Y, Piece, UpdateBoard),
 	retract(board(Board)),
 	assert(board(UpdateBoard)),
@@ -136,22 +135,24 @@ parse_input(movePlayer(X, Y), End):-
 		(endGame(X, Y, Board, Piece, End))
 		;
 		(End is 1)
-	),	
-	changePlayer(Player).
+	).
 
 %caso jogada nao seja valida
-parse_input(movePlayer(_, _), End):-
+parse_input(movePlayer(_, _, _), End):-
 	End is 0.
 
 /*----- BOT -----*/
 
 %caso jogada seja valida
-parse_input(moveBot(Level), [X, Y, End]):-
+parse_input(moveBot(Level, PieceBot), [X, Y, End]):-
 	board(Board),
-        currentPlayer(Player),
-        piece(Player, Piece),
-        getPreviousPlayer(OppositePlayer),
-        bestOption(Level, Board, Player, OppositePlayer, X, Y),
+    (
+		(PieceBot = 'black', Piece = 'b')
+		;
+		(PieceBot =  'white', Piece = 'w')
+	),
+    getPreviousPlayer(Piece, PieceOpposite),
+    bestOption(Level, Board, Piece, PieceOpposite, X, Y),
 	replace(Board, X, Y, Piece, UpdateBoard),
 	retract(board(Board)),
 	assert(board(UpdateBoard)),
@@ -159,8 +160,7 @@ parse_input(moveBot(Level), [X, Y, End]):-
 		(endGame(X, Y, Board, Piece, End))
 		;
 		(End is 1)
-	),	
-	changePlayer(Player).
+	).
 
 %caso jogada nao seja valida
 parse_input(moveBot(_), End):-

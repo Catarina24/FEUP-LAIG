@@ -32,44 +32,31 @@ isSamePiece(X, Y, Board, Piece):- getPiece(X, Y, Board, Cell), Cell = Piece.
 
 /**----------------- PLAYER -------------------**/
 
-changePlayer(Player):-
-	Player = 'player1',
-	retract(currentPlayer(Player)),
-	assert(currentPlayer(player2)).
 
-changePlayer(Player):-
-	Player = 'player2',
-	retract(currentPlayer(Player)),
-	assert(currentPlayer(player1)).
+getPreviousPlayer(Piece, PieceOpposite):-
+	Piece = 'b',
+	PieceOpposite = 'w'.
 
-getPreviousPlayer(PlayerBefore):-
-	currentPlayer(Player),
-	Player = 'player1',
-	PlayerBefore = 'player2'.
-
-getPreviousPlayer(PlayerBefore):-
-	currentPlayer(Player),
-	Player = 'player2',
-	PlayerBefore = 'player1'.
-
+getPreviousPlayer(Piece, PieceOpposite):-
+	Piece = 'w',
+	PieceOpposite = 'b'.
 
 
 /**----------------- BOT -------------------**/
-bestOption(Level, Board, Name1, Name2, X, Y):-
-        ((Level =:= 2, 
-                ((checkPossibleWinTest(0, 0, Board, Name1, X, Y)) %verifica se pode ganhar
+bestOption(Level, Board, Piece1, Piece2, X, Y):-
+        ((Level = 2, 
+                ((checkPossibleWinTest(0, 0, Board, Piece1, X, Y)) %verifica se pode ganhar
                 ;
-                (checkPossibleWinTest(0, 0, Board, Name2, X, Y))) %verifica se o outro jogador pode ganhar
+                (checkPossibleWinTest(0, 0, Board, Piece2, X, Y))) %verifica se o outro jogador pode ganhar
         )
         ;
-        (Level =:= 1, checkPossibleWinTest(0, 0, Board, Name2, X, Y)) %verifica se o outro jogador pode ganhar
+        (Level = 1, checkPossibleWinTest(0, 0, Board, Piece2, X, Y)) %verifica se o outro jogador pode ganhar
         ;
         (generateRandomCoordinates(X, Y, Board, Level))).  %escolhe coordenadas aleatórias
 
 %checkPossibleWinTest(_, 9, _, _, _, _).
 
-checkPossibleWinTest(X, Y, Board, Name, Xfinal, Yfinal) :-
-        piece(Name, Piece),
+checkPossibleWinTest(X, Y, Board, Piece, Xfinal, Yfinal) :-
         Y < 9,
         nth0(Y, Board, ListY), 
         length(ListY, Size),
