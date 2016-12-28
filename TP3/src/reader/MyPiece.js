@@ -72,5 +72,4 @@ function MyPiece(scene, color, height, radius) {
      vector.set(x, y, z);
 
      this.translationVector = vector;
-     debugger;
  }

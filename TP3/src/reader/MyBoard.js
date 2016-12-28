@@ -222,8 +222,16 @@ MyBoard.prototype.displayPieces = function()
         {
             this.scene.pushMatrix();
 
-            this.scene.setMatrix(this.cellsMatrix[piece.boardCoord.x][piece.boardCoord.y]);
-            this.scene.translate(0, 0, this.cellHeight);
+            if(piece.boardCoord.x == this.selectedCoords.y && piece.boardCoord.x == this.selectedCoords.y)
+            {
+                //this.animation.apply(this.scene.elapsedTime);
+            }
+
+            this.animation.apply(this.scene.elapsedTime);
+            //this.scene.setMatrix(this.cellsMatrix[piece.boardCoord.x][piece.boardCoord.y]);
+            //this.scene.translate(0, 0, this.cellHeight);
+
+            console.log(this.scene.getMatrix());
 
             piece.finalPositionMatrix = this.scene.getMatrix();
             piece.extractTranslationVector();
@@ -242,7 +250,6 @@ MyBoard.prototype.displayPieces = function()
 MyBoard.prototype.display = function(){
 
     this.pickListener();
-
    
     this.scene.pushMatrix();
 
@@ -260,10 +267,15 @@ MyBoard.prototype.display = function(){
  * Animation creator for a selected position
  */
 
-MyBoard.prototype.generateAnimation = function () {
-    var controlPoints = [[0,0,0], [0, 3, 0]]; // start on the pieces position and elevate
+MyBoard.prototype.generateAnimation = function (piece) {
+    var initialFrame = new KeyFrame([0, 0, 0], [0, 0, 0, 0]);
+    var controlFrame1 = new KeyFrame([0.5, 0.5, 0], [0, 0, 0, 1]);
+    var controlFrame2 = new KeyFrame([0.5, 0.5, 0], [0, 0, 0, 1]);
+    var finalFrame = new KeyFrame([1, 0, 0], [0, 0, 0, 1]);
 
-    var animation = new MyLinearAnimation(this.scene, 1, 2, controlPoints);
+    var kfq = new KeyFrameQuadruple(initialFrame, controlFrame1, controlFrame2, finalFrame);
+
+    var animation = new MyKeyAnimation(this.scene, 10, 2, kfq);
 
     return animation;
 }
@@ -285,5 +297,12 @@ MyBoard.prototype.movePlayerPiece = function (player){
 
     piece.boardCoord.set(this.selectedCoords.y, this.selectedCoords.x);
 
+    this.animation = this.generateAnimation(piece);
+    this.animation.start(this.scene.elapsedTime);
+
     this.pieces.push(piece);
 }
+
+/**
+ * Testing frame animation
+ */
