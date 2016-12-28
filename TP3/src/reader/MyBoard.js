@@ -55,7 +55,7 @@ MyBoard.prototype.pickHandler = function(Coords)
 {
     this.selectedCoords = Coords;
     this.startAnimationTime = this.scene.elapsedTime;
-    this.movePlayerPiece(0);
+    this.movePlayerPiece(1);
 }
 
 /**
@@ -224,17 +224,8 @@ MyBoard.prototype.displayPieces = function()
 
             if(piece.boardCoord.x == this.selectedCoords.y && piece.boardCoord.x == this.selectedCoords.y)
             {
-                //this.animation.apply(this.scene.elapsedTime);
+                this.animation.apply(this.scene.elapsedTime);
             }
-
-            this.animation.apply(this.scene.elapsedTime);
-            //this.scene.setMatrix(this.cellsMatrix[piece.boardCoord.x][piece.boardCoord.y]);
-            //this.scene.translate(0, 0, this.cellHeight);
-
-            console.log(this.scene.getMatrix());
-
-            piece.finalPositionMatrix = this.scene.getMatrix();
-            piece.extractTranslationVector();
 
             piece.display();
 
@@ -268,10 +259,20 @@ MyBoard.prototype.display = function(){
  */
 
 MyBoard.prototype.generateAnimation = function (piece) {
-    var initialFrame = new KeyFrame([0, 0, 0], [0, 0, 0, 0]);
-    var controlFrame1 = new KeyFrame([0.5, 0.5, 0], [0, 0, 0, 1]);
-    var controlFrame2 = new KeyFrame([0.5, 0.5, 0], [0, 0, 0, 1]);
-    var finalFrame = new KeyFrame([1, 0, 0], [0, 0, 0, 1]);
+    
+    var initialFrame;
+
+    if(piece.color == 1)
+    {
+        initialFrame = new KeyFrame([-6, 0, 0], [0, 0, -1, 0]);
+    }
+    else
+    {
+        initialFrame = new KeyFrame([6, 0, 0], [0, 0, 1, 0]);
+    }
+    var controlFrame1 = new KeyFrame([piece.translationVector[0]/2, 0, 8], [-Math.PI/2, 0, 1, 0]);
+    var controlFrame2 = new KeyFrame([piece.translationVector[0]/2, 0, 8], [-Math.PI/2, 0, 1, 0]);
+    var finalFrame = new KeyFrame([piece.translationVector[0]+10, 6, this.cellHeight], [-Math.PI, 0, 1, 0]);
 
     var kfq = new KeyFrameQuadruple(initialFrame, controlFrame1, controlFrame2, finalFrame);
 
@@ -296,6 +297,9 @@ MyBoard.prototype.movePlayerPiece = function (player){
     }
 
     piece.boardCoord.set(this.selectedCoords.y, this.selectedCoords.x);
+
+    piece.finalPositionMatrix = this.scene.getMatrix();
+    piece.extractTranslationVector();
 
     this.animation = this.generateAnimation(piece);
     this.animation.start(this.scene.elapsedTime);

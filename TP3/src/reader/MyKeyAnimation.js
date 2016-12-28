@@ -26,6 +26,9 @@ class KeyFrameQuadruple {
     }
 }
 
+/**
+ * To move PIECES around the game
+ */
 function MyKeyAnimation(scene, id, span, controlKeyFramesQuadruple){ // span == totalTime
 
     MyAnimation.call(this, scene, id, span);
