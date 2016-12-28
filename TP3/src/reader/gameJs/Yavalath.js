@@ -25,7 +25,9 @@ var state={
 function Yavalath(scene){
     
     this.scene = scene;
+
     this.board = new MyBoard(scene);
+    this.menu = null;
     this.client = new Client();
 
     this.state = state.MENU;
@@ -38,6 +40,8 @@ function Yavalath(scene){
     this.player2 = null;
 
     this.currentPlayer = null;
+
+    this.lastMoves = [];
     
 }
 
@@ -54,6 +58,40 @@ Yavalath.prototype.init = function(){
     });
 }
 
+Yavalath.prototype.undo = function(){
+    
+    var length = this.lastMoves.length;
+
+    if (length == 0){
+        console.log("nothing to undo");
+        return;
+    }
+
+    var x = this.lastMoves[length-1].x;
+    var y = this.lastMoves[length-1].y;
+
+    this.lastMoves.pop();
+
+    this.board.pieces.pop();
+    this.changePlayer();
+    
+    if (this.lastMoves.length != 0){
+        var selectedCoords = this.lastMoves[length-2];
+        this.board.selectedCoords = new Coord2(selectedCoords.y+1, selectedCoords.x+1);
+    }
+    else{
+        this.board.selectedCoords = new Coord2(-1, -1);
+    }
+
+    var requestString = "undo(" + x + "," + y + ")";
+    this.client.getPrologRequest(requestString, function(data){
+
+        var result = data.target.responseText;
+
+    });
+}
+
+
 
 Yavalath.prototype.placePiecePlayer = function(x, y, piece){
 
@@ -63,7 +101,6 @@ Yavalath.prototype.placePiecePlayer = function(x, y, piece){
     var end = this.client.getPrologRequest(requestString, function(data){
         
         var result = data.target.responseText;
-        console.log(result);
         game.handleDataReceived(result);
 
     });
@@ -121,6 +158,9 @@ Yavalath.prototype.changePlayer = function(){
 
 }
 
+/**
+ * If a cell is picked it activates the pickHandler giving the cell coordinates to it.
+ */
 Yavalath.prototype.pickListenerGame = function()
 {
     if (this.scene.pickMode == false) {
@@ -130,7 +170,7 @@ Yavalath.prototype.pickListenerGame = function()
 				if (obj)
 				{
 					var customId = this.scene.pickResults[i][1];
-                    this.pickHandler(this.board.getCoordFromIdofPickedCell(customId));		
+                    this.pickHandlerGame(this.board.getCoordFromIdofPickedCell(customId), customId);		
 				}
 			}
 			this.scene.pickResults.splice(0,this.scene.pickResults.length);
@@ -138,14 +178,18 @@ Yavalath.prototype.pickListenerGame = function()
 	}
 }
 
-Yavalath.prototype.pickHandler = function(Coords)
+/**
+ * What to do when a cell with board coordinates 'Coords' is picked.
+ */
+Yavalath.prototype.pickHandlerGame = function(Coords, customId)
 {
-    console.log(Coords);
     this.board.selectedCoords = Coords;
     this.board.startAnimationTime = this.scene.elapsedTime;
 
-    //teste
     this.placePiecePlayer(this.board.selectedCoords.y-1, this.board.selectedCoords.x-1, this.currentPlayer.piece);
+
+    var lastMove = new Coord2(this.board.selectedCoords.y-1, this.board.selectedCoords.x-1);
+    this.lastMoves.push(lastMove);
 
     if (this.currentPlayer.piece == 'black')
         this.board.movePlayerPiece(0);
@@ -172,10 +216,10 @@ Yavalath.prototype.handleGameState = function(){
             this.pickListenerGame();
             break;
         case state.END:
-            //this.finalize();
             this.state = state.GAMEOVER_MENU;
             break;
         case state.GAMEOVER_MENU:
             break;
     }
 }
+

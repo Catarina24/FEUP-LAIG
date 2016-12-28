@@ -165,3 +165,11 @@ parse_input(moveBot(Level, PieceBot), [X, Y, End]):-
 %caso jogada nao seja valida
 parse_input(moveBot(_), End):-
 	End is 0.
+
+
+%undo
+parse_input(undo(X,Y), [Board, UpdateBoard]):-
+	board(Board),
+	replace(Board, X, Y, 's', UpdateBoard),
+	retract(board(Board)),
+	assert(board(UpdateBoard)).

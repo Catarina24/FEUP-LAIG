@@ -49,37 +49,6 @@ function MyBoard(scene){
 MyBoard.prototype.constructor = MyBoard;
 
 /**
- * What to do when a cell with board coordinates 'Coords' is picked.
- */
-MyBoard.prototype.pickHandler = function(Coords)
-{
-    console.log(Coords);
-    this.selectedCoords = Coords;
-    this.startAnimationTime = this.scene.elapsedTime;
-    this.movePlayerPiece(0);
-}
-
-/**
- * If a cell is picked it activates the pickHandler giving the cell coordinates to it.
- */
-MyBoard.prototype.pickListener = function()
-{
-    if (this.scene.pickMode == false) {
-		if (this.scene.pickResults != null && this.scene.pickResults.length > 0) {
-			for (var i=0; i< this.scene.pickResults.length; i++) {
-				var obj = this.scene.pickResults[i][0];
-				if (obj)
-				{
-					var customId = this.scene.pickResults[i][1];
-                    this.pickHandler(this.getCoordFromIdofPickedCell(customId));		
-				}
-			}
-			this.scene.pickResults.splice(0,this.scene.pickResults.length);
-		}	
-	}
-}
-
-/**
  * Translates an ID of a picked cell into its board coordinates, assuming ID of board cells start at 1.
  */
 MyBoard.prototype.getCoordFromIdofPickedCell = function(id)
@@ -241,9 +210,6 @@ MyBoard.prototype.displayPieces = function()
  * Displays board with center in the origin and face torwards positive Z.
  */
 MyBoard.prototype.display = function(){
-
-    //this.pickListener();
-
    
     this.scene.pushMatrix();
 
