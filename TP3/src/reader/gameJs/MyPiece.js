@@ -17,6 +17,8 @@ function MyPiece(scene, color, height, radius) {
 
     this.animate = false;
 
+    this.played = false;
+
     // Appearances for the piece
     this.whiteAppearance = new CGFappearance(this.scene);
     this.whiteAppearance.setAmbient(1, 1, 1, 1);
@@ -73,8 +75,7 @@ function MyPiece(scene, color, height, radius) {
      var y = this.finalPositionMatrix[13] - this.initialPositionMatrix[7];
      var z = this.finalPositionMatrix[14] - this.initialPositionMatrix[11];
 
-     vector.set(x, y, z);
-
+     vector = [1, 4, 0];
+     
      this.translationVector = vector;
-     debugger;
  }

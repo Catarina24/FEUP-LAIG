@@ -374,7 +374,7 @@
                 <material id="inherit"/>
             </materials>
 
-            <texture id="inherit"/>
+            <texture id="none"/>
 
             <children>
                 <primitiveref id="plane"/>

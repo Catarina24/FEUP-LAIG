@@ -12,12 +12,12 @@ function getUrlVars() {
 }	 
 
 serialInclude(['../lib/CGF.js', 'XMLscene.js', 'MySceneGraph.js', 
-'MyNode.js', 'primitives/MyQuad.js','MyShape.js', 'MyView.js', 'MyTexture.js', 
+'MyNode.js', 'primitives/MyQuad.js','primitives/MyShape.js', 'MyView.js', 'MyTexture.js', 
 'MyMaterial.js', 'MyTransformation.js', 'primitives/MyTriangle.js', 'primitives/MySphere.js', 
 'primitives/MyCylinder.js', 'primitives/MyCylinderBase.js', 'primitives/MyCylinderSurface.js', 
 'primitives/MyTorus.js', 'MyLight.js', 'MyInterface.js', 'primitives/MyPlane.js', 'primitives/MyPatch.js', 'primitives/MyVehicle.js', 'primitives/MyCube.js',
-'animations/MyAnimation.js', 'animations/MyLinearAnimation.js', 'animations/MyCircularAnimation.js',
-'primitives/MyChessboard.js', 'gameJs/MyBoard.js', 'Utils.js', 'gameJs/MyPiece.js', 'gameJs/Yavalath.js','gameJs/Client.js', 'gameJs/Player.js', 'gameJs/Menu.js',
+'animations/MyAnimation.js', 'animations/MyLinearAnimation.js', 'animations/MyCircularAnimation.js', 'animations/MyKeyAnimation.js',
+'primitives/MyChessboard.js', 'gameJs/MyBoard.js', 'Utils.js', 'gameJs/MyPiece.js', 'gameJs/Yavalath.js','gameJs/Client.js', 'gameJs/Player.js',
 
 main=function()
 {
