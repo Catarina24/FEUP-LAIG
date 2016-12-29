@@ -39,6 +39,8 @@ function MyBoard(scene){
         this.cellsMatrix[i]=new Array(20)
     }
 
+    this.ConvertCoordinates();
+
     // Pieces of the board
     this.whitePiece = new MyPiece(this.scene, 1, this.cellHeight*1.5, this.cellRadius*3/4);
     this.blackPiece = new MyPiece(this.scene, 0, this.cellHeight*1.5, this.cellRadius*3/4);
@@ -270,9 +272,12 @@ MyBoard.prototype.generateAnimation = function (piece) {
     {
         initialFrame = new KeyFrame([6, 0, 0], [0, 0, 1, 0]);
     }
-    var controlFrame1 = new KeyFrame([piece.translationVector[0]/2, 0, 8], [-Math.PI/2, 0, 1, 0]);
-    var controlFrame2 = new KeyFrame([piece.translationVector[0]/2, 0, 8], [-Math.PI/2, 0, 1, 0]);
-    var finalFrame = new KeyFrame([piece.translationVector[0]+10, 6, this.cellHeight], [-Math.PI, 0, 1, 0]);
+    var controlFrame1 = new KeyFrame([this.convert[piece.boardCoord.y-1][piece.boardCoord.x-1][0], 0, 8], [-Math.PI/2, 0, 1, 0]);
+    var controlFrame2 = new KeyFrame([this.convert[piece.boardCoord.y-1][piece.boardCoord.x-1][0], 0, 8], [-Math.PI/2, 0, 1, 0]);
+    var finalFrame = new KeyFrame(  [this.convert[piece.boardCoord.y-1][piece.boardCoord.x-1][0], 
+                                    this.convert[piece.boardCoord.y-1][piece.boardCoord.x-1][1] * 2 - this.convert[piece.boardCoord.y-1][piece.boardCoord.x-1][1] * 0.25,
+                                    this.cellHeight], 
+                                    [-Math.PI, 0, 1, 0]);
 
     var kfq = new KeyFrameQuadruple(initialFrame, controlFrame1, controlFrame2, finalFrame);
 
@@ -298,7 +303,7 @@ MyBoard.prototype.movePlayerPiece = function (player){
 
     piece.boardCoord.set(this.selectedCoords.y, this.selectedCoords.x);
 
-    piece.finalPositionMatrix = this.scene.getMatrix();
+    piece.finalPositionMatrix = this.cellsMatrix[this.selectedCoords.y][this.selectedCoords.x];
     piece.extractTranslationVector();
 
     this.animation = this.generateAnimation(piece);
@@ -307,6 +312,33 @@ MyBoard.prototype.movePlayerPiece = function (player){
     this.pieces.push(piece);
 }
 
-/**
- * Testing frame animation
- */
+
+
+MyBoard.prototype.ConvertCoordinates = function (x, y) {
+
+    this.convert = 
+    [
+        [[-2, 2], [-1, 2], [0, 2], [1, 2], [2, 2]],
+        [[-2.5, 1.5], [-1.5, 1.5], [-0.5, 1.5], [0.5, 1.5], [1.5,1.5], [2.5, 1.5]],
+        [[-3, 1], [-2, 1], [-1, 1], [0, 1], [0, 1], [1, 1], [2, 1], [3, 1]],
+        [[-3.5,0.5], [-2.5,0.5], [-1.5, 0.5], [-0.5, 0.5], [0.5,0.5], [1.5, 0.5], [2.5, 0.5], [3.5, 0.5]],
+        [[-4,0], [-3,0], [-2, 0], [-1, 0], [0,0], [1,0], [2, 0], [3,0], [4,0]],
+        [[-3.5,-0.5], [-2.5, -0.5], [-1.5, -0.5], [-0.5, -0.5], [0.5,-0.5], [1.5, -0.5], [2.5, -0.5], [3.5, -0.5]],
+        [[-3, -1], [-2, -1], [-1, -1], [0, -1], [0, -1], [1, -1], [2, -1], [3, -1]],
+        [[-2.5,-1.5], [-1.5, -1.5], [-0.5, -1.5], [0.5, -1.5], [1.5,-1.5], [2.5, -1.5]],
+        [[-2, -2], [-1, -2], [0, -2], [1, -2], [2, -2]]
+    ]
+
+}
+
+MyBoard.prototype.FillMyCoordinates = function () {
+
+    this.cellsMatrixAux = new Array(20)
+    for (var i=0; i < 20; i++)
+    {
+        this.cellsMatrixAux[i]=new Array(20);
+    }
+
+
+
+}

@@ -69,7 +69,11 @@ function MyPiece(scene, color, height, radius) {
      var y = this.finalPositionMatrix[13] - this.initialPositionMatrix[7];
      var z = this.finalPositionMatrix[14] - this.initialPositionMatrix[11];
 
-     vector = [x, 0, 0];
+     vector = [1, 4, 0];
+
+     console.log("2:");
+     console.log(this.finalPositionMatrix);
+     console.log(vector);
      
      this.translationVector = vector;
  }
