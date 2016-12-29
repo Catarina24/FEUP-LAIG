@@ -160,8 +160,8 @@ Yavalath.prototype.handleDataReceived = function(result){
                 //example
                 if (this.audioEnabled)
                     this.audioPiece.play();
-                this.changePlayer();
                 this.canPlay = true;
+                this.movePiece();
                 break;
             case '2':
                 this.state = state.END;
@@ -213,26 +213,35 @@ Yavalath.prototype.pickListenerGame = function()
  */
 Yavalath.prototype.pickHandlerGame = function(Coords)
 {
-    this.movePiece(Coords);
+    this.getPrologFeedback(Coords);
 
 }
 
-Yavalath.prototype.movePiece = function (Coords)
-{
+Yavalath.prototype.getPrologFeedback = function (Coords) {
+
     this.board.selectedCoords = Coords;
+    this.placePiece(this.currentPlayer.piece);  // get prolog feedback
+}
 
-    this.placePiece(this.currentPlayer.piece);  // in prolog
-
+Yavalath.prototype.movePiece = function ()
+{
     if (this.canPlay){
+
         var lastMove = new Coord2(this.board.selectedCoords.y-1, this.board.selectedCoords.x-1);
         this.lastMoves.push(lastMove);
 
         this.board.startAnimationTime = this.scene.elapsedTime;
 
         if (this.currentPlayer.piece == 'black')
+        {
             this.board.movePlayerPiece(0);
+        }
         else if(this.currentPlayer.piece == 'white')
+        {
             this.board.movePlayerPiece(1);  
+        }
+
+        this.changePlayer();
     }
 }
 
