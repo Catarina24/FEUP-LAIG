@@ -71,8 +71,6 @@ MyKeyAnimation.prototype.apply = function(sceneTime){
  */
 MyKeyAnimation.prototype.keyFrameQuadrupleInterpolation = function (t, keyFrameQuadruple) {
 
-    console.log(keyFrameQuadruple);
-
     if(!keyFrameQuadruple instanceof KeyFrameQuadruple)
     {
         console.error("Bad keyFrameQuadruple argument on bezierInterpolation.");
