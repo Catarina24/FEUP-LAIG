@@ -17,6 +17,8 @@ function MyPiece(scene, color, height, radius) {
 
     this.animate = false;
 
+    this.played = false;
+
     // Appearances for the piece
     this.whiteAppearance = new CGFappearance(this.scene);
     this.whiteAppearance.setAmbient(1, 1, 1, 1);

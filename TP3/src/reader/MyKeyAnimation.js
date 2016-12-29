@@ -54,6 +54,7 @@ MyKeyAnimation.prototype.apply = function(sceneTime){
 
     if(this.currentTime > this.totalTime)
     {
+        this.end = true;
         return 0;   // animation ended
     }
 

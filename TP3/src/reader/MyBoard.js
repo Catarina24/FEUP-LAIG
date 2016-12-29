@@ -180,6 +180,8 @@ MyBoard.prototype.displayBoardCells = function()
         }
     }
 
+    this.scene.clearPickRegistration();
+
     this.scene.popMatrix();
 }
 
@@ -227,6 +229,16 @@ MyBoard.prototype.displayPieces = function()
             if(piece.boardCoord.x == this.selectedCoords.y && piece.boardCoord.x == this.selectedCoords.y)
             {
                 this.animation.apply(this.scene.elapsedTime);
+                if(this.animation.end)
+                {
+                    piece.played = true;
+                }
+            }
+
+            if(piece.played == true)
+            {
+                this.scene.setMatrix(this.cellsMatrix[piece.boardCoord.x][piece.boardCoord.y]);
+                this.scene.translate(0, 0, this.cellHeight);
             }
 
             piece.display();
@@ -274,6 +286,7 @@ MyBoard.prototype.generateAnimation = function (piece) {
     }
     var controlFrame1 = new KeyFrame([this.convert[piece.boardCoord.y-1][piece.boardCoord.x-1][0], 0, 8], [-Math.PI/2, 0, 1, 0]);
     var controlFrame2 = new KeyFrame([this.convert[piece.boardCoord.y-1][piece.boardCoord.x-1][0], 0, 8], [-Math.PI/2, 0, 1, 0]);
+
     var finalFrame = new KeyFrame(  [this.convert[piece.boardCoord.y-1][piece.boardCoord.x-1][0], 
                                     this.convert[piece.boardCoord.y-1][piece.boardCoord.x-1][1] * 2 - this.convert[piece.boardCoord.y-1][piece.boardCoord.x-1][1] * 0.25,
                                     this.cellHeight], 
@@ -320,11 +333,11 @@ MyBoard.prototype.ConvertCoordinates = function (x, y) {
     [
         [[-2, 2], [-1, 2], [0, 2], [1, 2], [2, 2]],
         [[-2.5, 1.5], [-1.5, 1.5], [-0.5, 1.5], [0.5, 1.5], [1.5,1.5], [2.5, 1.5]],
-        [[-3, 1], [-2, 1], [-1, 1], [0, 1], [0, 1], [1, 1], [2, 1], [3, 1]],
+        [[-3, 1], [-2, 1], [-1, 1], [0, 1], [1, 1], [2, 1], [3, 1]],
         [[-3.5,0.5], [-2.5,0.5], [-1.5, 0.5], [-0.5, 0.5], [0.5,0.5], [1.5, 0.5], [2.5, 0.5], [3.5, 0.5]],
         [[-4,0], [-3,0], [-2, 0], [-1, 0], [0,0], [1,0], [2, 0], [3,0], [4,0]],
         [[-3.5,-0.5], [-2.5, -0.5], [-1.5, -0.5], [-0.5, -0.5], [0.5,-0.5], [1.5, -0.5], [2.5, -0.5], [3.5, -0.5]],
-        [[-3, -1], [-2, -1], [-1, -1], [0, -1], [0, -1], [1, -1], [2, -1], [3, -1]],
+        [[-3, -1], [-2, -1], [-1, -1], [0, -1], [1, -1], [2, -1], [3, -1]],
         [[-2.5,-1.5], [-1.5, -1.5], [-0.5, -1.5], [0.5, -1.5], [1.5,-1.5], [2.5, -1.5]],
         [[-2, -2], [-1, -2], [0, -2], [1, -2], [2, -2]]
     ]
