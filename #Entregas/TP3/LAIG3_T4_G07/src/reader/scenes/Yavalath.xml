@@ -131,6 +131,8 @@
         <texture id="alcatifa" file="./scenes/resources/alcatifa.jpg" length_s="0.2" length_t="0.2"/>
 
         <texture id="train" file="./scenes/resources/white_wood.jpg" length_s="1" length_t="1"/>
+
+        <texture id="yavalath_wall" file="./scenes/resources/yavalath_wall.png" length_s="1" length_t="1"/>
         
         
     </textures>
@@ -173,6 +175,14 @@
             <shininess value="0.1" />
         </material>
 
+        <material id="green" >
+            <emission r="0" g="0.8" b="0" a="0.2" />
+            <ambient r="0" g="0.8" b="0" a="0.2" />
+            <diffuse r="0" g="1" b="0" a="1" />
+            <specular r="0" g="1" b="0" a="1" />
+            <shininess value="0.1" />
+        </material>
+
          <material id="black" >
             <emission r="0" g="0" b="0" a="0" />
             <ambient r="0" g="0" b="0" a="0" />
@@ -188,6 +198,22 @@
             <specular r="1" g="1" b="1" a="0.6" />
             <shininess value="1000" />
         </material>   
+
+        <material id="yellow">
+            <emission r="1" g="0.9" b="" a="0.1" />
+            <ambient r="1" g="0.9" b="0" a="0.3" />
+            <diffuse r="1" g="0.9" b="0" a="0.3" />
+            <specular r="1" g="0.9" b="0" a="0.6" />
+            <shininess value="1" />
+        </material>
+
+        <material id="bright_yellow">
+            <emission r="1" g="1" b="0.2" a="0.1" />
+            <ambient r="1" g="1" b="0.2" a="0.3" />
+            <diffuse r="1" g="1" b="0.2" a="0.3" />
+            <specular r="1" g="1" b="0.2" a="0.6" />
+            <shininess value="1" />
+        </material>  
 
     </materials>
     
@@ -250,7 +276,7 @@
         <!-- Os identificadores "id" nao podem ser repetidos -->
            
         <!-- apenas pode existir UMA das seguintes tags: -->
-        <!--     rectangle, triangle, cylinder, sphere, torus -->
+        <!--     plane, triangle, cylinder, sphere, torus -->
         <!-- os parametros devem ser interpretados, genericamente como-->
         <!-- em OpenGL/GLUT; o cilindro deve adicionalmente ter tampas -->
 
@@ -265,18 +291,6 @@
         <primitive id="plane">
             <plane dimX="1" dimY="1" partsX="100" partsY="100" />
         </primitive>
-
-        <primitive id="vehicle">
-            <vehicle dimension="1" />
-        </primitive>
-
-        <primitive id="chessboard">
-            <chessboard du="8" dv="8" textureref="beige_wall" su="1" sv="1" >
-                   <c1 r="1" g="1" b="1" a="1" />
-                   <c2 r="0.5" g="0.5" b="0.5" a="1" />
-                   <cs r="0.7" g="0" b="0" a="1" />
-            </chessboard>
-        </primitive> 
 
     </primitives>
     
@@ -325,118 +339,153 @@
                 <!-- "primitiveref", identificando outros -->
                 <!-- componentes ou primitivas -->
                 <!-- <componentref id="ss" /> -->
-                <componentref id="board" />
-                <!--<componentref id="white_piece" />
-                <componentref id="black_piece" />-->
-                <componentref id="cells"/>
+                <componentref id="room" />
                 
             </children>
             
         </component>
 
-         <!-- *** BEGIN OF BOARD *** -->
+     <!-- *** BEGIN OF BASIC SOLIDS*** -->
 
-            <component id="board">
-                 <transformation>
-                   <translate x="4.5" y="0" z="4.5"/>
-                   <scale x="9" y="1" z="9" />
-                   <rotate axis="x" angle="-90" />
-                </transformation>
+        <component id="cubeTop">
+            <transformation>
+                <translate x="0" y="0.5" z="0"/>
+                <rotate axis="x" angle="90"/>
+            </transformation>
 
-                <materials>
-                    <material id="white"/>
-                </materials>
+            <materials>
+                <material id="inherit"/>
+            </materials>
 
-                <texture id="board"/>
+            <texture id="inherit"/>
 
-                <children>
-                    <primitiveref id="plane"/>
-                </children>
-            </component>
+            <children>
+                <primitiveref id="plane"/>
+            </children>
+        </component> 
 
-        <!-- *** END OF BOARD *** -->
+        <component id="cubeBot">
+            <transformation>
+                <translate x="0" y="-0.5" z="0"/>
+                <rotate axis="x" angle="-90"/>
+            </transformation>
 
-        <!-- *** BEGIN OF CELL *** -->
+            <materials>
+                <material id="inherit"/>
+            </materials>
 
-        	<component id="cells">
-        		<transformation>
-        		</transformation>
+            <texture id="none"/>
 
-        		<materials>
-                   <material id="invisible"/>
-                </materials>
+            <children>
+                <primitiveref id="plane"/>
+            </children>
+        </component> 
 
-                <texture id="none"/>
+        <component id="cubeLeft">
+            <transformation>
+                <translate x="-0.5" y="0" z="0" />
+                <rotate axis="y" angle="90"/>
+            </transformation>
 
-				<children>
-					<componentref id="cell"/>
-				</children>
-        	</component>
+            <materials>
+                <material id="bright_yellow"/>
+                <material id="red"/>
+                <material id="green"/>
+                <material id="blue"/>
+            </materials>
 
-            <component id="cell">
-                 <transformation>
-                   <translate x="0.8" y="0" z="4.5"/>
-                   <scale x="1" y="0.005" z="1" />
-                   <rotate axis="y" angle="-90" />
-                   <rotate axis="x" angle="-90" />
-                </transformation>
+            <texture id="inherit"/>
 
-                <materials>
-                   <material id="inherit"/>
-                </materials>
+            <children>
+                <primitiveref id="plane"/>
+            </children>
+        </component> 
 
-                <texture id="none"/>
+        <component id="cubeFront">
+            <transformation>
+                <translate x="0" y="0" z="0.5"/>
+                <rotate axis="y" angle="180"/>
+            </transformation>
 
-                <children>
-                    <primitiveref id="hexagon"/>
-                </children>
-            </component>
+            <materials>
+                <material id="blue"/>
+                <material id="bright_yellow"/>
+                <material id="red"/>
+                <material id="green"/>
+            </materials>
 
-        <!-- *** END OF CELL *** -->
+            <texture id="inherit"/>
 
-        <!-- *** BEGIN OF WHITE PIECE *** -->
+            <children>
+                <primitiveref id="plane"/>
+            </children>
+        </component> 
 
-            <component id="white_piece">
-                 <transformation>
-                   <translate x="0.8" y="0" z="4.5"/>
-                   <rotate axis="x" angle="-90" />
-                </transformation>
+        <component id="cubeRight">
+            <transformation>
+                <translate x="0.5" y="0" z="0"/>
+                <rotate axis="y" angle="-90"/>
+            </transformation>
 
-                <materials>
-                            <material id="white"/>
-                </materials>
+            <materials>
+                <material id="green"/>
+                <material id="blue"/>
+                <material id="bright_yellow"/>
+                <material id="red"/>
+            </materials>
 
-                <texture id="none"/>
+            <texture id="inherit"/>
 
-                <children>
-                    <primitiveref id="cylinder"/>
-                </children>
-            </component>
+            <children>
+                <primitiveref id="plane"/>
+            </children>
+        </component> 
 
-        <!-- *** END OF WHITE PIECE *** -->
+        <component id="cubeBack">
+            <transformation>
+                <translate x="0" y="0" z="-0.5"/>
+                <rotate axis="y" angle="0"/>
+            </transformation>
 
-        <!-- *** BEGIN OF BLACK PIECE *** -->
+            <materials>
+                <material id="red"/>
+                <material id="green"/>
+                <material id="blue"/>
+                <material id="bright_yellow"/>
+            </materials>
 
-            <component id="black_piece">
-                 <transformation>
-                   <translate x="3.55" y="0" z="4.5"/>
-                   <rotate axis="x" angle="-90" />
-                </transformation>
+            <texture id="inherit"/>
 
-                <materials>
-                   <material id="black"/>
-                </materials>
+            <children>
+                <primitiveref id="plane"/>
+            </children>
+        </component> 
 
-                <texture id="none"/>
 
-                <children>
-                    <primitiveref id="cylinder"/>
-                </children>
-            </component>
+        <component id="room">
+            <transformation>
+                <scale x="100" y="100" z="100"/>
+            </transformation>
 
-        <!-- *** END OF WHITE PIECE *** -->
+            <materials>
+                <material id="inherit"/>
+            </materials>
 
-   
+            <texture id="yavalath_wall"/>
+
+            <children>
+                <componentref id="cubeTop"/>
+                <componentref id="cubeBot"/>
+                <componentref id="cubeLeft"/>
+                <componentref id="cubeFront"/>
+                <componentref id="cubeRight"/>
+                <componentref id="cubeBack"/>
+            </children>
+        </component>
+
+        <!-- *** END OF BASIC SOLIDS*** -->
+
+
     </components>
 
 </dsx>

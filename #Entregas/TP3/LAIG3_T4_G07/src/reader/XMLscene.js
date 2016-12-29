@@ -46,9 +46,9 @@ XMLscene.prototype.init = function (application) {
 
 	this.startTime = 0;
 	this.elapsedTime = 0;
-	
-	// Testing board
-	this.board = new MyBoard(this);
+
+	// Testing game
+	this.game = new Yavalath(this);
 
 	// Picking
 	this.setPickEnabled(true);
@@ -307,22 +307,6 @@ XMLscene.prototype.changeCamera = function(i){
 	this.application.interface.setActiveCamera(this.camera); // so mouse controls work
 }
 
-XMLscene.prototype.logPicking = function ()
-{
-	if (this.pickMode == false) {
-		if (this.pickResults != null && this.pickResults.length > 0) {
-			for (var i=0; i< this.pickResults.length; i++) {
-				var obj = this.pickResults[i][0];
-				if (obj)
-				{
-					var customId = this.pickResults[i][1];				
-					console.log("Picked object: " + obj + ", with pick id " + customId);
-				}
-			}
-			this.pickResults.splice(0,this.pickResults.length);
-		}		
-	}
-}
 
 XMLscene.prototype.display = function () {
 	// Picking
@@ -356,7 +340,7 @@ XMLscene.prototype.display = function () {
 		this.updateLights();	
 	}
 	
-	this.board.display();
+	this.game.handleGameState();
 
 	this.processGraph(this.graph.sceneRoot, null, null);
 };

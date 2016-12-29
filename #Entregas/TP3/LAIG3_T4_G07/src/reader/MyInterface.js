@@ -76,6 +76,10 @@ MyInterface.prototype.processKeyDown = function(event) {
 			this.scene.viewCounter++;
 			this.scene.changeCamera(this.scene.viewCounter);
 			break;
+		case(90):
+		case(90+32):	// 'Z' or 'z'
+			this.scene.game.undo();
+			break;
 	};
 }
 
