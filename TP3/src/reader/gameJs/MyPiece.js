@@ -34,6 +34,10 @@ function MyPiece(scene, color, height, radius) {
     this.initialPositionMatrix = null;
     this.finalPositionMatrix = null;
     this.translationVector = null;
+
+    
+   
+
  };
 
  MyPiece.prototype = Object.create(CGFobject.prototype);

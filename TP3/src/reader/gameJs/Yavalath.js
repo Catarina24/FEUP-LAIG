@@ -27,7 +27,7 @@ function Yavalath(scene){
     this.scene = scene;
 
     this.board = new MyBoard(scene);
-    this.menu = null;
+    //this.menu = new Menu(scene);
     this.client = new Client();
 
     this.state = state.MENU;
@@ -35,14 +35,16 @@ function Yavalath(scene){
 
     this.winner = null;
 
-    //add player
+    // Players
     this.player1 = null;
     this.player2 = null;
-
     this.currentPlayer = null;
 
     this.lastMoves = [];
-    
+
+    this.audioPiece = new Audio('resources/sounds/piece.mp3');
+   
+    this.audioEnabled = false;
 }
 
 
@@ -69,9 +71,14 @@ Yavalath.prototype.undo = function(){
 
     var x = this.lastMoves[length-1].x;
     var y = this.lastMoves[length-1].y;
+    var requestString = "undo(" + x + "," + y + ")";
+    this.client.getPrologRequest(requestString, function(data){
+
+        var result = data.target.responseText;
+
+    });
 
     this.lastMoves.pop();
-
     this.board.pieces.pop();
     this.changePlayer();
     
@@ -82,13 +89,7 @@ Yavalath.prototype.undo = function(){
     else{
         this.board.selectedCoords = new Coord2(-1, -1);
     }
-
-    var requestString = "undo(" + x + "," + y + ")";
-    this.client.getPrologRequest(requestString, function(data){
-
-        var result = data.target.responseText;
-
-    });
+    
 }
 
 
@@ -131,6 +132,9 @@ Yavalath.prototype.handleDataReceived = function(result){
                 break;
             case '1':
                 console.log("Valid Move");
+                //example
+                if (this.audioEnabled)
+                    this.audioPiece.play();
                 this.changePlayer();
                 break;
             case '2':
@@ -194,7 +198,8 @@ Yavalath.prototype.pickHandlerGame = function(Coords, customId)
     if (this.currentPlayer.piece == 'black')
         this.board.movePlayerPiece(0);
     else if(this.currentPlayer.piece == 'white')
-        this.board.movePlayerPiece(1);
+        this.board.movePlayerPiece(1);  
+    
 }
 
 
@@ -202,6 +207,7 @@ Yavalath.prototype.pickHandlerGame = function(Coords, customId)
 Yavalath.prototype.handleGameState = function(){
     switch(this.state){
         case state.MENU:
+            //this.menu.display();
             this.player1 = new Player('cat', 'black');
             this.player2 = new Player('ze', 'white');
             this.currentPlayer = this.player1;
