@@ -61,9 +61,7 @@ function Yavalath(scene){
 
 }
 
-
 Yavalath.prototype.constructor=Yavalath;
-
 
 Yavalath.prototype.init = function(){
     
@@ -133,6 +131,10 @@ Yavalath.prototype.placePieceBot = function(piece){
         var result = parsed[2];
 
         game.handleDataReceived(result);
+
+        var botMove = new Coord2(x+1, y+1);
+
+        game.botMove(botMove);
        
     });
 };
@@ -222,6 +224,12 @@ Yavalath.prototype.getPrologFeedback = function (Coords) {
     this.board.selectedCoords = Coords;
     this.placePiece(this.currentPlayer.piece);  // get prolog feedback
 }
+
+Yavalath.prototype.botMove = function (Coords)  
+{
+    this.board.selectedCoords = Coords;
+    this.movePiece(this.currentPlayer.piece);
+} 
 
 Yavalath.prototype.movePiece = function ()
 {
@@ -334,26 +342,9 @@ Yavalath.prototype.menuHandler = function(){
 }
 
 Yavalath.prototype.handleAudio = function(){
-
         if (this.audioEnabled)
             this.audioEnabled = false;
         else if(!this.audioEnabled)
             this.audioEnabled = true;
-
 }
 
-Yavalath.prototype.playerTurn = function () {
-
-    if(this.currentPlayer.human)
-    {
-        // wait for him to play
-    }
-    else
-    {
-        while(!this.board.playable)
-        {
-
-        }
-    }
-
-}
