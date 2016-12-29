@@ -133,6 +133,10 @@ Yavalath.prototype.placePieceBot = function(piece){
         var result = parsed[2];
 
         game.handleDataReceived(result);
+
+        var botMove = new Coord2(x+1, y+1);
+
+        game.botMove(botMove);
        
     });
 };
@@ -342,18 +346,8 @@ Yavalath.prototype.handleAudio = function(){
 
 }
 
-Yavalath.prototype.playerTurn = function () {
-
-    if(this.currentPlayer.human)
-    {
-        // wait for him to play
-    }
-    else
-    {
-        while(!this.board.playable)
-        {
-
-        }
-    }
-
-}
+Yavalath.prototype.botMove = function (Coord)
+{
+    this.board.selectedCoords = Coord;
+    this.movePiece(this.currentPlayer.piece);
+} 
