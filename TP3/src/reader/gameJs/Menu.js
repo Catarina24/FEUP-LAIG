@@ -104,7 +104,7 @@ Menu.prototype.displayMainMenu = function(){
             // Play
             this.scene.pushMatrix();
                 
-                this.scene.registerForPick(1, this.firstButton);
+                this.scene.registerForPick(81, this.firstButton);
                 this.scene.translate(this.positionX, 0.3, 2);
                 this.scene.scale(1, 0.1, 0.3);
                 this.firstButton.display();
@@ -114,7 +114,7 @@ Menu.prototype.displayMainMenu = function(){
             // About
             this.scene.pushMatrix();
                 
-                this.scene.registerForPick(2, this.secondButton);
+                this.scene.registerForPick(82, this.secondButton);
                 this.scene.translate(this.positionX, 0.3, 4);
                 this.scene.scale(1, 0.1, 0.3);
                 this.secondButton.display();
@@ -124,7 +124,7 @@ Menu.prototype.displayMainMenu = function(){
             // Sound On/Off
             this.scene.pushMatrix();
                 
-                this.scene.registerForPick(3, this.thirdButton);
+                this.scene.registerForPick(83, this.thirdButton);
                 this.scene.translate(this.positionX, 0.3, 6);
                 this.scene.scale(1, 0.1, 0.3);
                 this.thirdButton.display();
@@ -138,7 +138,7 @@ Menu.prototype.displayModeMenu = function(){
             // HUMAN_VS_HUMAN
             this.scene.pushMatrix();
                 
-                this.scene.registerForPick(4, this.firstButton);
+                this.scene.registerForPick(84, this.firstButton);
                 this.scene.translate(this.positionX, 0.3, 2);
                 this.scene.scale(1, 0.1, 0.3);
                 this.firstButton.display();
@@ -148,7 +148,7 @@ Menu.prototype.displayModeMenu = function(){
             //HUMAN_VS_BOT
             this.scene.pushMatrix();
                 
-                this.scene.registerForPick(5, this.secondButton);
+                this.scene.registerForPick(85, this.secondButton);
                 this.scene.translate(this.positionX, 0.3, 4);
                 this.scene.scale(1, 0.1, 0.3);
                 this.secondButton.display();
@@ -158,7 +158,7 @@ Menu.prototype.displayModeMenu = function(){
             //BOT_VS_BOT
             this.scene.pushMatrix();
                 
-                this.scene.registerForPick(6, this.thirdButton);
+                this.scene.registerForPick(86, this.thirdButton);
                 this.scene.translate(this.positionX, 0.3, 6);
                 this.scene.scale(1, 0.1, 0.3);
                 this.thirdButton.display();
@@ -168,7 +168,7 @@ Menu.prototype.displayModeMenu = function(){
             //Back 
             this.scene.pushMatrix();
                 
-                this.scene.registerForPick(7, this.backButton);
+                this.scene.registerForPick(87, this.backButton);
                 this.scene.translate(this.positionX, 0.2, 8);
                 this.scene.scale(1, 0.1, 0.3);
                 this.backButton.display();
@@ -181,7 +181,7 @@ Menu.prototype.displayLevelMenu = function(){
             // EASY
             this.scene.pushMatrix();
                 
-                this.scene.registerForPick(8, this.firstButton);
+                this.scene.registerForPick(88, this.firstButton);
                 this.scene.translate(this.positionX, 0.3, 2);
                 this.scene.scale(1, 0.1, 0.3);
                 this.firstButton.display();
@@ -191,7 +191,7 @@ Menu.prototype.displayLevelMenu = function(){
             //NORMAL
             this.scene.pushMatrix();
                 
-                this.scene.registerForPick(9, this.secondButton);
+                this.scene.registerForPick(89, this.secondButton);
                 this.scene.translate(this.positionX, 0.3, 4);
                 this.scene.scale(1, 0.1, 0.3);
                 this.secondButton.display();
@@ -201,7 +201,7 @@ Menu.prototype.displayLevelMenu = function(){
              //Back 
             this.scene.pushMatrix();
                 
-                this.scene.registerForPick(10, this.backButton);
+                this.scene.registerForPick(90, this.backButton);
                 this.scene.translate(this.positionX, 0.2, 6);
                 this.scene.scale(1, 0.1, 0.3);
                 this.backButton.display();
@@ -215,7 +215,7 @@ Menu.prototype.displayAboutGame = function(){
             //Back 
             this.scene.pushMatrix();
                 
-                this.scene.registerForPick(11, this.backButton);
+                this.scene.registerForPick(91, this.backButton);
                 this.scene.translate(this.positionX, 0.2, 6);
                 this.scene.scale(1, 0.1, 0.3);
                 this.backButton.display();
