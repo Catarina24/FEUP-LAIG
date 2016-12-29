@@ -54,6 +54,18 @@ function Menu(scene){
     //this.titleAppearance.loadTexture("resources\\images\\menus\\blockade.png");
     //this.setAllColors(this.titleAppearance, 1, 1, 1, 1);
 
+    // Menu Materials
+    this.menuMaterialWhite = new CGFappearance(this.scene);
+    this.menuMaterialWhite.setAmbient(1, 0.9, 1, 1);
+    this.menuMaterialWhite.setDiffuse(1, 0.9, 1, 1);
+    this.menuMaterialWhite.setSpecular(1, 0.9, 1, 1);
+    this.menuMaterialWhite.setShininess(1);
+
+    // Menu textures aka texts
+    this.textureMenuPlay = new CGFtexture(this.scene, "scenes/resources/menu_play.png");
+    this.textureMenuAbout = new CGFtexture(this.scene, "scenes/resources/menu_about.png");
+    this.textureMenuSoundOnOff = new CGFtexture(this.scene, "scenes/resources/menu_sound-on-off.png");
+
     // Cell materials
     this.defaultCellAppearance = new CGFappearance(this.scene);
     this.defaultCellAppearance.setAmbient(1, 0.9, 0, 1);
@@ -66,6 +78,7 @@ function Menu(scene){
     this.selectedCellAppearance.setDiffuse(0.8, 0, 0, 1);
     this.selectedCellAppearance.setSpecular(0.8, 0, 0, 1);
     this.selectedCellAppearance.setShininess(1);
+    
 
 
 }
@@ -101,9 +114,14 @@ Menu.prototype.display = function(){
 
 Menu.prototype.displayMainMenu = function(){
 
+            
+
             // Play
             this.scene.pushMatrix();
-                
+
+                this.menuMaterialWhite.setTexture(this.textureMenuPlay);
+                this.menuMaterialWhite.apply();
+
                 this.scene.registerForPick(81, this.firstButton);
                 this.scene.translate(this.positionX, 0.3, 2);
                 this.scene.scale(1, 0.1, 0.3);
@@ -113,7 +131,10 @@ Menu.prototype.displayMainMenu = function(){
 
             // About
             this.scene.pushMatrix();
-                
+
+                this.menuMaterialWhite.setTexture(this.textureMenuAbout);
+                this.menuMaterialWhite.apply();
+
                 this.scene.registerForPick(82, this.secondButton);
                 this.scene.translate(this.positionX, 0.3, 4);
                 this.scene.scale(1, 0.1, 0.3);
@@ -123,6 +144,9 @@ Menu.prototype.displayMainMenu = function(){
 
             // Sound On/Off
             this.scene.pushMatrix();
+
+                this.menuMaterialWhite.setTexture(this.textureMenuSoundOnOff);
+                this.menuMaterialWhite.apply();
                 
                 this.scene.registerForPick(83, this.thirdButton);
                 this.scene.translate(this.positionX, 0.3, 6);
