@@ -106,8 +106,6 @@ Yavalath.prototype.undo = function(){
     
 }
 
-
-
 Yavalath.prototype.placePiecePlayer = function(x, y, piece){
 
     var game = this;
@@ -138,6 +136,18 @@ Yavalath.prototype.placePieceBot = function(piece){
        
     });
 };
+
+Yavalath.prototype.placePiece = function (piece)
+{
+    if(this.currentPlayer.human == true)
+    {
+        this.placePiecePlayer(this.board.selectedCoords.y-1, this.board.selectedCoords.x-1, piece);
+    }
+    else
+    {
+        this.placePieceBot(piece);
+    }
+}
 
 Yavalath.prototype.handleDataReceived = function(result){
         switch(result){
@@ -190,7 +200,7 @@ Yavalath.prototype.pickListenerGame = function()
 				if (obj)
 				{
 					var customId = this.scene.pickResults[i][1];
-                    this.pickHandlerGame(this.board.getCoordFromIdofPickedCell(customId), customId);		
+                    this.pickHandlerGame(this.board.getCoordFromIdofPickedCell(customId));		
 				}
 			}
 			this.scene.pickResults.splice(0,this.scene.pickResults.length);
@@ -201,16 +211,23 @@ Yavalath.prototype.pickListenerGame = function()
 /**
  * What to do when a cell with board coordinates 'Coords' is picked.
  */
-Yavalath.prototype.pickHandlerGame = function(Coords, customId)
+Yavalath.prototype.pickHandlerGame = function(Coords)
+{
+    this.movePiece(Coords);
+
+}
+
+Yavalath.prototype.movePiece = function (Coords)
 {
     this.board.selectedCoords = Coords;
-    this.board.startAnimationTime = this.scene.elapsedTime;
 
-    this.placePiecePlayer(this.board.selectedCoords.y-1, this.board.selectedCoords.x-1, this.currentPlayer.piece);
+    this.placePiece(this.currentPlayer.piece);  // in prolog
 
     if (this.canPlay){
         var lastMove = new Coord2(this.board.selectedCoords.y-1, this.board.selectedCoords.x-1);
         this.lastMoves.push(lastMove);
+
+        this.board.startAnimationTime = this.scene.elapsedTime;
 
         if (this.currentPlayer.piece == 'black')
             this.board.movePlayerPiece(0);
@@ -222,7 +239,6 @@ Yavalath.prototype.pickHandlerGame = function(Coords, customId)
 
 
 Yavalath.prototype.handleGameState = function(){
-
     
     switch(this.state){
         case state.MENU:
@@ -272,10 +288,13 @@ Yavalath.prototype.menuHandler = function(){
             else if (this.menu.optionSelected == 85){
                 this.menu.menuSelected = submenu.LEVEL;
                 this.mode = mode.HUMAN_VS_BOT;
+                this.player2.human = false;
             }
             else if (this.menu.optionSelected == 86){
                 this.menu.menuSelected = submenu.LEVEL;
                 this.mode = mode.BOT_VS_BOT;
+                this.player1.human = false;
+                this.player2.human = false;
             }
             else if (this.menu.optionSelected == 87){
                 this.menu.menuSelected = submenu.MAIN;
@@ -311,5 +330,21 @@ Yavalath.prototype.handleAudio = function(){
             this.audioEnabled = false;
         else if(!this.audioEnabled)
             this.audioEnabled = true;
+
+}
+
+Yavalath.prototype.playerTurn = function () {
+
+    if(this.currentPlayer.human)
+    {
+        // wait for him to play
+    }
+    else
+    {
+        while(!this.board.playable)
+        {
+
+        }
+    }
 
 }

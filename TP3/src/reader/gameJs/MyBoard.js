@@ -46,6 +46,9 @@ function MyBoard(scene){
     this.blackPiece = new MyPiece(this.scene, 0, this.cellHeight*1.5, this.cellRadius*3/4);
 
     this.pieces = [this.whitePiece, this.blackPiece]; // initial pieces: one for each player
+
+    // Playable means if the user is able to pick something
+    this.playable = true;
 }
 
 MyBoard.prototype.constructor = MyBoard;
@@ -202,6 +205,7 @@ MyBoard.prototype.displayPieces = function()
                 if(this.animation.end)
                 {
                     piece.played = true;
+                    this.setPlayable(true);
                 }
             }
 
@@ -290,13 +294,15 @@ MyBoard.prototype.movePlayerPiece = function (player){
     this.animation = this.generateAnimation(piece);
     this.animation.start(this.scene.elapsedTime);
 
+    this.setPlayable(false); // until the animation ends
+
     this.pieces.push(piece);
 }
 
-
-
+/**
+ * Auxiliary key-map to use in animations. It translates board-coords in space coordinates. The center is the middle board piece.
+ */
 MyBoard.prototype.ConvertCoordinates = function (x, y) {
-
     this.convert = 
     [
         [[-2, 2], [-1, 2], [0, 2], [1, 2], [2, 2]],
@@ -309,17 +315,24 @@ MyBoard.prototype.ConvertCoordinates = function (x, y) {
         [[-2.5,-1.5], [-1.5, -1.5], [-0.5, -1.5], [0.5, -1.5], [1.5,-1.5], [2.5, -1.5]],
         [[-2, -2], [-1, -2], [0, -2], [1, -2], [2, -2]]
     ]
-
 }
 
-MyBoard.prototype.FillMyCoordinates = function () {
+MyBoard.prototype.setPlayable = function (playable) {
+    this.playable = playable;
 
-    this.cellsMatrixAux = new Array(20)
-    for (var i=0; i < 20; i++)
+    if(this.playable)
     {
-        this.cellsMatrixAux[i]=new Array(20);
+        this.scene.setPickEnabled(true);
     }
+    else
+    {
+        this.scene.setPickEnabled(false);
+    }
+}
 
+MyBoard.prototype.movePieceAutomatically = function (coords, player)
+{
+    this.selectedCoords = coords;
 
-
+    movePlayerPiece(player);
 }
