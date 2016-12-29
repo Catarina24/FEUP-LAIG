@@ -61,9 +61,7 @@ function Yavalath(scene){
 
 }
 
-
 Yavalath.prototype.constructor=Yavalath;
-
 
 Yavalath.prototype.init = function(){
     
@@ -227,6 +225,12 @@ Yavalath.prototype.getPrologFeedback = function (Coords) {
     this.placePiece(this.currentPlayer.piece);  // get prolog feedback
 }
 
+Yavalath.prototype.botMove = function (Coords)  
+{
+    this.board.selectedCoords = Coords;
+    this.movePiece(this.currentPlayer.piece);
+} 
+
 Yavalath.prototype.movePiece = function ()
 {
     if (this.canPlay){
@@ -338,16 +342,9 @@ Yavalath.prototype.menuHandler = function(){
 }
 
 Yavalath.prototype.handleAudio = function(){
-
         if (this.audioEnabled)
             this.audioEnabled = false;
         else if(!this.audioEnabled)
             this.audioEnabled = true;
-
 }
 
-Yavalath.prototype.botMove = function (Coord)
-{
-    this.board.selectedCoords = Coord;
-    this.movePiece(this.currentPlayer.piece);
-} 
