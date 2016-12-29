@@ -66,6 +66,15 @@ function Menu(scene){
     this.textureMenuAbout = new CGFtexture(this.scene, "scenes/resources/menu_about.png");
     this.textureMenuSoundOnOff = new CGFtexture(this.scene, "scenes/resources/menu_sound-on-off.png");
 
+    this.textureMenuHumanVsHuman= new CGFtexture(this.scene, "scenes/resources/menu_human-vs-human.png");
+    this.textureMenuHumanVsBot = new CGFtexture(this.scene, "scenes/resources/menu_human-vs-bot.png");
+    this.textureMenuBotVsBot = new CGFtexture(this.scene, "scenes/resources/menu_bot-vs-bot.png");
+
+    this.textureMenuEasy = new CGFtexture(this.scene, "scenes/resources/menu_easy.png");
+    this.textureMenuNormal = new CGFtexture(this.scene, "scenes/resources/menu_normal.png");
+
+    this.textureMenuBack = new CGFtexture(this.scene, "scenes/resources/menu_back.png");
+
     // Cell materials
     this.defaultCellAppearance = new CGFappearance(this.scene);
     this.defaultCellAppearance.setAmbient(1, 0.9, 0, 1);
@@ -114,8 +123,6 @@ Menu.prototype.display = function(){
 
 Menu.prototype.displayMainMenu = function(){
 
-            
-
             // Play
             this.scene.pushMatrix();
 
@@ -154,6 +161,8 @@ Menu.prototype.displayMainMenu = function(){
                 this.thirdButton.display();
 
             this.scene.popMatrix();
+
+            this.scene.clearPickRegistration();
 }
 
 
@@ -161,6 +170,9 @@ Menu.prototype.displayModeMenu = function(){
 
             // HUMAN_VS_HUMAN
             this.scene.pushMatrix();
+
+                this.menuMaterialWhite.setTexture(this.textureMenuHumanVsHuman);
+                this.menuMaterialWhite.apply();
                 
                 this.scene.registerForPick(84, this.firstButton);
                 this.scene.translate(this.positionX, 0.3, 2);
@@ -171,6 +183,9 @@ Menu.prototype.displayModeMenu = function(){
 
             //HUMAN_VS_BOT
             this.scene.pushMatrix();
+
+                this.menuMaterialWhite.setTexture(this.textureMenuHumanVsBot);
+                this.menuMaterialWhite.apply();
                 
                 this.scene.registerForPick(85, this.secondButton);
                 this.scene.translate(this.positionX, 0.3, 4);
@@ -181,6 +196,9 @@ Menu.prototype.displayModeMenu = function(){
 
             //BOT_VS_BOT
             this.scene.pushMatrix();
+
+                this.menuMaterialWhite.setTexture(this.textureMenuBotVsBot);
+                this.menuMaterialWhite.apply();
                 
                 this.scene.registerForPick(86, this.thirdButton);
                 this.scene.translate(this.positionX, 0.3, 6);
@@ -191,6 +209,9 @@ Menu.prototype.displayModeMenu = function(){
 
             //Back 
             this.scene.pushMatrix();
+
+                this.menuMaterialWhite.setTexture(this.textureMenuBack);
+                this.menuMaterialWhite.apply();
                 
                 this.scene.registerForPick(87, this.backButton);
                 this.scene.translate(this.positionX, 0.2, 8);
@@ -198,12 +219,17 @@ Menu.prototype.displayModeMenu = function(){
                 this.backButton.display();
 
             this.scene.popMatrix();
+
+            this.scene.clearPickRegistration();
 }
 
 Menu.prototype.displayLevelMenu = function(){
 
             // EASY
             this.scene.pushMatrix();
+
+                this.menuMaterialWhite.setTexture(this.textureMenuEasy);
+                this.menuMaterialWhite.apply();
                 
                 this.scene.registerForPick(88, this.firstButton);
                 this.scene.translate(this.positionX, 0.3, 2);
@@ -214,6 +240,9 @@ Menu.prototype.displayLevelMenu = function(){
 
             //NORMAL
             this.scene.pushMatrix();
+
+                this.menuMaterialWhite.setTexture(this.textureMenuNormal);
+                this.menuMaterialWhite.apply();
                 
                 this.scene.registerForPick(89, this.secondButton);
                 this.scene.translate(this.positionX, 0.3, 4);
@@ -224,6 +253,9 @@ Menu.prototype.displayLevelMenu = function(){
 
              //Back 
             this.scene.pushMatrix();
+
+                this.menuMaterialWhite.setTexture(this.textureMenuBack);
+                this.menuMaterialWhite.apply();
                 
                 this.scene.registerForPick(90, this.backButton);
                 this.scene.translate(this.positionX, 0.2, 6);
@@ -232,19 +264,26 @@ Menu.prototype.displayLevelMenu = function(){
 
             this.scene.popMatrix();
 
+            this.scene.clearPickRegistration();
+
 }
 
 Menu.prototype.displayAboutGame = function(){
 
             //Back 
             this.scene.pushMatrix();
-                
+            
+                this.menuMaterialWhite.setTexture(this.textureMenuBack);
+                this.menuMaterialWhite.apply();
+                 
                 this.scene.registerForPick(91, this.backButton);
                 this.scene.translate(this.positionX, 0.2, 6);
                 this.scene.scale(1, 0.1, 0.3);
                 this.backButton.display();
 
             this.scene.popMatrix();
+
+            this.scene.clearPickRegistration();
 
 }
 
