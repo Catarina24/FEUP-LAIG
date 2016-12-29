@@ -3,6 +3,15 @@
 * @constructor
 */
 
+
+var submenu={
+    MAIN:1,
+    MODE:2,
+    LEVEL:3,
+    ABOUT:4,
+    GAMEOVER:5,
+};
+
 var mode={
     HUMAN_VS_HUMAN: 1,
     HUMAN_VS_BOT:2,
@@ -27,24 +36,27 @@ function Yavalath(scene){
     this.scene = scene;
 
     this.board = new MyBoard(scene);
-    //this.menu = new Menu(scene);
+    this.menu = new Menu(scene);
     this.client = new Client();
 
     this.state = state.MENU;
     this.level = null;
+    this.mode = null;
 
     this.winner = null;
 
-    // Players
-    this.player1 = null;
-    this.player2 = null;
-    this.currentPlayer = null;
-
+    
     this.lastMoves = [];
 
     this.audioPiece = new Audio('resources/sounds/piece.mp3');
    
     this.audioEnabled = false;
+
+    // Players
+    this.player1 = new Player('player1', 'black');
+    this.player2 = new Player('player2', 'white');
+    this.currentPlayer = this.player1;
+
 }
 
 
@@ -205,13 +217,12 @@ Yavalath.prototype.pickHandlerGame = function(Coords, customId)
 
 
 Yavalath.prototype.handleGameState = function(){
+
+    
     switch(this.state){
         case state.MENU:
-            //this.menu.display();
-            this.player1 = new Player('cat', 'black');
-            this.player2 = new Player('ze', 'white');
-            this.currentPlayer = this.player1;
-            this.state = state.INIT;
+            this.menuHandler();
+            
             break;
         case state.INIT:
             this.init();
@@ -229,3 +240,71 @@ Yavalath.prototype.handleGameState = function(){
     }
 }
 
+
+Yavalath.prototype.menuHandler = function(){
+    this.menu.display();
+
+    switch(this.menu.menuSelected){
+        case submenu.MAIN:
+
+            if(this.menu.optionSelected == 1){
+                this.menu.menuSelected = submenu.MODE;
+            }
+            else if (this.menu.optionSelected == 2){
+                this.menu.menuSelected = submenu.ABOUT;
+            }
+            else if (this.menu.optionSelected == 3){
+                this.handleAudio(); 
+            }
+            break;
+
+        case submenu.MODE:
+
+            if(this.menu.optionSelected == 4){
+                this.menu.menuSelected = submenu.LEVEL;
+                this.mode = mode.HUMAN_VS_HUMAN;
+            }
+            else if (this.menu.optionSelected == 5){
+                this.menu.menuSelected = submenu.LEVEL;
+                this.mode = mode.HUMAN_VS_BOT;
+            }
+            else if (this.menu.optionSelected == 6){
+                this.menu.menuSelected = submenu.LEVEL;
+                this.mode = mode.BOT_VS_BOT;
+            }
+            else if (this.menu.optionSelected == 7){
+                this.menu.menuSelected = submenu.MAIN;
+            }
+            break;
+
+            case submenu.LEVEL:
+
+                if(this.menu.optionSelected == 8){
+                    this.level = 1;
+                    this.state = state.PLAYING;
+                }
+                else if (this.menu.optionSelected == 9){
+                    this.level = 2;
+                    this.state = state.PLAYING;
+                }
+                else if (this.menu.optionSelected == 10){
+                    this.menu.menuSelected = submenu.MODE;
+                }
+                break;
+
+            case submenu.ABOUT:
+                if(this.menu.optionSelected == 11){
+                    this.menu.menuSelected = submenu.MAIN;
+                }
+                break;
+    }
+}
+
+Yavalath.prototype.handleAudio = function(){
+
+        if (this.audioEnabled)
+            this.audioEnabled = false;
+        else if(!this.audioEnabled)
+            this.audioEnabled = true;
+
+}
