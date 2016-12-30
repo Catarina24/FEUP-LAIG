@@ -50,9 +50,6 @@ XMLscene.prototype.init = function (application) {
 	// Testing game
 	this.game = new Yavalath(this);
 
-	// Picking
-	this.setPickEnabled(true);
-
 };
 
 XMLscene.prototype.initLights = function () {

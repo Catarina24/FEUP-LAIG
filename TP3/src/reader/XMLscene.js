@@ -50,6 +50,12 @@ XMLscene.prototype.init = function (application) {
 	// Testing game
 	this.game = new Yavalath(this);
 
+	// Making camera transitions
+	this.initialCameraForAnimation = 0;
+	this.cameraAnimationTime = -1;
+	this.cameraAnimationDuration = 1;
+	this.cameraAnimation = false;
+
 };
 
 XMLscene.prototype.initLights = function () {
@@ -450,3 +456,55 @@ XMLscene.prototype.processGraph = function(nodeName, material, texture)
 	}
 
 };
+
+/**
+ * Linear interpolation for camera animation
+ */
+XMLscene.prototype.lerp = function (p0, p1, t) {
+  return (1-t)*p0 + t*p1;
+}
+
+XMLscene.prototype.lerpBetweenSameSizeArrays = function (array1, array2, t) {
+	var returnArray = [];
+
+	if(Array1.length != array2.length)
+	{
+		return;
+		console.error("Lerp between arrays of different sizes is not possible.");
+	}
+
+	for(var i = 0; i < array1.length; i++)
+	{
+		returnArray[i] = lerp(array1[i], array2[i], t);
+	}
+
+  	return returnArray;
+}
+
+
+/**
+ * Getting a camera position for its animation/transition
+ */
+XMLscene.prototype.animateCamera = function (newCamera)
+{
+	if(this.initialCameraForAnimation == 0)
+	{
+		this.initialCameraForAnimation = this.camera;	// initial camera
+		this.cameraAnimation = true;	// begin animation
+	}
+
+	if(this.cameraAnimationTime < 0)
+	{
+		this.cameraAnimationTime = this.elapsedTime;
+	}
+
+	if(this.elapsedTime - this.cameraAnimationTime > this.cameraAnimationDuration)	// End
+	{
+		this.initialCameraForAnimation = 0;
+		this.cameraAnimationTime = -1;
+		this.cameraAnimation = false;
+	}
+
+	this.camera.position = this.lerpBetweenSameSizeArrays(this.initialCameraForAnimation, )
+
+}
