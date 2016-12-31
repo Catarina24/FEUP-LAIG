@@ -32,6 +32,10 @@ XMLscene.prototype.init = function (application) {
 	this.primitives = [];
 	this.animations = [];
 
+	// load different scenes from different graphs
+	this.graphs = [];
+	this.currentGraph = 0;
+
 	//Interface variables declaration
 	this.application = application;
 
@@ -275,9 +279,8 @@ XMLscene.prototype.loadLights = function()
 		// to have the number of lights in the scene
 		this.numOfLights++;
 	}
-
-	this.application.interface.addLightsMenu(this.graph.lights, this.numOfLights);
 	
+	this.application.interface.addLightsMenu(this.graph.lights, this.numOfLights);
 
 }
 
@@ -505,6 +508,15 @@ XMLscene.prototype.animateCamera = function (newCamera)
 		this.cameraAnimation = false;
 	}
 
-	this.camera.position = this.lerpBetweenSameSizeArrays(this.initialCameraForAnimation, )
+	//this.camera.position = this.lerpBetweenSameSizeArrays(this.initialCameraForAnimation);
 
+}
+
+XMLscene.prototype.changeScene = function ()
+{
+	this.currentGraph++;
+
+	var i = this.currentGraph % this.graphs.length;
+
+	this.graph = this.graphs[i];
 }

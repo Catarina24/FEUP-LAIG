@@ -38,11 +38,13 @@ main=function()
 	
 	
 	//open dsx file (dsxFile)
-	var filename=getUrlVars()['file'] || "Yavalath.xml";
+	var filename1=getUrlVars()['file'] || "Yavalath2.xml";
+    var filename2=getUrlVars()['file'] || "Yavalath1.xml";
 
 	// create and load graph, and associate it to scene. 
 	// Check console for loading errors
-	var myGraph = new MySceneGraph(filename, myScene);
+	var myGraph1 = new MySceneGraph(filename1, myScene, "primary");
+    var myGraph2 = new MySceneGraph(filename2, myScene, "secondary");
 	
 	// start
     app.run();

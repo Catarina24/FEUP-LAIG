@@ -49,6 +49,23 @@ function MyBoard(scene){
 
     // Playable means if the user is able to pick something
     this.playable = true;
+
+    // Number textures
+    this.number0 = new CGFtexture(this.scene, "scenes/resources/0.png");
+    this.number1 = new CGFtexture(this.scene, "scenes/resources/1.png");
+    this.number2 = new CGFtexture(this.scene, "scenes/resources/2.png");
+    this.number3 = new CGFtexture(this.scene, "scenes/resources/3.png");
+    this.number4 = new CGFtexture(this.scene, "scenes/resources/4.png");
+    this.number5 = new CGFtexture(this.scene, "scenes/resources/5.png");
+    this.number6 = new CGFtexture(this.scene, "scenes/resources/6.png");
+    this.number7 = new CGFtexture(this.scene, "scenes/resources/7.png");
+    this.number8 = new CGFtexture(this.scene, "scenes/resources/8.png");
+    this.number9 = new CGFtexture(this.scene, "scenes/resources/9.png");
+
+    // Timer
+    this.timePerPlay = 9;
+
+    this.timer = new MyPlane(this.scene, 1, 1, 20, 20);
 }
 
 MyBoard.prototype.constructor = MyBoard;
@@ -156,6 +173,10 @@ MyBoard.prototype.displayBoardCells = function()
     this.scene.clearPickRegistration();
 
     this.scene.popMatrix();
+}
+
+MyBoard.prototype.displayTimer = function () {
+
 }
 
 /**
@@ -335,4 +356,61 @@ MyBoard.prototype.movePieceAutomatically = function (coords, player)
     this.selectedCoords = coords;
 
     movePlayerPiece(player);
+}
+
+MyBoard.prototype.numberToImage = function(number)
+{
+    switch(number)
+    {
+        case 0:
+            return this.number0;
+            break;
+        case 1:
+            return this.number1;
+            break;
+        case 2:
+            return this.number2;
+            break;
+        case 3:
+            return this.number3;
+            break;
+        case 4:
+            return this.number4;
+            break;
+        case 5:
+            return this.number5;
+            break;
+        case 6:
+            return this.number6;
+            break;
+        case 7:
+            return this.number7;
+            break;
+        case 8:
+            return this.number8;
+            break;
+        case 9:
+            return this.number9;
+            break;
+        default:
+            console.error("Bad number on numberToImage");
+            return;
+    }
+}
+
+MyBoard.prototype.startTimer = function (duration) {
+    var timer = duration, minutes, seconds;
+    setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        this.displayTimer(seconds);
+
+        if (--timer < 0) {
+            timer = duration;
+        }
+    }, 1000);
 }

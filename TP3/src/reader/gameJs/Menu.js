@@ -66,6 +66,8 @@ function Menu(scene){
     this.textureMenuAbout = new CGFtexture(this.scene, "scenes/resources/menu_about.png");
     this.textureMenuSoundOnOff = new CGFtexture(this.scene, "scenes/resources/menu_sound-on-off.png");
 
+    this.textureAbout = new CGFtexture(this.scene, "scenes/resources/yavalath_about.png");
+
     this.textureMenuHumanVsHuman= new CGFtexture(this.scene, "scenes/resources/menu_human-vs-human.png");
     this.textureMenuHumanVsBot = new CGFtexture(this.scene, "scenes/resources/menu_human-vs-bot.png");
     this.textureMenuBotVsBot = new CGFtexture(this.scene, "scenes/resources/menu_bot-vs-bot.png");
@@ -269,6 +271,17 @@ Menu.prototype.displayLevelMenu = function(){
 }
 
 Menu.prototype.displayAboutGame = function(){
+
+            this.scene.pushMatrix();
+            
+                this.menuMaterialWhite.setTexture(this.textureAbout);
+                this.menuMaterialWhite.apply();
+                 
+                this.scene.translate(this.positionX, 0.2, 2);
+                this.scene.scale(1.2, 0.1, 1);
+                this.backButton.display();
+
+            this.scene.popMatrix();
 
             //Back 
             this.scene.pushMatrix();
