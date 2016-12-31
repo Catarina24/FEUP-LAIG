@@ -104,6 +104,7 @@ Yavalath.prototype.undo = function(){
         this.board.selectedCoords = new Coord2(-1, -1);
     }
     
+    this.board.resetTimer(this.timePerPlay);
 }
 
 Yavalath.prototype.placePiecePlayer = function(x, y, piece){

@@ -1,10 +1,18 @@
 
-function MySceneGraph(filename, scene) {
+function MySceneGraph(filename, scene, priority) {
 	this.loadedOk = null;
 
 	// Establish bidirectional references between scene and graph
 	this.scene = scene;
-	scene.graph=this;
+
+	this.priority = priority;
+
+	if(this.priority == "primary")
+	{
+		scene.graph=this;
+	}
+	
+	scene.graphs.push(this);
 
 	// File reading 
 	this.reader = new CGFXMLreader();
@@ -78,7 +86,10 @@ MySceneGraph.prototype.onXMLReady=function()
 	this.loadedOk=true;
 
 	// As the graph loaded ok, signal the scene so that any additional initialization depending on the graph can take place
-	this.scene.onGraphLoaded();
+	if(this.priority == "primary")
+	{
+		this.scene.onGraphLoaded();
+	}
 };
 
 

@@ -47,6 +47,7 @@ MyInterface.prototype.init = function(application) {
 };
 
 MyInterface.prototype.addLightsMenu = function(lights, numOfLights){
+	this.removeFolder('Lights');
 	var lightGroup=this.gui.addFolder('Lights');
 		
 	lightGroup.open();
@@ -70,6 +71,10 @@ MyInterface.prototype.processKeyDown = function(event) {
 		case (77):	
 		case (77+32):	// 'M' or 'm'
 			this.scene.materialCounter++;
+			break;
+		case(83):
+		case(83+32):	// 'S' or 's'
+			this.scene.changeScene();
 			break;
 		case(86):
 		case(86+32):	// 'D' or 'd'
@@ -103,4 +108,15 @@ MyInterface.prototype.processMouseDown = function (event) {
 			console.log("Pressed right button!");
 			break;
 	}
+}
+
+MyInterface.prototype.removeFolder = function(name) {
+  var folder = this.gui.__folders[name];
+  if (!folder) {
+    return;
+  }
+  folder.close();
+  this.gui.__ul.removeChild(folder.domElement.parentNode);
+  delete this.gui.__folders[name];
+  this.gui.onResize();
 }
