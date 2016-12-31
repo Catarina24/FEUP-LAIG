@@ -32,6 +32,12 @@ function MyBoard(scene){
     this.selectedCellAppearance.setSpecular(0.8, 0, 0, 1);
     this.selectedCellAppearance.setShininess(1);
 
+    this.materialWhite = new CGFappearance(this.scene);
+    this.materialWhite.setAmbient(1, 0.9, 1, 1);
+    this.materialWhite.setDiffuse(1, 0.9, 1, 1);
+    this.materialWhite.setSpecular(1, 0.9, 1, 1);
+    this.materialWhite.setShininess(1);
+
     // Cells transformation matrices (key:id, value:matrix) (2D array)
     this.cellsMatrix = new Array(20)
     for (var i=0; i < 20; i++)
@@ -63,6 +69,7 @@ function MyBoard(scene){
     this.number9 = new CGFtexture(this.scene, "scenes/resources/9.png");
 
     // Timer
+    this.playTime;
     this.timer = new MyPlane(this.scene, 1, 1, 20, 20);
 }
 
@@ -178,7 +185,9 @@ MyBoard.prototype.displayTimer = function () {
     this.scene.pushMatrix();
 
     this.scene.translate(5, 0, 5);
-    this.scene.rotate(-Math.PI/2, 1, 0, 0);
+
+    this.materialWhite.apply();
+    this.materialWhite.setTexture(this.numberToImage(this.playTime));
 
     this.timer.display();
 
@@ -369,6 +378,7 @@ MyBoard.prototype.movePieceAutomatically = function (coords, player)
 
 MyBoard.prototype.numberToImage = function(number)
 {
+    console.log(number);
     switch(number)
     {
         case 0:
@@ -408,17 +418,19 @@ MyBoard.prototype.numberToImage = function(number)
 }
 
 MyBoard.prototype.startTimer = function (duration) {
-    var timer = duration, minutes, seconds;
+    var board = this;
+    this.playTime = duration;
+    var minutes, seconds;
     var id = setInterval(function () {
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
+        minutes = parseInt(board.playTime / 60, 10);
+        seconds = parseInt(board.playTime % 60, 10);
 
         minutes = minutes < 10 ? "0" + minutes : minutes;
         seconds = seconds < 10 ? "0" + seconds : seconds;
 
         console.log(seconds);
 
-        if (--timer < 0) {
+        if (--board.playTime < 0) {
             clearInterval(id);
         }
     }, 1000);
