@@ -69,8 +69,25 @@ function MyBoard(scene){
     this.number9 = new CGFtexture(this.scene, "scenes/resources/9.png");
 
     // Timer
-    this.playTime;
+    this.playTime = 9;
     this.timer = new MyPlane(this.scene, 1, 1, 20, 20);
+    this.currentTimerFunction = null;
+
+    // Markers
+    this.whitePlayerMarkerUnits = new MyPlane(this.scene, 1, 1, 20, 20);
+    this.blackPlayerMarkerUnits = new MyPlane(this.scene, 1, 1, 20, 20);
+    this.whitePlayerMarkerTens = new MyPlane(this.scene, 1, 1, 20, 20);
+    this.blackPlayerMarkerTens = new MyPlane(this.scene, 1, 1, 20, 20);
+
+    this.whitePlayerPlayedPieces = 0;
+    this.blackPlayerPlayedPieces = 0;
+
+    // Game end
+    this.gameEndBoard = new MyPlane(this.scene, 1, 1, 20, 20);
+    this.winnerWhite = new CGFtexture(this.scene, "scenes/resources/winner_white.png");
+    this.winnerBlack = new CGFtexture(this.scene, "scenes/resources/winner_black.png");
+    this.winnerDraw = new CGFtexture(this.scene, "scenes/resources/winner_draw.png");
+
 }
 
 MyBoard.prototype.constructor = MyBoard;
@@ -184,15 +201,55 @@ MyBoard.prototype.displayTimer = function () {
 
     this.scene.pushMatrix();
 
-    this.scene.translate(5, 0, 5);
+    //marker matrix : this.scene.translate(5, 0, 0.1);
+    this.scene.translate(0, 4.5, 0.1);
 
-    this.materialWhite.apply();
     this.materialWhite.setTexture(this.numberToImage(this.playTime));
+    this.materialWhite.apply();
 
     this.timer.display();
 
     this.scene.popMatrix();
 
+}
+
+MyBoard.prototype.displayMarkers = function () {
+
+    // Black player 
+    this.scene.pushMatrix();
+
+    this.scene.translate(5.2, 0, 0.1);
+    this.scene.scale(0.5, 0.5, 0.5);
+
+    this.materialWhite.setTexture(this.numberToImage(this.blackPlayerPlayedPieces % 10));
+    this.materialWhite.apply();
+
+    this.blackPlayerMarkerUnits.display();
+
+    this.scene.translate(-0.8, 0, 0);
+    this.materialWhite.setTexture(this.numberToImage(Math.floor(this.blackPlayerPlayedPieces / 10)));
+    this.materialWhite.apply();
+    this.blackPlayerMarkerTens.display();
+
+    this.scene.popMatrix();
+
+    // White player
+    this.scene.pushMatrix();
+
+    this.scene.translate(-4.8, 0, 0.1);
+    this.scene.scale(0.5, 0.5, 0.5);
+
+    this.materialWhite.setTexture(this.numberToImage(this.whitePlayerPlayedPieces % 10));
+    this.materialWhite.apply();
+
+    this.blackPlayerMarkerUnits.display();
+
+    this.scene.translate(-0.8, 0, 0);
+    this.materialWhite.setTexture(this.numberToImage(Math.floor(this.whitePlayerPlayedPieces / 10)));
+    this.materialWhite.apply();
+    this.blackPlayerMarkerTens.display();
+
+    this.scene.popMatrix();
 }
 
 /**
@@ -275,6 +332,8 @@ MyBoard.prototype.display = function(){
     this.displayPieces();
 
     this.displayTimer();
+
+    this.displayMarkers();
 
     this.scene.popMatrix();
 }
@@ -378,7 +437,6 @@ MyBoard.prototype.movePieceAutomatically = function (coords, player)
 
 MyBoard.prototype.numberToImage = function(number)
 {
-    console.log(number);
     switch(number)
     {
         case 0:
@@ -421,17 +479,55 @@ MyBoard.prototype.startTimer = function (duration) {
     var board = this;
     this.playTime = duration;
     var minutes, seconds;
-    var id = setInterval(function () {
+    this.currentTimerFunction = setInterval(function () {
         minutes = parseInt(board.playTime / 60, 10);
         seconds = parseInt(board.playTime % 60, 10);
 
         minutes = minutes < 10 ? "0" + minutes : minutes;
         seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        console.log(seconds);
-
         if (--board.playTime < 0) {
-            clearInterval(id);
+            board.playTime = 0;
+            clearInterval(board.currentTimerFunction);
         }
     }, 1000);
+}
+
+MyBoard.prototype.resetTimer = function (duration) {
+
+    if(this.currentTimerFunction != null)
+    {
+        clearInterval(this.currentTimerFunction);
+    }
+    this.startTimer(duration);
+
+}
+
+MyBoard.prototype.displayEnd = function(player) {
+
+    this.scene.pushMatrix();
+
+    this.scene.translate(5, 0.1, 5);
+    this.scene.rotate(-Math.PI/2, 1, 0, 0);
+    this.scene.scale(5, 5, 1);
+
+    if(player == 1)
+    {
+        this.materialWhite.setTexture(this.winnerBlack);
+    }
+    if(player == 2)
+    {
+        this.materialWhite.setTexture(this.winnerWhite);
+    }
+    if(player == 0)
+    {
+        this.materialWhite.setTexture(this.winnerDraw);
+    }
+
+    this.materialWhite.apply();
+
+    this.gameEndBoard.display();
+
+    this.scene.popMatrix();
+    
 }

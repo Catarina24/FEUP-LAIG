@@ -166,19 +166,36 @@ Yavalath.prototype.handleDataReceived = function(result){
                     this.audioPiece.play();
                 this.canPlay = true;
                 this.movePiece();
-                this.board.startTimer(9);
+                this.board.resetTimer(9);
                 break;
-            case '2':
+            case '2':   // draw
+                this.sleep(2000);
                 this.state = state.END;
-                console.log("Draw");
+                this.winner = 0;
                 break;
-            case '3':
+            case '3':   // player loses
+                this.sleep(2000);
                 this.state = state.END;
-                console.log("Lost");
+                if(this.currentPlayer == this.player1)
+                {
+                    this.winner = 2;
+                }
+                if(this.currentPlayer == this.player2)
+                {
+                    this.winner = 1;
+                }
                 break;
-            case '4':
+            case '4':   // player wins
+                this.sleep(2000);
                 this.state = state.END;
-                console.log("Win");
+                if(this.currentPlayer == this.player1)
+                {
+                    this.winner = 1;
+                }
+                if(this.currentPlayer == this.player2)
+                {
+                    this.winner = 2;
+                }
                 break;
         }
 };
@@ -246,10 +263,12 @@ Yavalath.prototype.movePiece = function ()
         if (this.currentPlayer.piece == 'black')
         {
             this.board.movePlayerPiece(0);
+            this.board.blackPlayerPlayedPieces++;
         }
         else if(this.currentPlayer.piece == 'white')
         {
             this.board.movePlayerPiece(1);  
+            this.board.whitePlayerPlayedPieces++;
         }
 
         this.changePlayer();
@@ -272,11 +291,13 @@ Yavalath.prototype.handleGameState = function(){
         case state.PLAYING:
             this.board.display();
             this.pickListenerGame();
+            this.checkEndByTime();
             break;
         case state.END:
             this.state = state.GAMEOVER_MENU;
             break;
         case state.GAMEOVER_MENU:
+            this.board.displayEnd(this.winner);
             break;
     }
 }
@@ -302,7 +323,7 @@ Yavalath.prototype.menuHandler = function(){
         case submenu.MODE:
 
             if(this.menu.optionSelected == 84){
-                this.menu.menuSelected = submenu.LEVEL;
+                this.state = state.INIT;
                 this.mode = mode.HUMAN_VS_HUMAN;
             }
             else if (this.menu.optionSelected == 85){
@@ -351,3 +372,29 @@ Yavalath.prototype.handleAudio = function(){
             this.audioEnabled = true;
 }
 
+Yavalath.prototype.checkEndByTime = function () {
+    if(this.board.playTime == 0)
+    {
+        if(this.currentPlayer == this.player1)
+        {
+            this.winner = 2;
+        }
+        if(this.currentPlayer == this.player2)
+        {
+            this.winner = 1;
+        }
+
+        this.state = state.END;
+    }
+
+    
+}
+
+Yavalath.prototype.sleep = function (milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
+}
