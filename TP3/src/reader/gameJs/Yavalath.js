@@ -249,6 +249,7 @@ Yavalath.prototype.botMove = function (Coords)
 {
     this.board.selectedCoords = Coords;
     this.movePiece(this.currentPlayer.piece);
+    this.board.resetTimer(9);
 } 
 
 Yavalath.prototype.movePiece = function ()
