@@ -59,6 +59,8 @@ function Yavalath(scene){
 
     this.canPlay = true;
 
+    this.timePerPlay = 9;   // in seconds
+
 }
 
 Yavalath.prototype.constructor=Yavalath;
@@ -164,6 +166,7 @@ Yavalath.prototype.handleDataReceived = function(result){
                     this.audioPiece.play();
                 this.canPlay = true;
                 this.movePiece();
+                this.board.startTimer(9);
                 break;
             case '2':
                 this.state = state.END;

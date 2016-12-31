@@ -63,8 +63,6 @@ function MyBoard(scene){
     this.number9 = new CGFtexture(this.scene, "scenes/resources/9.png");
 
     // Timer
-    this.timePerPlay = 9;
-
     this.timer = new MyPlane(this.scene, 1, 1, 20, 20);
 }
 
@@ -177,6 +175,15 @@ MyBoard.prototype.displayBoardCells = function()
 
 MyBoard.prototype.displayTimer = function () {
 
+    this.scene.pushMatrix();
+
+    this.scene.translate(5, 0, 5);
+    this.scene.rotate(-Math.PI/2, 1, 0, 0);
+
+    this.timer.display();
+
+    this.scene.popMatrix();
+
 }
 
 /**
@@ -257,6 +264,8 @@ MyBoard.prototype.display = function(){
     this.displayBoardCells();
 
     this.displayPieces();
+
+    this.displayTimer();
 
     this.scene.popMatrix();
 }
@@ -400,17 +409,17 @@ MyBoard.prototype.numberToImage = function(number)
 
 MyBoard.prototype.startTimer = function (duration) {
     var timer = duration, minutes, seconds;
-    setInterval(function () {
+    var id = setInterval(function () {
         minutes = parseInt(timer / 60, 10);
         seconds = parseInt(timer % 60, 10);
 
         minutes = minutes < 10 ? "0" + minutes : minutes;
         seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        this.displayTimer(seconds);
+        console.log(seconds);
 
         if (--timer < 0) {
-            timer = duration;
+            clearInterval(id);
         }
     }, 1000);
 }
