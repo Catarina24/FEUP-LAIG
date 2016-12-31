@@ -94,8 +94,24 @@ Yavalath.prototype.undo = function(){
 
     this.lastMoves.pop();
     this.board.pieces.pop();
+
+    if(this.currentPlayer == this.player1)
+    {
+        if(this.board.whitePlayerPlayedPieces > 0)
+        {
+            this.board.whitePlayerPlayedPieces--;
+        }
+    }
+    if(this.currentPlayer == this.player2)
+    {
+        if(this.board.blackPlayerPlayedPieces > 0)
+        {
+            this.board.blackPlayerPlayedPieces--;
+        }
+    }
+
     this.changePlayer();
-    
+
     if (this.lastMoves.length != 0){
         var selectedCoords = this.lastMoves[length-2];
         this.board.selectedCoords = new Coord2(selectedCoords.y+1, selectedCoords.x+1);
@@ -105,6 +121,8 @@ Yavalath.prototype.undo = function(){
     }
     
     this.board.resetTimer(this.timePerPlay);
+
+    
 }
 
 Yavalath.prototype.placePiecePlayer = function(x, y, piece){
