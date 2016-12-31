@@ -17,7 +17,7 @@ serialInclude(['../lib/CGF.js', 'XMLscene.js', 'MySceneGraph.js',
 'primitives/MyCylinder.js', 'primitives/MyCylinderBase.js', 'primitives/MyCylinderSurface.js', 
 'primitives/MyTorus.js', 'MyLight.js', 'MyInterface.js', 'primitives/MyPlane.js', 'primitives/MyPatch.js', 'primitives/MyVehicle.js', 'primitives/MyCube.js',
 'animations/MyAnimation.js', 'animations/MyLinearAnimation.js', 'animations/MyCircularAnimation.js', 'animations/MyKeyAnimation.js',
-'primitives/MyChessboard.js', 'gameJs/MyBoard.js', 'Utils.js', 'gameJs/MyPiece.js', 'gameJs/Yavalath.js','gameJs/Client.js', 'gameJs/Player.js',
+'primitives/MyChessboard.js', 'gameJs/MyBoard.js', 'Utils.js', 'gameJs/MyPiece.js', 'gameJs/Yavalath.js','gameJs/Client.js', 'gameJs/Player.js', 'gameJs/Menu.js',
 
 main=function()
 {
@@ -38,11 +38,13 @@ main=function()
 	
 	
 	//open dsx file (dsxFile)
-	var filename=getUrlVars()['file'] || "Yavalath.xml";
+	var filename1=getUrlVars()['file'] || "Yavalath2.dsx";
+    var filename2=getUrlVars()['file'] || "Yavalath1.dsx";
 
 	// create and load graph, and associate it to scene. 
 	// Check console for loading errors
-	var myGraph = new MySceneGraph(filename, myScene);
+	var myGraph1 = new MySceneGraph(filename1, myScene, "primary");
+    var myGraph2 = new MySceneGraph(filename2, myScene, "secondary");
 	
 	// start
     app.run();

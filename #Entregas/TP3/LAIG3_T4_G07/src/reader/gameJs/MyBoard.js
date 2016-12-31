@@ -32,6 +32,12 @@ function MyBoard(scene){
     this.selectedCellAppearance.setSpecular(0.8, 0, 0, 1);
     this.selectedCellAppearance.setShininess(1);
 
+    this.materialWhite = new CGFappearance(this.scene);
+    this.materialWhite.setAmbient(1, 0.9, 1, 1);
+    this.materialWhite.setDiffuse(1, 0.9, 1, 1);
+    this.materialWhite.setSpecular(1, 0.9, 1, 1);
+    this.materialWhite.setShininess(1);
+
     // Cells transformation matrices (key:id, value:matrix) (2D array)
     this.cellsMatrix = new Array(20)
     for (var i=0; i < 20; i++)
@@ -46,6 +52,42 @@ function MyBoard(scene){
     this.blackPiece = new MyPiece(this.scene, 0, this.cellHeight*1.5, this.cellRadius*3/4);
 
     this.pieces = [this.whitePiece, this.blackPiece]; // initial pieces: one for each player
+
+    // Playable means if the user is able to pick something
+    this.playable = true;
+
+    // Number textures
+    this.number0 = new CGFtexture(this.scene, "scenes/resources/0.png");
+    this.number1 = new CGFtexture(this.scene, "scenes/resources/1.png");
+    this.number2 = new CGFtexture(this.scene, "scenes/resources/2.png");
+    this.number3 = new CGFtexture(this.scene, "scenes/resources/3.png");
+    this.number4 = new CGFtexture(this.scene, "scenes/resources/4.png");
+    this.number5 = new CGFtexture(this.scene, "scenes/resources/5.png");
+    this.number6 = new CGFtexture(this.scene, "scenes/resources/6.png");
+    this.number7 = new CGFtexture(this.scene, "scenes/resources/7.png");
+    this.number8 = new CGFtexture(this.scene, "scenes/resources/8.png");
+    this.number9 = new CGFtexture(this.scene, "scenes/resources/9.png");
+
+    // Timer
+    this.playTime = 9;
+    this.timer = new MyPlane(this.scene, 1, 1, 20, 20);
+    this.currentTimerFunction = null;
+
+    // Markers
+    this.whitePlayerMarkerUnits = new MyPlane(this.scene, 1, 1, 20, 20);
+    this.blackPlayerMarkerUnits = new MyPlane(this.scene, 1, 1, 20, 20);
+    this.whitePlayerMarkerTens = new MyPlane(this.scene, 1, 1, 20, 20);
+    this.blackPlayerMarkerTens = new MyPlane(this.scene, 1, 1, 20, 20);
+
+    this.whitePlayerPlayedPieces = 0;
+    this.blackPlayerPlayedPieces = 0;
+
+    // Game end
+    this.gameEndBoard = new MyPlane(this.scene, 1, 1, 20, 20);
+    this.winnerWhite = new CGFtexture(this.scene, "scenes/resources/winner_white.png");
+    this.winnerBlack = new CGFtexture(this.scene, "scenes/resources/winner_black.png");
+    this.winnerDraw = new CGFtexture(this.scene, "scenes/resources/winner_draw.png");
+
 }
 
 MyBoard.prototype.constructor = MyBoard;
@@ -155,6 +197,61 @@ MyBoard.prototype.displayBoardCells = function()
     this.scene.popMatrix();
 }
 
+MyBoard.prototype.displayTimer = function () {
+
+    this.scene.pushMatrix();
+
+    //marker matrix : this.scene.translate(5, 0, 0.1);
+    this.scene.translate(0, 4.5, 0.1);
+
+    this.materialWhite.setTexture(this.numberToImage(this.playTime));
+    this.materialWhite.apply();
+
+    this.timer.display();
+
+    this.scene.popMatrix();
+
+}
+
+MyBoard.prototype.displayMarkers = function () {
+
+    // Black player 
+    this.scene.pushMatrix();
+
+    this.scene.translate(5.2, 0, 0.1);
+    this.scene.scale(0.5, 0.5, 0.5);
+
+    this.materialWhite.setTexture(this.numberToImage(this.blackPlayerPlayedPieces % 10));
+    this.materialWhite.apply();
+
+    this.blackPlayerMarkerUnits.display();
+
+    this.scene.translate(-0.8, 0, 0);
+    this.materialWhite.setTexture(this.numberToImage(Math.floor(this.blackPlayerPlayedPieces / 10)));
+    this.materialWhite.apply();
+    this.blackPlayerMarkerTens.display();
+
+    this.scene.popMatrix();
+
+    // White player
+    this.scene.pushMatrix();
+
+    this.scene.translate(-4.8, 0, 0.1);
+    this.scene.scale(0.5, 0.5, 0.5);
+
+    this.materialWhite.setTexture(this.numberToImage(this.whitePlayerPlayedPieces % 10));
+    this.materialWhite.apply();
+
+    this.blackPlayerMarkerUnits.display();
+
+    this.scene.translate(-0.8, 0, 0);
+    this.materialWhite.setTexture(this.numberToImage(Math.floor(this.whitePlayerPlayedPieces / 10)));
+    this.materialWhite.apply();
+    this.blackPlayerMarkerTens.display();
+
+    this.scene.popMatrix();
+}
+
 /**
  * Display piece
  */
@@ -202,6 +299,7 @@ MyBoard.prototype.displayPieces = function()
                 if(this.animation.end)
                 {
                     piece.played = true;
+                    this.setPlayable(true);
                 }
             }
 
@@ -232,6 +330,10 @@ MyBoard.prototype.display = function(){
     this.displayBoardCells();
 
     this.displayPieces();
+
+    this.displayTimer();
+
+    this.displayMarkers();
 
     this.scene.popMatrix();
 }
@@ -290,13 +392,15 @@ MyBoard.prototype.movePlayerPiece = function (player){
     this.animation = this.generateAnimation(piece);
     this.animation.start(this.scene.elapsedTime);
 
+    this.setPlayable(false); // until the animation ends
+
     this.pieces.push(piece);
 }
 
-
-
+/**
+ * Auxiliary key-map to use in animations. It translates board-coords in space coordinates. The center is the middle board piece.
+ */
 MyBoard.prototype.ConvertCoordinates = function (x, y) {
-
     this.convert = 
     [
         [[-2, 2], [-1, 2], [0, 2], [1, 2], [2, 2]],
@@ -309,17 +413,121 @@ MyBoard.prototype.ConvertCoordinates = function (x, y) {
         [[-2.5,-1.5], [-1.5, -1.5], [-0.5, -1.5], [0.5, -1.5], [1.5,-1.5], [2.5, -1.5]],
         [[-2, -2], [-1, -2], [0, -2], [1, -2], [2, -2]]
     ]
+}
+
+MyBoard.prototype.setPlayable = function (playable) {
+    this.playable = playable;
+
+    if(this.playable)
+    {
+        this.scene.setPickEnabled(true);
+    }
+    else
+    {
+        this.scene.setPickEnabled(false);
+    }
+}
+
+MyBoard.prototype.movePieceAutomatically = function (coords, player)
+{
+    this.selectedCoords = coords;
+
+    movePlayerPiece(player);
+}
+
+MyBoard.prototype.numberToImage = function(number)
+{
+    switch(number)
+    {
+        case 0:
+            return this.number0;
+            break;
+        case 1:
+            return this.number1;
+            break;
+        case 2:
+            return this.number2;
+            break;
+        case 3:
+            return this.number3;
+            break;
+        case 4:
+            return this.number4;
+            break;
+        case 5:
+            return this.number5;
+            break;
+        case 6:
+            return this.number6;
+            break;
+        case 7:
+            return this.number7;
+            break;
+        case 8:
+            return this.number8;
+            break;
+        case 9:
+            return this.number9;
+            break;
+        default:
+            console.error("Bad number on numberToImage");
+            return;
+    }
+}
+
+MyBoard.prototype.startTimer = function (duration) {
+    var board = this;
+    this.playTime = duration;
+    var minutes, seconds;
+    this.currentTimerFunction = setInterval(function () {
+        minutes = parseInt(board.playTime / 60, 10);
+        seconds = parseInt(board.playTime % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        if (--board.playTime < 0) {
+            board.playTime = 0;
+            clearInterval(board.currentTimerFunction);
+        }
+    }, 1000);
+}
+
+MyBoard.prototype.resetTimer = function (duration) {
+
+    if(this.currentTimerFunction != null)
+    {
+        clearInterval(this.currentTimerFunction);
+    }
+    this.startTimer(duration);
 
 }
 
-MyBoard.prototype.FillMyCoordinates = function () {
+MyBoard.prototype.displayEnd = function(player) {
 
-    this.cellsMatrixAux = new Array(20)
-    for (var i=0; i < 20; i++)
+    this.scene.pushMatrix();
+
+    this.scene.translate(5, 0.1, 5);
+    this.scene.rotate(-Math.PI/2, 1, 0, 0);
+    this.scene.scale(5, 5, 1);
+
+    if(player == 1)
     {
-        this.cellsMatrixAux[i]=new Array(20);
+        this.materialWhite.setTexture(this.winnerBlack);
+    }
+    if(player == 2)
+    {
+        this.materialWhite.setTexture(this.winnerWhite);
+    }
+    if(player == 0)
+    {
+        this.materialWhite.setTexture(this.winnerDraw);
     }
 
+    this.materialWhite.apply();
 
+    this.gameEndBoard.display();
 
+    this.scene.popMatrix();
+    
 }
